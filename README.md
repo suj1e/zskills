@@ -8,7 +8,7 @@
 
 ## 已有
 
-_(暂无。有真正想用的 skill 再往 `skills/` 里加。)_
+- **zdesign** — 视觉/界面设计 skill。选一套设计系统(消费 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 68 个 `DESIGN.md`),产出严格遵循它的 HTML/CSS,自带实时预览(node watch + SSE)和三层质量门禁(约束/细节/验收)。不依赖 OpenDesign。
 
 ## 怎么用
 

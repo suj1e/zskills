@@ -1,0 +1,38 @@
+<!--
+  zdesign · 组件示范:button
+  ──────────────────────────
+  展示一个组件如何「消费」:root 里的 token 变量,并覆盖完整状态。
+  换一套 DESIGN.md(只改 :root),这个组件自动适配,无需改组件本身。
+-->
+<style>
+  .zd-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
+    font-family: var(--font-text); font-size: var(--fs-body); font-weight: 500;
+    line-height: 1.2;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    min-height: 44px; /* a11y: 触控目标 */
+    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
+  }
+  /* 主按钮 */
+  .zd-btn--primary { background: var(--color-primary); color: var(--ink); }
+  .zd-btn--primary:hover { background: var(--color-primary-hover); }
+  .zd-btn--primary:active { transform: translateY(1px); }
+  /* 次按钮(描边) */
+  .zd-btn--secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--hairline);
+  }
+  .zd-btn--secondary:hover { border-color: var(--color-primary); }
+  /* 禁用 */
+  .zd-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+  /* 焦点(a11y: 可见焦点环) */
+  .zd-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+</style>
+
+<button class="zd-btn zd-btn--primary" type="button">主操作</button>
+<button class="zd-btn zd-btn--secondary" type="button">次操作</button>
+<button class="zd-btn zd-btn--primary" type="button" disabled>禁用</button>
