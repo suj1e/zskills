@@ -135,6 +135,32 @@ body[data-tree="open"] .tree { display: block; }
   width: 56px; height: 56px; margin: 0 auto 14px; display: grid; place-items: center;
   background: var(--accent); color: var(--accent-ink); border-radius: 14px; font-size: 26px; font-weight: 700;
 }
+/* ── 图标 / token 专属预览 ── */
+.special { width: 100%; height: 100%; overflow: auto; padding: 32px; }
+.icon-preview { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.icon-canvas {
+  display: grid; place-items: center;
+  min-width: 240px; min-height: 240px; padding: 36px;
+  background-color: var(--surface);
+  background-image: linear-gradient(45deg, var(--border) 25%, transparent 25%), linear-gradient(-45deg, var(--border) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--border) 75%), linear-gradient(-45deg, transparent 75%, var(--border) 75%);
+  background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.icon-canvas img { max-width: 128px; max-height: 128px; object-fit: contain; }
+.icon-name { font-family: var(--mono); font-size: 13px; color: var(--ink); }
+
+.tk-section { margin-bottom: 28px; }
+.tk-h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); margin-bottom: 12px; }
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.swatch { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.sw { height: 72px; border-bottom: 1px solid var(--border); }
+.sw-name { padding: 8px 10px 2px; font-family: var(--mono); font-size: 11px; color: var(--ink); word-break: break-all; }
+.sw-val { padding: 0 10px 8px; }
+.fw-sample { height: 72px; display: grid; place-items: center; font-size: 24px; color: var(--ink); border-bottom: 1px solid var(--border); }
+.kv { display: flex; flex-direction: column; gap: 4px; }
+.kv-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.kv-row .sw-name { padding: 0; }
+
 .scrim { display: none; }
 
 @media (max-width: 760px) {

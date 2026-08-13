@@ -18,6 +18,7 @@ const $ = (id) => document.getElementById(id);
 const treeInner = $('treeInner');
 const frame = $('frame');
 const device = $('device');
+const special = $('special');
 const empty = $('empty');
 const currentFile = $('currentFile');
 const vpLabel = $('vpLabel');
@@ -56,7 +57,7 @@ async function loadFiles() {
       el.className = 'file';
       el.dataset.path = it.path;
       el.innerHTML = '<span>' + it.name + '</span><span class="tag">' + (it.ext || '') + '</span>';
-      el.addEventListener('click', () => selectFile(it.path));
+      el.addEventListener('click', () => selectFile(it.path, it.type));
       sec.appendChild(el);
     }
     treeInner.appendChild(sec);
@@ -68,17 +69,21 @@ function highlight(p) {
   treeInner.querySelectorAll('.file').forEach((el) => el.classList.toggle('active', el.dataset.path === p));
 }
 
-/* ── 预览 ── */
-function selectFile(p) {
+/* ── 预览(按类型:page→iframe,icon→图标展示,token→色板)── */
+function selectFile(p, type) {
   current = p;
   currentFile.textContent = p;
   empty.hidden = true;
-  device.hidden = false;
-  frame.src = '/' + encodeURI(p);
+  device.hidden = true;
+  special.hidden = true;
+  if (type === 'icon') showIcon(p);
+  else if (type === 'token') showToken(p);
+  else { device.hidden = false; frame.src = '/' + encodeURI(p); }
   highlight(p);
   closeTreeOnNarrow();
 }
 frame.addEventListener('load', () => {
+  if (device.hidden) return;
   try {
     const loc = frame.contentWindow && frame.contentWindow.location;
     if (loc && loc.pathname) {
@@ -88,7 +93,85 @@ frame.addEventListener('load', () => {
   } catch (e) {}
 });
 
-/* ── 视口:0=桌面占满,768/375=预设,custom=自定义档位(选中后宽高实时驱动)── */
+/* 图标专属预览 */
+function showIcon(p) {
+  special.hidden = false;
+  const name = p.split('/').pop();
+  special.innerHTML =
+    '<div class="icon-preview"><div class="icon-canvas"><img id="iconImg" src="/' + encodeURI(p) + '" alt="" /></div>' +
+    '<div class="icon-meta"><div class="icon-name">' + name + '</div><div class="muted small" id="iconDim">—</div></div></div>';
+  const img = $('iconImg');
+  img.onload = () => { $('iconDim').textContent = img.naturalWidth + ' × ' + img.naturalHeight + ' px'; };
+  img.onerror = () => { $('iconDim').textContent = '该格式无法预览'; };
+}
+
+/* token 专属预览:解析 CSS 变量 → 配色色板 + 字体样例 + 其他 */
+async function showToken(p) {
+  special.hidden = false;
+  special.innerHTML = '<p class="muted pad">解析中…</p>';
+  let text;
+  try {
+    text = await (await fetch('/' + encodeURI(p), { cache: 'no-store' })).text();
+  } catch (e) {
+    special.innerHTML = '<p class="muted pad">读取失败</p>';
+    return;
+  }
+  const vars = parseCssVars(text);
+  if (!vars.length) {
+    special.innerHTML = '<div class="icon-preview"><div class="icon-name">' + p.split('/').pop() + '</div><p class="muted small">未发现 CSS 变量(非 token 文件)</p></div>';
+    return;
+  }
+  const colors = [], fonts = [], radii = [], spaces = [], others = [];
+  for (const v of vars) {
+    const n = v.name.toLowerCase();
+    if (isColor(v.value)) colors.push(v);
+    else if (/font|family|type/.test(n)) fonts.push(v);
+    else if (/radius|round|corner/.test(n)) radii.push(v);
+    else if (/space|gap|pad|margin|inset/.test(n)) spaces.push(v);
+    else others.push(v);
+  }
+  special.innerHTML = renderToken(colors, fonts, radii, spaces, others);
+}
+function parseCssVars(text) {
+  const out = [];
+  const re = /(--[A-Za-z0-9_-]+)\s*:\s*([^;}\n]+)/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const val = m[2].trim();
+    if (val) out.push({ name: m[1].trim(), value: val });
+  }
+  return out;
+}
+function isColor(v) {
+  return /^(#([0-9a-fA-F]{3,8})\b|rgb|rgba|hsl|hsla|oklch|oklab|color\()/i.test(v.trim());
+}
+function renderToken(colors, fonts, radii, spaces, others) {
+  let h = '';
+  if (colors.length) {
+    h += '<div class="tk-section"><div class="tk-h">配色 · ' + colors.length + '</div><div class="palette">';
+    for (const c of colors) {
+      h += '<div class="swatch"><div class="sw" style="background:' + c.value + '"></div><div class="sw-name">' + c.name + '</div><div class="sw-val muted small">' + c.value + '</div></div>';
+    }
+    h += '</div></div>';
+  }
+  if (fonts.length) {
+    h += '<div class="tk-section"><div class="tk-h">字体 · ' + fonts.length + '</div><div class="palette">';
+    for (const f of fonts) {
+      const fam = f.value.split(',')[0].replace(/['"]/g, '');
+      h += '<div class="swatch"><div class="fw-sample" style="font-family:' + f.value + '">Aa</div><div class="sw-name">' + f.name + '</div><div class="sw-val muted small">' + fam + '</div></div>';
+    }
+    h += '</div></div>';
+  }
+  const rest = [].concat(radii, spaces, others);
+  if (rest.length) {
+    h += '<div class="tk-section"><div class="tk-h">其他 · ' + rest.length + '</div><div class="kv">';
+    for (const r of rest) h += '<div class="kv-row"><span class="sw-name">' + r.name + '</span><span class="muted">' + r.value + '</span></div>';
+    h += '</div></div>';
+  }
+  return h || '<p class="muted pad">无</p>';
+}
+
+/* ── 视口:0=桌面占满,768/375=预设,custom=自定义档位 ── */
 function setViewport(mode, opts) {
   opts = opts || {};
   if (mode === 0) {
@@ -108,7 +191,6 @@ function setViewport(mode, opts) {
     markActive('custom');
     return;
   }
-  // 数字预设
   device.style.maxWidth = mode + 'px';
   device.style.height = '';
   vpLabel.textContent = mode + 'px';
@@ -125,7 +207,6 @@ document.querySelectorAll('.vp-seg .vp-btn').forEach((b) =>
     else setViewport(Number(bw));
   })
 );
-// 自定义档位下,改宽高实时生效;其他档位下输入不驱动
 function onCustomInput() {
   if (!customMode) return;
   const w = Number(vpWidth.value), h = Number(vpHeight.value);
@@ -148,7 +229,7 @@ applyTheme(currentTheme());
 /* ── SSE ── */
 function connect() {
   const es = new EventSource('/__reload');
-  es.addEventListener('reload', () => { try { frame.contentWindow && frame.contentWindow.location.reload(); } catch (e) {} });
+  es.addEventListener('reload', () => { try { if (!device.hidden) frame.contentWindow && frame.contentWindow.location.reload(); } catch (e) {} });
   es.addEventListener('files', () => { loadFiles(); });
   es.onopen = () => { dot.className = 'dot live'; statusText.textContent = '实时'; };
   es.onerror = () => { dot.className = 'dot lost'; statusText.textContent = '已断开'; es.close(); setTimeout(connect, 1500); };
