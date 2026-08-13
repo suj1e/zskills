@@ -1,0 +1,8 @@
+{
+  "name": "zskills",
+  "version": "0.1.0",
+  "description": "个人 ZCode skill 集合(宁缺毋滥,只放真正会用的)。",
+  "author": { "name": "suj1e" },
+  "license": "MIT",
+  "skills": "skills"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "zskills",
+  "owner": {
+    "name": "suj1e",
+    "url": "https://github.com/suj1e"
+  },
+  "description": "个人 ZCode skill 集合(宁缺毋滥,只放真正会用的)。",
+  "plugins": [
+    {
+      "name": "zskills",
+      "source": "./",
+      "description": "suj1e 的个人 ZCode skill 集合。",
+      "category": "engineering",
+      "keywords": [
+        "skills",
+        "personal"
+      ]
+    }
+  ]
+}
