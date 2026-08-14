@@ -50,7 +50,7 @@ npx -y getdesign@latest add <brand-slug>
 
 ### 6. 起实时预览(调用 zdesign-dashboard 包)
 ```bash
-npx zdesign-dashboard --dir <产出根> --open
+npx zdesign-dashboard@latest --dir <产出根> --open
 ```
 预览由独立 npm 包 `zdesign-dashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
@@ -107,7 +107,7 @@ DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 
 交付时给出:产出根 + 文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
 
 ## 资产
-- 实时预览由独立 npm 包 `zdesign-dashboard` 提供,见第 6 步(`npx zdesign-dashboard --dir <产出根> --open`)
+- 实时预览由独立 npm 包 `zdesign-dashboard` 提供,见第 6 步(`npx zdesign-dashboard@latest --dir <产出根> --open`)
 - `assets/templates/starter.html` — token → CSS 变量的骨架范式
 - `assets/components/button.html` — 组件如何消费 token 的示范
 - `references/quality-checklist.md` — 约束 / 细节 / 验收的详细速查
