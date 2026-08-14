@@ -29,6 +29,7 @@ const vpHeight = $('vpHeight');
 
 let current = null;
 let customMode = false;
+let stopped = false;
 
 /* ── 文件树 ── */
 async function loadFiles() {
@@ -232,7 +233,7 @@ function connect() {
   es.addEventListener('reload', () => { try { if (!device.hidden) frame.contentWindow && frame.contentWindow.location.reload(); } catch (e) {} });
   es.addEventListener('files', () => { loadFiles(); });
   es.onopen = () => { dot.className = 'dot live'; statusText.textContent = '实时'; };
-  es.onerror = () => { dot.className = 'dot lost'; statusText.textContent = '已断开'; es.close(); setTimeout(connect, 1500); };
+  es.onerror = () => { dot.className = 'dot lost'; es.close(); if (stopped) { statusText.textContent = '已停止'; return; } statusText.textContent = '已断开'; setTimeout(connect, 1500); };
 }
 
 /* ── 侧栏折叠 ── */
@@ -241,6 +242,22 @@ $('treeToggle').addEventListener('click', () => {
 });
 $('scrim').addEventListener('click', () => { document.body.dataset.tree = 'closed'; });
 function closeTreeOnNarrow() { if (window.matchMedia('(max-width: 760px)').matches) document.body.dataset.tree = 'closed'; }
+
+/* ── 停止服务 ── */
+$('stopBtn').addEventListener('click', async () => {
+  if (!confirm('停止预览服务?停止后需重新启动才能继续预览。')) return;
+  stopped = true;
+  try { await fetch('/__stop', { method: 'POST', headers: { 'x-stop-token': window.__ZD_STOP || '' } }); } catch (e) {}
+  showStopped();
+});
+function showStopped() {
+  dot.className = 'dot lost';
+  statusText.textContent = '已停止';
+  const ov = document.createElement('div');
+  ov.className = 'stopped-overlay';
+  ov.innerHTML = '<div class="stopped-card"><div class="empty-logo">z</div><p>预览服务已停止</p><p class="muted small">关闭此页,或在终端重新启动 node scripts/preview-server.js</p></div>';
+  document.body.appendChild(ov);
+}
 
 /* ── 启动 ── */
 setViewport(0);

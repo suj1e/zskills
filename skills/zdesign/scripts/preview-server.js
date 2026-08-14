@@ -16,7 +16,11 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { exec } = require('child_process');
+
+// 停止服务的校验 token:注入 dashboard,/__stop 请求须带匹配 token 才退出(防 CSRF)
+const STOP_TOKEN = crypto.randomBytes(12).toString('hex');
 
 const args = parseArgs(process.argv.slice(2));
 const ROOT = path.resolve(args.dir || '.zdesign');
@@ -122,12 +126,33 @@ function handler(req, res) {
     req.on('close', () => clients.delete(res));
     return;
   }
+  // 停止服务:仅接受带匹配 token 的 POST,防 CSRF
+  if (url === '/__stop' && req.method === 'POST') {
+    if (req.headers['x-stop-token'] === STOP_TOKEN) {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end('{"ok":true}');
+      setTimeout(() => { try { server.close(); } catch (e) {} process.exit(0); }, 50);
+    } else {
+      res.writeHead(403); res.end('forbidden');
+    }
+    return;
+  }
   if (url === '/__files') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
     return res.end(JSON.stringify(scanAssets()));
   }
   // dashboard 前端(只有根路径 / 是入口;/index.html 等都归资产路由,避免和用户 ROOT 的 index.html 冲突)
-  if (url === '/') return serveFile(path.join(APP_DIR, 'index.html'), res, false);
+  if (url === '/') {
+    fs.readFile(path.join(APP_DIR, 'index.html'), (err, data) => {
+      if (err) { res.writeHead(404); return res.end('Not found'); }
+      const inj = '<script>window.__ZD_STOP=' + JSON.stringify(STOP_TOKEN) + ';</script>';
+      let s = data.toString('utf8');
+      s = s.indexOf('</head>') >= 0 ? s.replace('</head>', inj + '</head>') : s + inj;
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(s);
+    });
+    return;
+  }
   if (url.indexOf('/__app/') === 0) {
     const fp = path.join(APP_DIR, url.slice(7));
     if (fp !== APP_DIR && fp.indexOf(APP_DIR + path.sep) !== 0) { res.writeHead(403); return res.end('Forbidden'); }
@@ -141,8 +166,9 @@ function handler(req, res) {
   return serveFile(fp, res, true);
 }
 
+let server;
 function start(port) {
-  const server = http.createServer(handler);
+  server = http.createServer(handler);
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') { console.log('[zdesign] port ' + port + ' busy, trying ' + (port + 1)); start(port + 1); }
     else throw err;
