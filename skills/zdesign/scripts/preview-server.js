@@ -10,7 +10,7 @@
  *   4. GET /__reload    → SSE:文件变更推 `reload`(刷新当前预览)+ `files`(刷新文件树)
  *   5. GET /<file>      → serve --dir 下文件;HTML 注入 reload + 防跳出脚本
  *
- * 用法: node preview-server.js --dir ./out --port 4173 --open
+ * 用法: node preview-server.js --dir .zdesign --port 4173 --open
  * 平台:fs.watch recursive 在 macOS/Windows 原生支持;Linux 不支持时静默降级(仅静态)。
  */
 const http = require('http');
@@ -19,7 +19,7 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const args = parseArgs(process.argv.slice(2));
-const ROOT = path.resolve(args.dir || './out');
+const ROOT = path.resolve(args.dir || '.zdesign');
 const PORT0 = parseInt(args.port || '4173', 10);
 const OPEN = !!args.open;
 const APP_DIR = path.join(__dirname, 'dashboard');

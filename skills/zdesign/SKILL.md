@@ -15,8 +15,15 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 ## 工作流
 
-### 1. 理解任务
-确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏)?给谁用?有无参考?目标设备与断点?
+### 1. 理解任务 + 确认产出根
+先确认产出根(强制询问,默认推荐 `.zdesign/`):
+- **独立设计** -> 产出根 = `cwd`(整个文件夹就是为设计而生)
+- **已有项目**(默认)-> 产出根 = `cwd/.zdesign/`(隔离,不污染项目)
+- **自定义** -> 用户填的任意路径(cwd 不是项目根时用这个填项目根)
+
+产出根确定后本次会话沿用,不写持久配置;产出根已存在 / 非空时只写入新文件,不清空。
+
+再确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏)?给谁用?有无参考?目标设备与断点?
 
 ### 2. 选风格(动态发现,可插拔源)
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
@@ -39,13 +46,13 @@ npx -y getdesign@latest add <brand-slug>
 把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。参考 `assets/templates/starter.html` 的映射范式。
 
 ### 5. 按约束产出 + 打磨细节
-遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入输出目录(默认 `./out`)。
+遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入产出根(第 1 步确认的)。
 
 ### 6. 起实时预览
 ```bash
-node scripts/preview-server.js --dir ./out --open
+node scripts/preview-server.js --dir <产出根> --open
 ```
-浏览器自动打开,每次保存自动刷新。把 URL 给用户。
+浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
 ### 7. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 5 步修,过了才交付。**
@@ -97,7 +104,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机查看。移动端规则薄弱时可参考 `references/`。
 
 ## 输出格式
-交付时给出:产出文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
+交付时给出:产出根 + 文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
 
 ## 资产
 - `scripts/preview-server.js` — 零依赖 node 实时预览(watch + SSE)
