@@ -5,13 +5,13 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 # zdesign
 
-独立的视觉 / 界面设计 skill。**选一套设计系统 → 产出严格遵循它的 HTML/CSS → 自带实时预览 → 过质量门禁才交付**。不依赖 OpenDesign。
+独立的视觉 / 界面设计 skill。**选一套设计系统 → 产出严格遵循它的 HTML/CSS → 调用 zdesign-dashboard 包实时预览 → 过质量门禁才交付**。不依赖 OpenDesign。
 
 ## 核心理念
 
 - **设计系统驱动**:所有视觉决策(配色 / 字体 / 圆角 / 间距)来自选定的 `DESIGN.md`,不自由发挥。
 - **完善交付,不是半成品**:产出必须过【约束】【细节】【验收】三道关,未全过则回炉。
-- **轻量自洽**:零运行时依赖,纯 HTML/CSS 产出 + 一个 node 预览脚本。
+- **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖);实时预览由独立包 `zdesign-dashboard` 提供。
 
 ## 工作流
 
@@ -48,11 +48,11 @@ npx -y getdesign@latest add <brand-slug>
 ### 5. 按约束产出 + 打磨细节
 遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入产出根(第 1 步确认的)。
 
-### 6. 起实时预览
+### 6. 起实时预览(调用 zdesign-dashboard 包)
 ```bash
-node scripts/preview-server.js --dir <产出根> --open
+npx zdesign-dashboard --dir <产出根> --open
 ```
-浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
+预览由独立 npm 包 `zdesign-dashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
 ### 7. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 5 步修,过了才交付。**
@@ -107,7 +107,7 @@ DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 
 交付时给出:产出根 + 文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
 
 ## 资产
-- `scripts/preview-server.js` — 零依赖 node 实时预览(watch + SSE)
+- 实时预览由独立 npm 包 `zdesign-dashboard` 提供,见第 6 步(`npx zdesign-dashboard --dir <产出根> --open`)
 - `assets/templates/starter.html` — token → CSS 变量的骨架范式
 - `assets/components/button.html` — 组件如何消费 token 的示范
 - `references/quality-checklist.md` — 约束 / 细节 / 验收的详细速查
