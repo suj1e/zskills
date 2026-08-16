@@ -13,7 +13,7 @@ zdesign 目前只覆盖 UI 产出(web 页面 / 应用界面 / 组件 / 风格探
 3. 独立单图交付(slide、社交图卡,固定尺寸)
 4. 图表风格探索(并排对比样张)
 
-环境里已装第三方 skill **diagram-design 2.4.0**:27 种图表类型、硬布局规则(正交圆角连线、复杂度预算、4px 网格、自检脚本),但绑定其自带的 editorial 设计系统(Instrument Serif + Geist,coral accent),换肤机制为语义角色(paper/ink/muted/accent/link)。
+环境里有第三方 skill **diagram-design**(上游 [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)):29 种图表类型(官方 repo description,2026-08-16 核实;类型数持续演进 13→27→29,本设计与产出一律**不硬编码**,以每次拉取到的最新版为准)、硬布局规则(正交圆角连线、复杂度预算、4px 网格、自检脚本),但绑定其自带的 editorial 设计系统(Instrument Serif + Geist,coral accent),换肤机制为语义角色(paper/ink/muted/accent/link)。本地安装的插件缓存可能滞后于上游 main(如本地 2.4.0 为 27 种而上游已 29),故语法源以拉最新为主路径(见 D5)。
 
 **互补关系**:diagram-design 有布局语法但只有一套皮肤;zdesign 有品牌 token 管道(getdesign,73+ 品牌)但没有图表布局知识。
 
@@ -25,6 +25,7 @@ zdesign 目前只覆盖 UI 产出(web 页面 / 应用界面 / 组件 / 风格探
 | D2 | 品牌主色在图表中的用法 | **焦点克制用色**:品牌 primary → 图表 accent,仅 1-2 个焦点节点/主箭头可用;其余节点一律 ink/muted 中性色。品牌感由整体调性(paper/ink/字体)传达 |
 | D3 | 图表字体策略 | **品牌优先 + 缺失退化**:标题←品牌 display(无 serif 用 sans);节点名←品牌 sans;技术子标签←品牌 mono,品牌无 mono 则保留 Geist Mono(功能性字体,交付时说明) |
 | D4 | 总体方案 | **方案 1:场景分支 + 语义角色桥**(否决了"完整内联"与"超薄路由") |
+| D5 | 布局语法源优先级 | **每次拉最新为主路径,四级降级**:① WebFetch 上游 main 的 SKILL.md + 按图型拉 `references/type-<name>.md`;② WebFetch 直连失败(如 raw.githubusercontent 超时)→ 改用 web reader 类 MCP 工具抓同 URL;③ 网络全失败 → 本地已装插件缓存;④ 都没有 → zdesign 自带 `references/diagram-basics.md`。类型数/版本不硬编码,以实际拉到的为准 |
 
 ## 设计
 
@@ -37,7 +38,7 @@ zdesign 目前只覆盖 UI 产出(web 页面 / 应用界面 / 组件 / 风格探
 | 4 token 转换 | 图表场景走新分支:token → **图表语义角色**(而非 CSS 变量),映射产物落盘 `<产出根>/diagram-style.md` |
 | 5 产出 | 自包含 HTML(inline SVG,零运行时依赖),布局语法来源见第 3 节 |
 | 6 预览 | 照旧 `npx zdesign-dashboard@latest --dir <产出根> --open` |
-| 7-8 验收/交付 | 验收清单增加图表专项;交付物含 diagram-style.md 路径与所选品牌名 |
+| 7-8 验收/交付 | 验收清单增加图表专项;交付物含 diagram-style.md 路径、所选品牌名、**所用 diagram-design 版本号与语法源级别(最新 main / 本地缓存 x.y.z / 自带兜底)** |
 
 ### 2. token → 图表语义角色映射
 
@@ -61,12 +62,18 @@ accent 约束(D2)硬规则:普通节点一律 ink/muted;**accent 元素总数 �
 
 ### 3. 与 diagram-design 的协作
 
-- **探测**:扫已装 skill 目录寻找 `diagram-design`(路径模式 `~/.zcode/cli/plugins/cache/**/diagram-design/**/SKILL.md` 或会话内 skill 列表)。
-- **已装(主路径)**:Read diagram-design 的 SKILL.md §4-§9(反模式/设计系统/SVG 原语/布局间距/taste gate)+ 按图型 Read 对应 `references/type-<name>.md`,按其布局语法产出。**不修改其 `references/style-guide.md`**(不污染第三方插件缓存)——品牌换肤通过 zdesign 在产出时以 `diagram-style.md` 覆盖语义角色实现。
-- **图型选择**:复用 diagram-design 的 27 类型选择表(架构→architecture、流程→flowchart、时序→sequence…)。
+**语法源四级降级(D5,拉最新优先)**:
+
+1. **主路径——拉上游 main 最新版**:WebFetch `https://raw.githubusercontent.com/cathrynlavery/diagram-design/main/skills/diagram-design/SKILL.md`,取其类型选择表、§4-§9(反模式/设计系统/SVG 原语/布局间距/taste gate);按所选图型再拉对应 `references/type-<name>.md`(同目录拼接 URL)。版本号以拉到的 frontmatter `metadata.version` 为准,不硬编码。
+2. **降级 1**:WebFetch 直连超时 → 改用 web reader 类 MCP 工具抓同一 URL。
+3. **降级 2**:网络全失败 → 用本地已装插件缓存 `~/.zcode/cli/plugins/cache/diagram-design/**/skills/diagram-design/`(版本可能滞后,可用但需在交付时说明)。
+4. **降级 3**:都没有 → zdesign 自带 `references/diagram-basics.md` 精简规则,并提示"建议安装 diagram-design 获得完整图表语法与自检脚本"。
+
+无论哪一级:**不修改 diagram-design 的任何文件**(不污染上游与插件缓存)——品牌换肤通过 zdesign 在产出时以 `diagram-style.md` 覆盖语义角色实现。
+
+- **图型选择**:复用拉到的最新版类型选择表(架构→architecture、流程→flowchart、时序→sequence 等;类型以最新版为准,不预设数量)。
 - **尺寸预设按场景映射**:文档配图 → `doc-inline` / `doc-wide`;设计稿内嵌 → `fit`;独立单图 → `slide-16x9` / `social-og`;风格探索 → 并排 2-3 张。
-- **导出 PNG/SVG**:diagram-design 在场时按其 `references/export.md` 流程执行。
-- **未装(兜底)**:使用 zdesign 自带 `references/diagram-basics.md`——覆盖常用 8 类型(架构/流程图/时序图/ER/状态机/泳道/树/层栈)的精简规则:正交圆角连线(r=8)、箭头标签遮罩 + 6-10px 间隙、同边多连线附着点扇形展开(≥12px)、复杂度预算(≤9 节点、≤12 箭头,超出拆 overview + detail)、4px 网格、SVG a11y(title/desc)。产出时提示"建议安装 diagram-design 获得完整图表语法与自检脚本"。
+- **导出 PNG/SVG**:diagram-design 语法源可用(级别 1-3)时按其 `references/export.md` 流程执行;级别 4 时按 diagram-basics.md 内置的导出说明。
 
 ### 4. 调度边界(description 措辞)
 
@@ -103,7 +110,9 @@ skills/zdesign/
 
 | 情况 | 处理 |
 |---|---|
-| diagram-design 探测失败 | 走兜底 `diagram-basics.md`,交付时提示建议安装 |
+| WebFetch 直连 raw.githubusercontent 超时 | 改用 web reader 类 MCP 工具抓同一 URL(服务端代抓,本机直连在部分网络下不通) |
+| 网络全失败 | 用本地已装插件缓存;交付时说明缓存版本可能滞后 |
+| 本地也未安装 diagram-design | 走兜底 `diagram-basics.md`,交付时提示建议安装 |
 | 品牌 token 无 mono 字体 | 技术子标签退化 Geist Mono,交付说明中披露 |
 | 品牌 token 无 info/蓝系 | link 角色保留 diagram-design 默认 `#2e5aa8`,交付说明中披露 |
 | getdesign 无网络 / CLI 不可用 | 现有 WebFetch 兜底照旧(`https://getdesign.md/<slug>/design-md`) |
