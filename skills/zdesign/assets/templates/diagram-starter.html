@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+  zdesign · 图表骨架范式(token → 语义角色)
+  ─────────────────────────────────────
+  图表不走 CSS 变量直接消费品牌 token,而是先映射成语义角色(paper/ink/muted/accent/link…),
+  角色注入为 :root 变量,inline SVG 内直接 fill="var(--ink)" 消费——换品牌只改变量,布局不动。
+  角色值是「示例占位」(Linear 调性)——实际使用时按 references/diagram-style-mapping.md
+  从选定 DESIGN.md 映射,产出落盘 <产出根>/diagram-style.md。
+  布局语法按拉到的最新 diagram-design 执行;全部降级失败时按 references/diagram-basics.md。
+  本骨架遵守:4px 网格 / 正交连线 / 标签遮罩+6–10px 间隙 / accent ≤2 / 图例底部条带。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zdesign · diagram starter</title>
+  <!-- 品牌 sans + 缺 mono 时补 Geist Mono(功能性字体,交付时披露) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* === 从 diagram-style.md 注入的语义角色 === */
+      --paper: #ffffff;          /* colors.background */
+      --paper-2: #f7f8f8;        /* colors.background-secondary */
+      --ink: #0b0c0e;            /* colors.text-primary */
+      --muted: #8a8f98;          /* colors.text-secondary */
+      --soft: #b4b9c2;           /* colors.text-tertiary */
+      --rule: rgba(11,12,14,.10);/* colors.border */
+      --accent: #5e6ad2;         /* colors.primary —— ≤2 元素 */
+      --accent-tint: rgba(94,106,210,.08);
+      --link: #2e5aa8;           /* colors.info,缺失时的退化默认 */
+
+      /* === 字体三元组(品牌优先 + 缺失退化) === */
+      --font-display: "Inter", system-ui, sans-serif; /* 品牌无 serif → sans 加权重 */
+      --font-sans: "Inter", system-ui, sans-serif;    /* 节点名 */
+      --font-mono: "Geist Mono", monospace;           /* 技术子标签(退化值) */
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      padding: 32px;
+    }
+    .eyebrow {
+      font-family: var(--font-mono); font-size: 12px;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    h1 { font-family: var(--font-display); font-size: 28px; font-weight: 600; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <p class="eyebrow">ARCHITECTURE</p>
+  <h1>请求流经网关到服务与存储</h1>
+
+  <!-- svg 骨架:role/aria-labelledby + prefixed title/desc(title 是第一个子元素) -->
+  <svg viewBox="0 0 640 368" width="640" height="368" role="img"
+       aria-labelledby="demo-arch-title demo-arch-desc" xmlns="http://www.w3.org/2000/svg">
+    <title id="demo-arch-title">示例服务架构</title>
+    <desc id="demo-arch-desc">架构图:客户端经网关调用 API 服务,API 读写数据库并异步投递外部邮件服务。</desc>
+
+    <defs>
+      <!-- 箭头 marker 三件套:muted / accent / link -->
+      <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="var(--muted)"/>
+      </marker>
+      <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+      </marker>
+      <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="var(--link)"/>
+      </marker>
+    </defs>
+
+    <!-- ① 画布底 -->
+    <rect width="100%" height="100%" fill="var(--paper)"/>
+
+    <!-- ② 连线先画(同轴直连用 line;跨轴必须正交圆角肘线) -->
+    <!-- 默认内部调用:muted -->
+    <line x1="96" y1="104" x2="96" y2="144" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <!-- 主链路(accent,≤2 配额之一) -->
+    <line x1="96" y1="180" x2="96" y2="220" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+    <line x1="96" y1="264" x2="96" y2="288" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <!-- 异步投递:虚线,从 Core API 右缘(y=244)到外部服务左缘 -->
+    <line x1="156" y1="244" x2="496" y2="244" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+
+    <!-- ③ 连线标签:不透明遮罩 + 与线留 6–10px 间隙(线 y=244,遮罩底 238 → 6px) -->
+    <rect x="296" y="226" width="48" height="12" rx="2" fill="var(--paper)"/>
+    <text x="320" y="236" fill="var(--muted)" font-size="8" font-family="var(--font-mono)"
+          text-anchor="middle" letter-spacing=".06em">ENQUEUE</text>
+
+    <!-- ④ 节点后画。普通节点:paper 底遮罩 + 白底 ink 描边 + 类型标签(mono 8px)+ 名(sans 12px 600) -->
+    <g>
+      <rect x="36" y="64" width="120" height="40" rx="6" fill="var(--paper)"/>
+      <rect x="36" y="64" width="120" height="40" rx="6" fill="#fff" stroke="var(--ink)" stroke-width="1"/>
+      <rect x="44" y="70" width="32" height="12" rx="2" fill="transparent" stroke="var(--ink)" stroke-opacity=".4" stroke-width=".8"/>
+      <text x="60" y="79" fill="var(--ink)" fill-opacity=".8" font-size="8" font-family="var(--font-mono)" text-anchor="middle" letter-spacing=".08em">CDN</text>
+      <text x="96" y="98" fill="var(--ink)" font-size="12" font-weight="600" font-family="var(--font-sans)" text-anchor="middle">Edge Cache</text>
+    </g>
+    <g>
+      <rect x="36" y="148" width="120" height="32" rx="6" fill="var(--paper)"/>
+      <rect x="36" y="148" width="120" height="32" rx="6" fill="#fff" stroke="var(--ink)" stroke-width="1"/>
+      <text x="96" y="168" fill="var(--ink)" font-size="12" font-weight="600" font-family="var(--font-sans)" text-anchor="middle">API Gateway</text>
+    </g>
+    <!-- 焦点节点:accent-tint + accent(占 ≤2 配额之一) -->
+    <g>
+      <rect x="36" y="224" width="120" height="40" rx="6" fill="var(--paper)"/>
+      <rect x="36" y="224" width="120" height="40" rx="6" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1"/>
+      <rect x="44" y="230" width="32" height="12" rx="2" fill="transparent" stroke="var(--accent)" stroke-opacity=".4" stroke-width=".8"/>
+      <text x="60" y="239" fill="var(--accent)" font-size="8" font-family="var(--font-mono)" text-anchor="middle" letter-spacing=".08em">SVC</text>
+      <text x="96" y="258" fill="var(--ink)" font-size="12" font-weight="600" font-family="var(--font-sans)" text-anchor="middle">Core API</text>
+    </g>
+    <!-- 存储:ink @ 0.05 + muted 描边,名 + mono 子标签 -->
+    <g>
+      <rect x="36" y="292" width="120" height="40" rx="6" fill="var(--paper)"/>
+      <rect x="36" y="292" width="120" height="40" rx="6" fill="var(--ink)" fill-opacity=".05" stroke="var(--muted)" stroke-width="1"/>
+      <text x="96" y="308" fill="var(--ink)" font-size="12" font-weight="600" font-family="var(--font-sans)" text-anchor="middle">Postgres</text>
+      <text x="96" y="324" fill="var(--muted)" font-size="8" font-family="var(--font-mono)" text-anchor="middle">:5432</text>
+    </g>
+    <!-- 外部/云:ink @ 0.03 + ink @ 0.30 描边;指向它的线用 link 箭头 -->
+    <g>
+      <rect x="500" y="224" width="112" height="40" rx="6" fill="var(--paper)"/>
+      <rect x="500" y="224" width="112" height="40" rx="6" fill="var(--ink)" fill-opacity=".03" stroke="var(--ink)" stroke-opacity=".3" stroke-width="1"/>
+      <text x="556" y="248" fill="var(--ink)" font-size="12" font-weight="600" font-family="var(--font-sans)" text-anchor="middle">Email SaaS</text>
+    </g>
+
+    <!-- ⑤ 图例:底部水平条带,绝不浮在图内;viewBox 已为它预留高度 -->
+    <line x1="36" y1="344" x2="604" y2="344" stroke="var(--rule)" stroke-width="1"/>
+    <text x="36" y="360" fill="var(--muted)" font-size="8" font-family="var(--font-mono)" letter-spacing=".14em">LEGEND</text>
+    <text x="112" y="360" fill="var(--muted)" font-size="8" font-family="var(--font-sans)">— 调用　- - 异步　▨ 焦点</text>
+  </svg>
+</body>
+</html>

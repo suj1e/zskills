@@ -1,6 +1,6 @@
 ---
 name: zdesign
-description: "Use when the user wants concrete UI/visual design produced — landing pages, web app screens, app screens, components, or visual style exploration. Picks a design system, generates HTML/CSS that strictly follows it, runs a live preview, self-verifies, and delivers polished artifacts (never half-baked). Independent of OpenDesign. For design taste/guidance alone, frontend-design may suffice; use zdesign when actual design artifacts are needed."
+description: "Use when the user wants concrete UI/visual design produced — landing pages, web app screens, app screens, components, or visual style exploration. Picks a design system, generates HTML/CSS that strictly follows it, runs a live preview, self-verifies, and delivers polished artifacts (never half-baked). Independent of OpenDesign. For design taste/guidance alone, frontend-design may suffice; use zdesign when actual design artifacts are needed. Also covers branded diagrams (architecture, flowchart, sequence, ER, state machine, SVG schematics) rendered in the chosen design system's style — use zdesign when diagrams must match the brand; plain unbranded diagrams route to diagram-design instead."
 ---
 
 # zdesign
@@ -23,7 +23,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 产出根确定后本次会话沿用,不写持久配置;产出根已存在 / 非空时只写入新文件,不清空。
 
-再确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏)?给谁用?有无参考?目标设备与断点?
+再确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
 
 ### 2. 选风格(动态发现,可插拔源)
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
@@ -42,8 +42,10 @@ npx -y getdesign@latest add <brand-slug>
 
 > 若无网络 / CLI 不可用,可改用 WebFetch 抓 `https://getdesign.md/<brand-slug>/design-md` 兜底。
 
-### 4. token → CSS 变量
-把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。参考 `assets/templates/starter.html` 的映射范式。
+### 4. token → CSS 变量(或图表语义角色)
+UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。参考 `assets/templates/starter.html` 的映射范式。
+
+图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `<产出根>/diagram-style.md`——见下方【图表(diagram)场景】。
 
 ### 5. 按约束产出 + 打磨细节
 遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入产出根(第 1 步确认的)。
@@ -76,6 +78,33 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 蒸馏出的 DESIGN.md 后续当 A 类本地源复用。
 
 **选源顺序**:先 `npx getdesign add <brand>` 探库 → 再本地 → 都没有则参考驱动蒸馏。任一源拿到的 DESIGN.md 都是本次产出的唯一视觉真相。
+
+## 图表(diagram)场景
+
+**判据**:图表 + 品牌诉求(要匹配所选设计系统)→ zdesign 承接;纯图表无品牌诉求 → 让 diagram-design 独立处理,不抢。
+
+### 视觉:token → 语义角色
+图表的视觉真相不是 CSS 变量,是**语义角色**(`paper`/`ink`/`muted`/`accent`/`link` + 字体三元组)。按 `references/diagram-style-mapping.md` 把选定 DESIGN.md 映射落盘为 `<产出根>/diagram-style.md`,地位等同 DESIGN.md;同品牌复跑直接复用。要点:
+
+- **accent 焦点克制**:品牌 primary 只给 ≤2 个元素(焦点节点/主箭头合计),其余节点一律中性(ink/muted/soft)。品牌感靠整体调性传达,不在图表里刷品牌色。
+- **字体品牌优先 + 缺失退化**:标题←品牌 display(无 serif 用 sans);节点名←品牌 sans;技术子标签←品牌 mono,无 mono 退化 Geist Mono 并披露。
+- 角色注入 CSS 变量后 inline SVG 直接 `fill="var(--ink)"` 消费,骨架见 `assets/templates/diagram-starter.html`。
+
+### 布局:语法源四级降级(拉最新优先)
+类型数/版本**不硬编码**,以实际拉到的为准(上游持续演进)。依次尝试,任一级成功即用:
+
+1. **拉上游 main 最新**:WebFetch `https://raw.githubusercontent.com/cathrynlavery/diagram-design/main/skills/diagram-design/SKILL.md` —— 取类型选择表与布局规则(§4-§9),按所选图型再拉同目录 `references/type-<name>.md`。
+2. **WebFetch 直连超时** → 改用 web reader 类 MCP 工具抓同一 URL(raw.githubusercontent 在部分网络下本机不通)。
+3. **网络全失败** → 本地插件缓存 `~/.zcode/cli/plugins/cache/diagram-design/**/skills/diagram-design/`(版本可能滞后,交付时说明)。
+4. **都没有** → 自带 `references/diagram-basics.md` 精简规则(8 常用类型 + 硬规则),并提示建议安装 diagram-design。
+
+无论哪级:**不修改 diagram-design 任何文件**;换肤靠产出时以 diagram-style.md 覆盖语义角色。
+
+### 场景 × 尺寸
+文档/README 配图 → `doc-inline`/`doc-wide`(可按需导出 PNG/SVG,手动不问不导);设计稿内嵌 → `fit`(随 dashboard 预览);独立单图 → `slide-16x9`/`social-og`;风格探索 → 并排 2-3 张。尺寸同时约束字号阶梯(slide 的节点名是 16px 不是 12px)。
+
+### 交付
+图表产出交付时另报:diagram-style.md 路径 + 所选品牌 + **所用语法源的 diagram-design 版本与级别**(最新 main / 本地缓存 x.y.z / 兜底)。验收走 `references/quality-checklist.md` 图表专项。
 
 ## 【约束】硬规则(产出时强制)
 1. **token 强制**:颜色 / 字号 / 圆角 / 间距 100% 来自选定 DESIGN.md → CSS 变量。禁止硬编码。
@@ -110,4 +139,7 @@ DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 
 - 实时预览由独立 npm 包 `zdesign-dashboard` 提供,见第 6 步(`npx zdesign-dashboard@latest --dir <产出根> --open`)
 - `assets/templates/starter.html` — token → CSS 变量的骨架范式
 - `assets/components/button.html` — 组件如何消费 token 的示范
-- `references/quality-checklist.md` — 约束 / 细节 / 验收的详细速查
+- `assets/templates/diagram-starter.html` — 图表语义角色 → CSS 变量 + SVG 原语骨架范式
+- `references/diagram-style-mapping.md` — 图表 token → 语义角色映射权威细节(含 diagram-style.md 格式定义、上游 URL 常量)
+- `references/diagram-basics.md` — 图表兜底布局规则(语法源四级降级全失败时用)
+- `references/quality-checklist.md` — 约束 / 细节 / 验收的详细速查(含图表专项)
