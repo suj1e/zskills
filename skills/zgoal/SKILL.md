@@ -23,8 +23,12 @@ product: 3           # bug 列表按产品拉(必填)
 用户不知道 product ID 时:先凭 url/account/password 取 token,再用 api.md 的产品列表端点查出来让用户选。
 
 ### 2. 看 bug(只读)
-按 `references/zentao-api.md`:取 token → `GET /products/{product}/bugs` → 会话内出紧凑表(ID / 标题 / 严重度 / 状态 / 指派),默认关注 `active`。用户挑一个,或直接给 bug ID 进下一步。
-列表也可在 zview-dashboard 的「Bugs」视图看(≥0.2.0)。
+按 `references/zentao-api.md`:取 token → `GET /products/{product}/bugs`。**按数量自适应**:
+
+- **≤8 条**:会话内出紧凑表(ID / 标题 / 严重度 / 状态 / 指派),用户挑一个
+- **>8 条**:起 zview-dashboard 让用户在「Bugs」视图里筛着挑(状态筛选 + 徽标比会话表格好扫),会话里只给一句汇总(如"23 条,active 15 / resolved 6 / closed 2,dashboard 里挑")
+
+用户挑定(或直接给 bug ID)后进下一步;dashboard 已在跑就复用,不重复起。
 
 ### 3. 开目标(openspec)
 拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec change new`,否则手建):
