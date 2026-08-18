@@ -1,6 +1,6 @@
 ---
 name: zview
-description: "Use when the user wants to view/browse a project's technical docs or specs — openspec proposals/designs/tasks, docs folder — or to run justfile recipes and watch live service logs. Detects openspec/docs/justfile in the project and launches zview-dashboard for structured spec preview plus real-time just log streaming (start/stop/restart). For UI design artifacts preview use zdesign instead."
+description: "Use when the user wants to view/browse a project's technical docs or specs — openspec proposals/designs/tasks, docs folder — or to run justfile recipes and watch live service logs, or to browse the read-only ZenTao (禅道) bug list when .zgoal/config.yaml exists. Detects openspec/docs/justfile/.zgoal in the project and launches zview-dashboard for structured spec preview plus real-time just log streaming (start/stop/restart) plus the Bugs view. For UI design artifacts preview use zdesign instead; for driving a bug to a fix/PR use zgoal."
 ---
 
 # zview
@@ -15,8 +15,9 @@ description: "Use when the user wants to view/browse a project's technical docs 
 - `openspec/` 存在 → 方案文档(openspec 结构感知:进行中 / 归档 / 能力 Specs)
 - `docs/` 存在 → 文档聚合
 - `justfile` / `just --list` 可用 → 日志能力(recipes 启停 + 实时流)
+- `.zgoal/config.yaml` 存在 → 禅道 bug 列表能力(只读,需 zview-dashboard ≥ 0.2.0)
 
-把命中的能力告诉用户(如:"检测到 openspec + justfile,可看方案和日志")。
+把命中的能力告诉用户(如:"检测到 openspec + justfile + .zgoal,可看方案、日志和禅道 bug 列表")。
 
 ### 2. 拉起 dashboard
 ```bash
@@ -27,9 +28,11 @@ npx zview-dashboard@latest --dir <项目根> --open
 ### 3. 引导使用
 - 看方案:左侧文件树点 proposal.md / design.md / tasks.md
 - 看日志:点树顶部「服务日志」→ 选 recipe → 启动;支持停止 / 重启 / 清屏,日志 ANSI 彩色 + 自动跟随
+- 看禅道 bug:点树顶部「Bugs」→ 列表(#ID / 标题 / 严重度 / 状态 / 指派),按状态筛(全部 / active / resolved / closed),点行跳禅道详情;**只读**
 - 文件变更即时刷新;顶栏电源按钮可停止服务
 
 ## 边界
 - 只读预览,不解析方案内容、不改 openspec(归档等操作用 openspec CLI)
 - 日志仅内存本次会话,不做持久化
+- bug 数据只读来自禅道(凭据在 .zgoal/config.yaml,由 zgoal 管);修复动作(开 openspec / 开 PR)用 zgoal
 - 用户要"看设计原型/token 色板"时 → 用 zdesign(zdesign-dashboard)
