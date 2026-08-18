@@ -30,6 +30,10 @@ TOKEN=$(curl -s -X POST "$ZTAO/api.php/v1/tokens" -H "Content-Type: application/
 curl -s "$ZTAO/api.php/v1/products/$PRODUCT/bugs?page=1&limit=100" \
   -H "Token: $TOKEN" | jq -r '.bugs[] | [.id,.title,.severity,.pri,.status,.assignedTo] | @tsv'
 
+# 只看指派给我的(account 换成配置里的账号)
+curl -s "$ZTAO/api.php/v1/products/$PRODUCT/bugs?page=1&limit=100" \
+  -H "Token: $TOKEN" | jq -r '.bugs[] | select((.assignedTo.account // .assignedTo.realname // .assignedTo) == "ACCOUNT") | [.id,.title,.severity,.status] | @tsv'
+
 # 产品列表(配置时用户不知道 product ID,用这个查)
 curl -s "$ZTAO/api.php/v1/products?page=1&limit=100" \
   -H "Token: $TOKEN" | jq -r '.products[] | [.id,.name] | @tsv'
