@@ -13,13 +13,14 @@ bug 修复闭环 skill:**禅道看 bug(只读)→ openspec 开修复目标 → �
 
 ### 1. 配(一次性)
 查 `<项目根>/.zgoal/config.yaml`;没有 → 引导用户创建并**提醒加 .gitignore + chmod 600**:
-
 ```yaml
 url: https://zentao.example.com
 account: me
 password: "***"      # 或 token: "***"(免登录)
 product: 3           # bug 列表按产品拉(必填)
 ```
+
+用户不知道 product ID 时:先凭 url/account/password 取 token,再用 api.md 的产品列表端点查出来让用户选。
 
 ### 2. 看 bug(只读)
 按 `references/zentao-api.md`:取 token → `GET /products/{product}/bugs` → 会话内出紧凑表(ID / 标题 / 严重度 / 状态 / 指派),默认关注 `active`。用户挑一个,或直接给 bug ID 进下一步。
