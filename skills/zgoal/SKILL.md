@@ -1,5 +1,6 @@
 ---
 name: zgoal
+icon: "🎯"
 description: "Use when the user wants to check ZenTao (禅道) bugs and drive one to a fix — list bugs via the official REST OpenAPI (read-only), pick one, open an openspec change as the fix plan (proposal/design/tasks), implement on a branch, track progress by checking off tasks.md, and open a PR. Progress lives in openspec only; ZenTao is never written. For viewing specs/logs/bug list read-only use zview; for doc alignment use zreview."
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: zview
+icon: "👁️"
 description: "Use when the user wants to view/browse a project's technical docs or specs — openspec proposals/designs/tasks, docs folder — or to run justfile recipes and watch live service logs, or to browse the read-only ZenTao (禅道) bug list when .zgoal/config.yaml exists. Detects openspec/docs/justfile/.zgoal in the project and launches zview-dashboard for structured spec preview plus real-time just log streaming (start/stop/restart) plus the Bugs view. For UI design artifacts preview use zdesign instead; for driving a bug to a fix/PR use zgoal."
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: zdesign
+icon: "🎨"
 description: "Use when the user wants concrete UI/visual design produced — landing pages, web app screens, app screens, components, or visual style exploration. Picks a design system, generates HTML/CSS that strictly follows it, runs a live preview, self-verifies, and delivers polished artifacts (never half-baked). Independent of OpenDesign. For design taste/guidance alone, frontend-design may suffice; use zdesign when actual design artifacts are needed. Also covers branded diagrams (architecture, flowchart, sequence, ER, state machine, SVG schematics) rendered in the chosen design system's style — use zdesign when diagrams must match the brand; plain unbranded diagrams route to diagram-design instead."
 ---
 
