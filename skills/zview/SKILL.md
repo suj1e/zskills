@@ -22,9 +22,9 @@ description: "Use when the user wants to view/browse a project's technical docs 
 
 ### 2. 拉起 dashboard
 ```bash
-npx zview-dashboard@latest --dir <项目根> --open
+npx zdashboard@latest --mode view --dir <项目根> --open
 ```
-默认端口 4190(与 zdesign-dashboard 的 4173 错开,可并行);占用自动顺延。把 URL 给用户。
+默认端口 4190;占用自动顺延。把 URL 给用户。
 
 ### 3. 引导使用
 - 看方案:左侧文件树点 proposal.md / design.md / tasks.md

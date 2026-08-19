@@ -51,11 +51,11 @@ UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color
 ### 5. 按约束产出 + 打磨细节
 遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入产出根(第 1 步确认的)。
 
-### 6. 起实时预览(调用 zdesign-dashboard 包)
+### 6. 起实时预览(调用 zdashboard 包)
 ```bash
-npx zdesign-dashboard@latest --dir <产出根> --open
+npx zdashboard@latest --mode design --dir <产出根> --open
 ```
-预览由独立 npm 包 `zdesign-dashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
+预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
 ### 7. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 5 步修,过了才交付。**

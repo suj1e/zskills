@@ -29,9 +29,9 @@ description: "Use when the user wants to write/align product or technical docs -
 
 ### 3. 拉起评审台
 ```bash
-npx zreview-dashboard@latest --dir .zreview --open
+npx zdashboard@latest --mode review --dir .zreview --open
 ```
-默认端口 4200(与 zdesign 4173 / zview 4190 错开,三者可并行)。给用户 URL。
+默认端口 4200。给用户 URL。
 
 ### 4. 引导对齐
 - 左栏切文档、按状态筛;右侧卡片逐项【答复/采纳/驳回】,全部处理完点顶栏【通过评审】
