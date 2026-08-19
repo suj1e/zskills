@@ -2,7 +2,7 @@
 
 - 日期:2026-08-18
 - 状态:已确认(4 项决策经用户拍板)
-- 涉及仓库:`suj1e/zskills`(skill 本体)、`suj1e/zview-dashboard`(bug 列表视图)
+- 涉及仓库:`suj1e/zskills`(skill 本体)、`suj1e/zdashboard`(bug 列表视图)
 
 ## 背景与动机
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | D1 | 禅道回写 | **纯只读**:绝不调任何写接口(创建/解决/关闭/评论都不做),进度唯一真相在 openspec tasks.md |
 | D2 | 凭据 | **项目本地配置文件** `.zgoal/config.yaml`(gitignore + chmod 600) |
-| D3 | dashboard | **不造新的**:bug 列表 + openspec 进度都走 zview-dashboard(4190) |
+| D3 | dashboard | **不造新的**:bug 列表 + openspec 进度都走 zdashboard(4190) |
 | D4 | 命名/范围 | **zgoal**;MVP:**bug 即目标**(非 bug 目标源将来再扩展) |
 
 ## 设计
@@ -25,7 +25,7 @@
 2. **看 bug(只读)**:按 `references/zentao-api.md` 取 token → `GET /products/{id}/bugs` → 会话内紧凑表(ID/标题/严重度/状态/指派);用户挑一个或直接给 ID。
 3. **开目标**:拉 bug 详情 → openspec change `openspec/changes/fix-<bugID>-<slug>/`:proposal.md(bug 复述 + 禅道链接 + 根因)、design.md(方案+取舍)、tasks.md(checkbox 清单)。
 4. **执行**:分支 `fix/<bugID>-<slug>` → 实施 → **每完成一个 task 即勾 tasks.md** → 常规测试/lint。
-5. **看进度**:`npx zview-dashboard@latest --dir <项目根> --open`——openspec 进度 + bug 列表一站看(需 ≥0.2.0)。
+5. **看进度**:`npx zdashboard@latest --mode view --dir <项目根> --open`——openspec 进度 + bug 列表一站看(需 zdashboard ≥ 1.0.0)。
 6. **开 PR**:`gh pr create`,body 含 bug 链接、change 路径、tasks 完成度;合并后提示手动关禅道 bug + `openspec archive`。
 
 ### ZenTao API(v1,官方文档核实)
@@ -49,7 +49,7 @@ product: 3           # bug 列表按产品拉(MVP 必填)
 
 SKILL.md 探测清单加第 4 项:`.zgoal/config.yaml` 存在 → 禅道 bug 列表能力(只读);引导使用加「Bugs」视图说明;边界注明 bug 修复动作用 zgoal。
 
-### zview-dashboard 扩展(0.1.7 → 0.2.0)
+### zdashboard 扩展(0.1.7 → 1.0.0)
 
 - `detect.ts`:加 `hasBugs = exists(.zgoal/config.yaml)`,随 `/__files` 下发。
 - 新 `src/server/bugs.ts`:读配置(扁平 yaml 极简解析)→ 取 token(内存缓存)→ 拉产品 bugs(限 100 条,8s 超时);**只代理 GET,绝不转发写方法**。
@@ -80,4 +80,4 @@ SKILL.md 探测清单加第 4 项:`.zgoal/config.yaml` 存在 → 禅道 bug 列
 ## 验证
 
 - zskills:引用路径完整 + 工作流干跑走查
-- zview-dashboard:build 通过;mock 禅道 + test-server 起服,`/__files` 带 hasBugs、`/__bugs` 返回 3 条假数据;浏览器截图确认 Bugs 入口与表格渲染
+- zdashboard:build 通过;mock 禅道 + test-server 起服,`/__files` 带 hasBugs、`/__bugs` 返回 3 条假数据;浏览器截图确认 Bugs 入口与表格渲染

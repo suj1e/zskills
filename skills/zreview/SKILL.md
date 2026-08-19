@@ -1,12 +1,12 @@
 ---
 name: zreview
 icon: "✅"
-description: "Use when the user wants to write/align product or technical docs - new product briefs, PRDs, design docs - through a review workflow. Acts as AI reviewer: drafts the doc if absent, generates sharp review questions by framework (goals/users/metrics/risks...), then launches zreview-dashboard for item-by-item alignment (answer/accept/dismiss) until the doc passes. Use when aligning on requirements or decisions before implementation."
+description: "Use when the user wants to write/align product or technical docs - new product briefs, PRDs, design docs - through a review workflow. Acts as AI reviewer: drafts the doc if absent, generates sharp review questions by framework (goals/users/metrics/risks...), then launches zdashboard for item-by-item alignment (answer/accept/dismiss) until the doc passes. Use when aligning on requirements or decisions before implementation."
 ---
 
 # zreview
 
-文档对齐 skill:**起草(可选)-> AI 评审官提对齐项 -> zreview-dashboard 逐项对齐 -> 通过**。
+文档对齐 skill:**起草(可选)-> AI 评审官提对齐项 -> zdashboard 逐项对齐 -> 通过**。
 
 定位对称:`zdesign` 出设计、`zview` 看项目,zreview 管"写文档并对齐"。
 

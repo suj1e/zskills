@@ -37,7 +37,7 @@ zdesign 目前只覆盖 UI 产出(web 页面 / 应用界面 / 组件 / 风格探
 | 2-3 选风格/取 token | 完全复用现有流程(awesome-claude-design 菜单 / getdesign / 本地 DESIGN.md / 参考蒸馏) |
 | 4 token 转换 | 图表场景走新分支:token → **图表语义角色**(而非 CSS 变量),映射产物落盘 `<产出根>/diagram-style.md` |
 | 5 产出 | 自包含 HTML(inline SVG,零运行时依赖),布局语法来源见第 3 节 |
-| 6 预览 | 照旧 `npx zdesign-dashboard@latest --dir <产出根> --open` |
+| 6 预览 | 照旧 `npx zdashboard@latest --mode design --dir <产出根> --open` |
 | 7-8 验收/交付 | 验收清单增加图表专项;交付物含 diagram-style.md 路径、所选品牌名、**所用 diagram-design 版本号与语法源级别(最新 main / 本地缓存 x.y.z / 自带兜底)** |
 
 ### 2. token → 图表语义角色映射

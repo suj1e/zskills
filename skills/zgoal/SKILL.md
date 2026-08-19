@@ -37,9 +37,9 @@ product: 3           # bug 列表按产品拉(必填)
 
 ### 5. 看进度
 ```bash
-npx zview-dashboard@latest --dir <项目根> --open
+npx zdashboard@latest --mode view --dir <项目根> --open
 ```
-openspec 进度 + bug 列表一站看(需 zview-dashboard ≥ 0.2.0;旧版降级为仅会话内表格,不阻塞)。
+openspec 进度 + bug 列表一站看(需 zdashboard ≥ 1.0.0;旧版降级为仅会话内表格,不阻塞)。
 
 ### 6. 开 PR
 push → `gh pr create`,body 含:bug 链接、change 路径、tasks 完成度(如 `3/5`)。
