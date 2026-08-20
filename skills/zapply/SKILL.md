@@ -120,6 +120,16 @@ openspec archive <change-name> --yes
 - **归档前双门禁必须全过**
 - 止于 archive,不开 PR、不 push
 
+## 可视化进度(zdashboard)
+
+执行过程中可拉起 dashboard 看进度:
+
+```bash
+npx zdashboard@latest --mode apply --dir <项目根> --open
+```
+
+面板展示:进行中的 change 卡片(名称 + 任务完成度百分比) + 点击展开 proposal/design/tasks 全文。文件变更即时刷新。
+
 ## 资产
 
 - `references/craftsman-prompt.md` — craftsman 子智能体 prompt 模板(含重跑变体与交付物规范)
