@@ -29,7 +29,7 @@ CLI 不可用则手建 `openspec/changes/<name>/`。在 change 目录写三个�
 | 文件 | 内容 |
 |------|------|
 | `proposal.md` | 需求复述 + 要解决的问题 + 成功标准 |
-| `design.md` | 技术方案 + 取舍(明确哪些做/哪些不做) |
+| `设计文档` | 技术方案 + 取舍(明确哪些做/哪些不做) |
 | `tasks.md` | checkbox 清单,粒度到"可独立验证" |
 
 命名:`<yyyy-mm-dd>-<kebab-slug>`,如 `2026-08-20-add-export`。
@@ -43,7 +43,7 @@ CLI 不可用则手建 `openspec/changes/<name>/`。在 change 目录写三个�
 ```markdown
 ## 上下文
 - Change 路径:<change-dir>
-- 方案约束:<design.md 核心约束摘要——必做项 + 明确不做的>
+- 方案约束:<设计约束摘要——必做项 + 明确不做的>
 - 任务清单:<tasks.md 全量>
 
 ## 交付物(必须返回)
@@ -73,7 +73,7 @@ openspec status --change <name>   # 查看阻塞项
 > 命令名以本地 `openspec --help` 为准;部分版本该环节叫 verify。
 
 **3b. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):
-- **只读**审查分支 diff(相对 base),核对:偏离 design.md 约束?bug / 逻辑错误 / 边界遗漏 / 安全问题?代码设计与架构合理性?设计原则(SRP/OCP/DIP/Demeter)与模式应用?代码风格与整洁度?craftsman 报告是否属实(声明的任务真实现了吗)?
+- **只读**审查分支 diff(相对 base),核对:偏离设计约束?bug / 逻辑错误 / 边界遗漏 / 安全问题?代码设计与架构合理性?设计原则(SRP/OCP/DIP/Demeter)与模式应用?代码风格与整洁度?craftsman 报告是否属实(声明的任务真实现了吗)?
 - 输出按严重度分级:**blocker**(必须修才能归档)与 **suggestion**(不阻塞,交付时汇报)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
 
