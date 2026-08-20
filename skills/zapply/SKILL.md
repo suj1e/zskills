@@ -59,9 +59,11 @@ CLI 不可用则手建 `openspec/changes/<name>/`。在 change 目录写三个�
 - 设计歧义:按最小惊讶原则实现,在报告中标注"歧义点 + 我的选择"
 - 不顺手做与任务无关的重构/优化
 
-### 3. 核实(openspec verify)
+### 3. 核实(双门禁:openspec verify + code review)
 
-收到报告后**主智能体自己跑**:
+收到报告后,**主智能体跑结构核实,再起独立 code-reviewer 做代码审查**:
+
+**3a. openspec 结构核实**(主智能体自己跑):
 
 ```bash
 openspec validate <change-dir>    # 校验 change 的 MODIFIED 需求与主 specs 一致性
@@ -70,19 +72,22 @@ openspec status --change <name>   # 查看阻塞项
 
 > 命令名以本地 `openspec --help` 为准;部分版本该环节叫 verify。
 
-另做两道轻量检查:
-- **抽查 diff**:与 design.md 约束是否一致
-- **git status**:分支干净、无游离文件
+**3b. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):
+- **只读**审查分支 diff(相对 base),核对:偏离 design.md 约束?bug / 逻辑错误 / 边界遗漏 / 安全问题?craftsman 报告是否属实(声明的任务真实现了吗)?
+- 输出按严重度分级:**blocker**(必须修才能归档)与 **suggestion**(不阻塞,交付时汇报)
+- 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
+
+**3c. 主智能体汇总**:validate/status 结果 + code review 报告 + 抽查 diff 与 `git status`(分支干净、无游离文件)
 
 **结果分支**:
 
 | 场景 | 处理 |
 |------|------|
-| verify 通过 | → 第 4 步归档 |
-| 实施问题(任务未完成/测试失败/代码偏离方案) | 汇报差异 → 用户选:**重跑 craftsman(带修正上下文)/ 手动修 / 中止** |
+| validate 通过 + 无 blocker | → 第 4 步归档(suggestion 一并汇报给用户) |
+| 实施问题(任务未完成/测试失败/blocker) | 汇报差异 → 用户选:**重跑 craftsman(带修正上下文)/ 手动修 / 中止** |
 | 方案问题(需求理解偏差/设计本身有误) | **主智能体改 proposal.md / design.md / tasks.md** → 回到第 2 步 |
 
-**重跑 craftsman 必须带修正上下文**:上一轮 verify 差异 + 用户决策,结构化追加进 prompt,要求先解决指出的问题、报告时逐条回应。
+**重跑 craftsman 必须带修正上下文**:上一轮核实差异(validate 结果 + code review blocker)+ 用户决策,结构化追加进 prompt,要求先解决指出的问题、报告时逐条回应。
 
 ### 4. 归档
 
@@ -110,10 +115,12 @@ openspec archive <change-name> --yes
 - **不碰禅道**(zgoal 的事)
 - **不直接写业务代码**,全部委托 craftsman
 - proposal/design 的生成与调整只在主智能体手里,craftsman 只执行
+- 核实 = openspec validate + code-reviewer **双门禁**;blocker 未清零不归档
 - verify 失败**不自动重试**,必须用户决策
-- **归档前 verify 必须通过**
+- **归档前双门禁必须全过**
 - 止于 archive,不开 PR、不 push
 
 ## 资产
 
 - `references/craftsman-prompt.md` — craftsman 子智能体 prompt 模板(含重跑变体与交付物规范)
+- `references/code-reviewer-prompt.md` — code-reviewer 审查 prompt 模板(分级输出规范)

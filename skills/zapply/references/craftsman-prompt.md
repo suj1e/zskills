@@ -41,7 +41,7 @@ zapply 第 2 步下发子智能体时使用。填充占位符(`<...>`)后,整体
 ```markdown
 ## 上一轮结果
 
-- openspec verify 差异:<具体差异——未完成 task / 测试失败 / 代码偏离方案的具体位置>
+- 核实差异:<openspec validate 结果 + code review blocker 的具体位置>
 - 用户决策:<方向——重跑 / 修某处 / 范围调整>
 
 ## 本轮要求

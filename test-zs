@@ -223,6 +223,16 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "craftsman-prompt.md not referenced"
       fi
+      if grep -q 'references/code-reviewer-prompt.md' "$f"; then
+        ok "code-reviewer-prompt.md referenced"
+      else
+        bad "code-reviewer-prompt.md not referenced"
+      fi
+      if grep -q 'blocker' "$f"; then
+        ok "blocker gate mentioned"
+      else
+        bad "blocker gate missing"
+      fi
       if grep -qE '不自动重试|用户决策' "$f"; then
         ok "no-auto-retry / user decision gate mentioned"
       else
