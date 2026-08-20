@@ -1,0 +1,245 @@
+#!/usr/bin/env bash
+# test-zs — zskills smoke tests (static, no runtime deps)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+SKILLS=("zdesign" "zgoal" "zreview" "zview" "zapply")
+PASS=0
+FAIL=0
+TOTAL=0
+
+say() { printf '%s\n' "$*"; }
+ok()  { PASS=$((PASS+1)); TOTAL=$((TOTAL+1)); say "  ✔ $1"; }
+bad() { FAIL=$((FAIL+1)); TOTAL=$((TOTAL+1)); say "  ✘ $1"; }
+info(){ say "  ℹ $1"; }
+
+# ---------- helpers ----------
+has_frontmatter() {
+  local file="$1"
+  local first
+  first=$(head -n1 "$file")
+  if [[ "$first" != "---" ]]; then return 1; fi
+  # look for closing --- on a line by itself after line 1
+  if tail -n +2 "$file" | grep -q "^---$"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+yaml_val() {
+  # extract top-level key value from frontmatter (simple regex)
+  local file="$1" key="$2"
+  # match lines like: key: "value" or key: value (until next key or ---)
+  awk -v k="$key" '
+    BEGIN{found=0}
+    /^---/{if(found){exit} else {found=1; next}}
+    found && $0 ~ "^"k":[ \t]*"{
+      sub(/^[^:]+:[ \t]*/, "")
+      print
+      exit
+    }
+  ' "$file"
+}
+
+# ---------- global checks ----------
+say "== global checks =="
+for f in skills/*/SKILL.md; do
+  name=$(basename "$(dirname "$f")")
+  if [[ -f "$f" ]]; then
+    ok "SKILL.md exists: $name"
+  else
+    bad "SKILL.md missing: $name"
+    continue
+  fi
+  if has_frontmatter "$f"; then
+    ok "frontmatter present: $name"
+  else
+    bad "frontmatter missing: $name"
+  fi
+  # required fields
+  for field in name icon description; do
+    val=$(yaml_val "$f" "$field")
+    if [[ -n "$val" ]]; then
+      ok "$name/$field = $val"
+    else
+      bad "$name/$field missing"
+    fi
+  done
+done
+
+# ---------- skill-specific checks ----------
+say ""
+say "== skill-specific checks =="
+
+for skill in "${SKILLS[@]}"; do
+  say "[$skill]"
+  dir="$ROOT/skills/$skill"
+  f="$dir/SKILL.md"
+
+  # 1. references exist if mentioned in SKILL.md
+  if grep -qE 'references/[A-Za-z0-9_-]+\.md' "$f"; then
+    while IFS= read -r ref; do
+      path="$dir/$ref"
+      if [[ -f "$path" ]]; then
+        ok "reference exists: $ref"
+      else
+        bad "reference missing: $ref"
+      fi
+    done < <(grep -oE 'references/[A-Za-z0-9_-]+\.md' "$f" | sort -u)
+  else
+    info "no references/*.md mentioned"
+  fi
+
+  # 2. assets exist if mentioned in SKILL.md
+  if grep -qE 'assets/[A-Za-z0-9_/.-]+' "$f"; then
+    while IFS= read -r asset; do
+      path="$dir/$asset"
+      if [[ -f "$path" ]]; then
+        ok "asset exists: $asset"
+      else
+        bad "asset missing: $asset"
+      fi
+    done < <(grep -oE 'assets/[A-Za-z0-9_/.-]+' "$f" | sort -u)
+  else
+    info "no assets/* mentioned"
+  fi
+
+  # 3. markdown structure (at least one ## heading)
+  if grep -qE '^## ' "$f"; then
+    ok "has ## heading"
+  else
+    bad "missing ## heading"
+  fi
+
+  # 4. skill-specific rules
+  case "$skill" in
+    zdesign)
+      if grep -q 'zentao\|禅道' "$f"; then
+        bad "zdesign must not mention ZenTao (禅道)"
+      else
+        ok "no ZenTao mention (zdesign)"
+      fi
+      if grep -q 'npx zdashboard@latest --mode design' "$f"; then
+        ok "zdashboard design mode present"
+      else
+        bad "zdashboard design mode missing"
+      fi
+      if grep -q 'getdesign' "$f"; then
+        ok "getdesign reference present"
+      else
+        bad "getdesign reference missing"
+      fi
+      if grep -qE 'diagram-basics|diagram-style-mapping|quality-checklist' "$f"; then
+        ok "diagram references present"
+      else
+        bad "diagram references missing"
+      fi
+      ;;
+    zgoal)
+      if grep -q 'references/zentao-api.md' "$f"; then
+        ok "zentao-api.md referenced"
+      else
+        bad "zentao-api.md not referenced"
+      fi
+      if grep -q 'npx zdashboard@latest --mode bugs' "$f"; then
+        ok "zdashboard bugs mode present"
+      else
+        bad "zdashboard bugs mode missing"
+      fi
+      if grep -q 'gh pr create' "$f"; then
+        ok "gh pr create present"
+      else
+        bad "gh pr create missing"
+      fi
+      if grep -qE '只读|read-only' "$f"; then
+        ok "read-only guarantee mentioned"
+      else
+        bad "read-only guarantee missing"
+      fi
+      ;;
+    zreview)
+      if grep -q 'npx zdashboard@latest --mode review' "$f"; then
+        ok "zdashboard review mode present"
+      else
+        bad "zdashboard review mode missing"
+      fi
+      if grep -q 'review.yaml' "$f"; then
+        ok "review.yaml mentioned"
+      else
+        bad "review.yaml missing"
+      fi
+      if grep -qE '\.zreview' "$f"; then
+        ok ".zreview directory mentioned"
+      else
+        bad ".zreview directory missing"
+      fi
+      ;;
+    zview)
+      if grep -q 'npx zdashboard@latest --mode view' "$f"; then
+        ok "zdashboard view mode present"
+      else
+        bad "zdashboard view mode missing"
+      fi
+      if grep -qE 'justfile|just --list' "$f"; then
+        ok "justfile/log streaming mentioned"
+      else
+        bad "justfile/log streaming missing"
+      fi
+      if grep -qE '\.zgoal/config\.yaml' "$f"; then
+        ok ".zgoal/config.yaml mentioned"
+      else
+        bad ".zgoal/config.yaml missing"
+      fi
+      if grep -qE 'openspec|docs/' "$f"; then
+        ok "project detection (openspec/docs) mentioned"
+      else
+        bad "project detection missing"
+      fi
+      ;;
+    zapply)
+      if grep -q 'openspec new change' "$f"; then
+        ok "openspec new change present"
+      else
+        bad "openspec new change missing"
+      fi
+      if grep -q 'openspec validate' "$f"; then
+        ok "openspec validate present (verify stage)"
+      else
+        bad "openspec validate missing"
+      fi
+      if grep -q 'openspec archive' "$f"; then
+        ok "openspec archive present"
+      else
+        bad "openspec archive missing"
+      fi
+      if grep -q 'craftsman' "$f"; then
+        ok "craftsman delegation mentioned"
+      else
+        bad "craftsman delegation missing"
+      fi
+      if grep -q 'references/craftsman-prompt.md' "$f"; then
+        ok "craftsman-prompt.md referenced"
+      else
+        bad "craftsman-prompt.md not referenced"
+      fi
+      if grep -qE '不自动重试|用户决策' "$f"; then
+        ok "no-auto-retry / user decision gate mentioned"
+      else
+        bad "no-auto-retry gate missing"
+      fi
+      ;;
+  esac
+done
+
+# ---------- summary ----------
+say ""
+say "== summary =="
+say "total: $TOTAL | pass: $PASS | fail: $FAIL"
+if [[ "$FAIL" -gt 0 ]]; then
+  say "FAIL: $FAIL check(s) failed"
+  exit 1
+else
+  say "ALL PASS"
+  exit 0
+fi

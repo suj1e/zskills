@@ -27,7 +27,7 @@ product: 3           # bug 列表按产品拉(必填)
 按 `references/zentao-api.md`:取 token → `GET /products/{product}/bugs`,**无论多少条都先起 zdashboard**(`npx zdashboard@latest --mode bugs --dir <项目根> --open`,已在跑就复用),让用户在「Bugs」视图里看和筛(「我的」= 指派给自己的,默认选中)。会话里给一句汇总(如"23 条,我的 8 · active 15 / resolved 6 / closed 2")并问用户挑哪个(或直接给 bug ID)。
 
 ### 3. 开目标(openspec)
-拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec change new`,否则手建):
+拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec new change fix-<bugID>-<slug> --description "<bug 标题>"`,否则手建):
 - **proposal.md**:bug 复述 + 禅道链接(`{url}/bug-view-{id}.html`)+ 根因分析
 - **design.md**:修复方案 + 取舍
 - **tasks.md**:checkbox 任务清单(能独立验证的粒度)
@@ -43,7 +43,7 @@ openspec 进度 + bug 列表一站看(需 zdashboard ≥ 1.0.0;旧版降级为�
 
 ### 6. 开 PR
 push → `gh pr create`,body 含:bug 链接、change 路径、tasks 完成度(如 `3/5`)。
-**合并后提示用户**:禅道手动关 bug(本 skill 纯只读)+ `openspec archive` 归档。
+**合并后提示用户**:禅道手动关 bug(本 skill 纯只读)+ `openspec archive <change> --yes` 归档。
 
 ## 边界
 - **禅道只读**:绝不调写接口(创建 / 解决 / 关闭 / 激活 / 评论 bug 一律不做)
