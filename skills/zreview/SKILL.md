@@ -6,17 +6,25 @@ description: "Use when the user wants to write/align product or technical docs -
 
 # zreview
 
-文档对齐 skill:**起草(可选)-> AI 评审官提对齐项 -> zdashboard 逐项对齐 -> 通过**。
+文档对齐 skill:**先拉起 zdashboard → 再起草/评审 → 逐项对齐 → 通过**。
 
 定位对称:`zdesign` 出设计、`zview` 看项目,zreview 管"写文档并对齐"。
 
 ## 工作流
 
-### 1. 收文档
+### 1. 立即拉起评审台
+**先于一切**,直接执行:
+```bash
+npx zdashboard@latest --mode review --dir .zreview --open
+```
+默认端口 4200。给用户 URL,让用户看到评审台界面。
+
+### 2. 收文档
+在 dashboard 运行的同时或之后:
 - 用户已有文档 -> 用它(确认放评审目录,默认 `.zreview/`)
 - 没有 -> **访谈式起草**:问目标/用户/成功标准/范围,按模板成文(brief.md / prd.md),存 `.zreview/`
 
-### 2. 生成评审项(AI 评审官)
+### 3. 生成评审项(AI 评审官)
 通读文档,按框架生成尖锐问题写 `review.yaml`(status: reviewing):
 
 - **默认框架(8 类)**:目标 / 用户 / 问题定义 / 方案 / 指标 / 边界 / 风险 / 竞品
@@ -26,12 +34,6 @@ description: "Use when the user wants to write/align product or technical docs -
 - 每项 3-8 个问题,直击含糊处(数字无来源、边界未定义、指标不可度量)
 - severity:high(阻断级含糊)/ medium / low
 - 每项带 `doc` 字段挂到对应文档;id 用 q1/q2… 递增
-
-### 3. 拉起评审台
-```bash
-npx zdashboard@latest --mode review --dir .zreview --open
-```
-默认端口 4200。给用户 URL。
 
 ### 4. 引导对齐
 - 左栏切文档、按状态筛;右侧卡片逐项【答复/采纳/驳回】,全部处理完点顶栏【通过评审】

@@ -6,25 +6,27 @@ description: "Use when the user wants to view/browse a project's technical docs 
 
 # zview
 
-项目洞察 skill:**探测项目结构 → 拉起 zdashboard → 看方案文档 + 看服务实时日志**。
+项目洞察 skill:**先拉起 zdashboard → 再看方案文档 + 服务实时日志**。
 
 定位与 zdesign 对称:`zdesign` 看设计产出,`zview` 看项目本身(方案 + 运行)。
 
 ## 工作流
 
-### 1. 探测项目(cwd)
-- `openspec/` 存在 → 方案文档(openspec 结构感知:进行中 / 归档 / 能力 Specs)
+### 1. 立即拉起 dashboard
+**先于一切**,直接执行:
+```bash
+npx zdashboard@latest --mode view --dir <项目根> --open
+```
+默认端口 4190;占用自动顺延。把 URL 给用户,让用户看到界面。
+
+### 2. 探测项目(cwd)
+在拉起 dashboard 的同时或之后,探测项目结构:
+- `openspec/` 存在 → 方案文档(openspec 结构感知:进行中 / archive / specs)
 - `docs/` 存在 → 文档聚合
 - `justfile` / `just --list` 可用 → 日志能力(recipes 启停 + 实时流)
 - `.zgoal/config.yaml` 存在 → 禅道 bug 列表能力(只读,需 zdashboard ≥ 1.0.0)
 
 把命中的能力告诉用户(如:"检测到 openspec + justfile + .zgoal,可看方案、日志和禅道 bug 列表")。
-
-### 2. 拉起 dashboard
-```bash
-npx zdashboard@latest --mode view --dir <项目根> --open
-```
-默认端口 4190;占用自动顺延。把 URL 给用户。
 
 ### 3. 引导使用
 - 看方案:左侧文件树点 proposal.md / design.md / tasks.md
