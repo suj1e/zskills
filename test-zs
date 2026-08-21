@@ -238,6 +238,21 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "no-auto-retry gate missing"
       fi
+      if grep -q 'code-simplifier' "$f"; then
+        ok "code-simplifier optional pass mentioned"
+      else
+        bad "code-simplifier pass missing"
+      fi
+      if grep -q '分支收尾' "$f"; then
+        ok "branch cleanup (merge back) step present"
+      else
+        bad "branch cleanup step missing"
+      fi
+      if grep -q '后台执行' "$f"; then
+        ok "background dispatch mentioned"
+      else
+        bad "background dispatch missing"
+      fi
       ;;
   esac
 

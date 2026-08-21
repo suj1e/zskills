@@ -34,7 +34,7 @@ description: "Use when the user reports a bug, error, crash, test failure, or un
 - 如果是移动端问题，检查 logcat/系统日志、截图
 
 ### 3. 派发 debugger agent 深度调查
-将证据和症状整理后，派发 `debugger` 子智能体进行深度调查。
+将证据和症状整理后，**后台执行**派发 `debugger` 子智能体进行深度调查(不阻塞会话;调查完成通知到达后再继续整合)。
 
 **必须包含的上下文**：
 - 症状描述和复现条件

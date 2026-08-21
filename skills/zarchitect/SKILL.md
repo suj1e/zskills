@@ -36,7 +36,7 @@ description: "Use when the user wants to design a solution — technical archite
 - 汇总需求清单,标注来源文件和关键段落
 
 **路径 B:代码库探索**
-- 用 `Explore` 子智能体做广域代码库扫描,理解现有架构和依赖关系
+- **优先用 `code-explorer` 子智能体**做深度代码库分析(执行路径/架构分层/模式/依赖文档化);未装则降级用 `Explore` 子智能体做广域扫描
 - 用 `openspec view` 看现有规范和变更
 - 必要时用 `WebSearch` / `WebFetch` 查外部资料
 
@@ -73,7 +73,7 @@ description: "Use when the user wants to design a solution — technical archite
 再次和用户确认「问题定义 + 推荐方向」达成共识。不要跳过确认直接写文档。
 
 ### 7. 正式方案设计
-在共识基础上输出完整方案。**所有方案必须包含设计模式建议和性能优化点**:
+在共识基础上输出完整方案。复杂方案(多模块/新架构)且装有 `code-architect` 子智能体时,可后台起它产出实现蓝图(文件清单/组件设计/数据流/构建顺序)作为方案骨架,主智能体在其上补齐取舍与开放问题;未装则自己写。**所有方案必须包含设计模式建议和性能优化点**:
 - 背景与目标
 - 现有系统分析(如适用)
 - 方案设计(图文)

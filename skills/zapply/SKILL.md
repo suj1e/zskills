@@ -42,18 +42,26 @@ CLI 不可用则手建 `openspec/changes/<name>/`。在 change 目录写三个�
 
 下发前先确认 `tasks.md` 粒度足够;太粗就**先细化**(主智能体有权细化 tasks,craftsman 只认细化后清单)。
 
-按 `references/craftsman-prompt.md` **完整模板**起子智能体 **craftsman**(模板含 TDD 红→绿→重构流程 + 测试策略上下文 + 覆盖率交付物,勿自行裁剪)。核心要求:
+按 `references/craftsman-prompt.md` **完整模板**起子智能体 **craftsman**,用**后台执行**下发(不阻塞会话等结果;完成通知到达后再进第 2.5 步。多 change 并行时同时后台起多个)。核心要求:
 
 **执行原则**:
 - craftsman 按 **TDD 红→绿→重构**实现每个 task:先写测试确认失败 → 最小实现跑绿 → 重构保持绿
 - 测试必须遵循 `design.md`「测试策略」章节 + `tasks.md` 每个 task 的测试验收标准
 - craftsman 只改代码 + 勾 tasks.md;**禁止修改 proposal.md / design.md**
-- 设计歧义:按最小惊讶原则实现,在报告中标注"歧义点 + 我的选择"
+- 设计歧义:按最小惊讶原则实现,并在报告中标注"歧义点 + 我的选择"
 - 不顺手做与任务无关的重构/优化
 - **不写死魔法常量**:业务阈值/超时/重试/分页等提为命名常量或配置
 - **不造轮子**:项目已有工具、语言标准库、已引入依赖能解决的直接复用;确需自造在报告中说明理由
+- **记录基线分支**:切工作分支前记下当前所在分支(基线),并在报告中返回——第 5 步分支收尾要用
 
-**交付物**(除模板要求外,必须含覆盖率报告——按 design.md 测试策略目标逐项核对)
+**交付物**(除模板要求外,必须含覆盖率报告——按 design.md 测试策略目标逐项核对,附基线分支名)
+
+### 2.5. 简化润色(可选)
+
+craftsman 交付后、三门禁**之前**,若装有 `code-simplifier` 子智能体,后台起它对分支 diff 做清晰度/一致性简化(保持功能,后台执行):
+- 安全网:simplifier 改完**必须复跑全部测试,仍绿才继续**;红了就打回 craftsman/回滚其简化
+- 未装 code-simplifier 或用户说跳过 → 直接进第 3 步
+- 定位:让 code-reviewer 审的是**最终形态**,结论不过期
 
 ### 3. 核实(三门禁:openspec verify + 测试策略核查 + code review)
 
@@ -106,12 +114,23 @@ openspec archive <change-name> --yes
 ✅ Change 已完成并归档
 - change:openspec/changes/<name>/
 - 归档:openspec/archive/<name>/
-- 分支:<name>
+- 分支:<name>(基线:<base>)
 - 任务完成度:x/y
 - 修改文件:n 个
 ```
 
-提示一句:"需要开 PR / merge 分支请说一声"(zapply 止于 archive,不开 PR)。
+### 5. 分支收尾(询问用户,不自动执行)
+
+归档后**询问用户**:「工作分支 `<name>` 要 merge 回基线分支 `<base>` 并清理吗?」
+
+- **是** → 本地操作:
+  ```bash
+  git checkout <base> && git merge <name> && git branch -d <name>
+  ```
+- **否** → 保留分支,用户后续手动处理
+- merge 出冲突 → 停下报告冲突点,交用户决策(不强行解决)
+- **多 change**:按依赖拓扑序逐个询问/merge(先 core 后 api 后 ui);依赖前缀相同的串行 merge
+- 边界不变:只做本地 merge,**不 push、不开 PR**
 
 ## 多 change 并行编排
 
@@ -123,9 +142,9 @@ openspec archive <change-name> --yes
 - 依赖缺失(前置 change 未存在/未归档)→ 该 change 挂起并告知用户,不阻塞无依赖的
 
 ### 2. 并行度与冲突控制
-- **默认并行度 2**(同时最多 2 个 craftsman),用户可指定更高/串行
+- **默认并行度 2**(同时最多 2 个 craftsman),用户可指定更高/串行;多个 craftsman 一律**后台执行**并行跑,完成一个处理一个
 - 下发前**冲突预警**:粗比对各 change `tasks.md` 涉及的模块/文件路径,有重叠的强制串行(重叠 → 后者等前者归档)
-- 每个 change 完全独立:独立分支、独立 TDD 循环、独立三门禁、独立归档,互不掺和
+- 每个 change 完全独立:独立分支、独立 TDD 循环、独立简化、独立三门禁、独立归档,互不掺和
 
 ### 3. 批间衔接
 - 前置 change 归档后,释放依赖它的下一批
