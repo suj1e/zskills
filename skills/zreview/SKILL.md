@@ -12,14 +12,9 @@ description: "Use when the user wants to write/align product or technical docs -
 
 ## 工作流
 
-### 1. 检查/拉起评审台
-先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
-- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
-  - 用户选「直接使用」→ 沿用当前实例
-  - 用户选「重新拉最新版」→ 继续下面的启动流程
-- 不能访问 → 直接拉起最新版
+### 1. 拉起评审台
+直接执行(同目录已有实例时由 zdashboard CLI 自行复用,端口占用自动顺延):
 
-拉起:
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```

@@ -17,18 +17,13 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 ## 工作流
 
-### 1. 检查/拉起实时预览
-先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
-- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
-  - 用户选「直接使用」→ 沿用当前实例
-  - 用户选「重新拉最新版」→ 继续下面的启动流程
-- 不能访问 → 直接拉起最新版
+### 1. 拉起实时预览
+直接执行(同目录已有实例时由 zdashboard CLI 自行复用,端口占用自动顺延):
 
-拉起:
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
-预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4190,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
+预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。多项目并行不冲突(`--port` 可指定)。
 
 产出根统一为 `.zdev/`;具体路径由 zdashboard 中用户选择的目录决定。
 
