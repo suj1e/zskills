@@ -79,7 +79,7 @@ openspec status --change <name>   # 查看阻塞项
 - 输出按严重度分级:**blocker**(优先修,清零才能归档)与 **suggestion**(同样下发修复,优先级次之;确实不该修的说明理由)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
 
-**3c. 主智能体汇总**:validate/status 结果 + code review 报告 + 抽查 diff 与 `git status`(分支干净、无游离文件)
+**3c. 主智能体汇总**:validate/status 结果 + code review 报告 + 抽查 diff 与 `git status`(分支干净、无游离文件)。抽查≠复审:全量审查是 reviewer 的职责,主智能体只抽核心任务对应的 2-3 个文件,对照报告验证"声称改的真的改了、无漏报",不做全量重复审查
 
 **结果分支**:
 
