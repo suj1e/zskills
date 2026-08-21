@@ -73,7 +73,7 @@ openspec status --change <name>   # 查看阻塞项
 > 命令名以本地 `openspec --help` 为准;部分版本该环节叫 verify。
 
 **3b. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):
-- **只读**审查分支 diff(相对 base),核对:偏离设计约束?bug/逻辑/边界/安全?设计与架构、原则与模式?硬编码与死代码?错误与资源处理?性能隐患?测试覆盖与兼容性?风格整洁度?craftsman 报告是否属实(声明的任务真实现了吗)?
+- **只读**审查分支 diff(相对 base),核对 12 维:设计约束、bug/边界/安全、架构合理性、原则与模式、硬编码/死代码、错误与资源、并发与事务、性能、测试与兼容、依赖与文档同步、风格整洁度、craftsman 报告属实
 - 输出按严重度分级:**blocker**(必须修才能归档)与 **suggestion**(不阻塞,交付时汇报)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
 
