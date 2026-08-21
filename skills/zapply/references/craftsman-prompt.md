@@ -7,21 +7,23 @@ zapply 第 2 步下发子智能体时使用。填充占位符(`<...>`)后,整体
 ```markdown
 ## 上下文
 
-- Change 路径:<change-dir>
+- 工作目录(worktree):<.zworktree/<change-name> 绝对路径>(分支 <change-name> 基线 <base>,已由主智能体建好,直接在其中工作)
+- 主目录:<项目根绝对路径>(proposal/design/tasks 已随基线提交,worktree 内 openspec/changes/<name>/ 可直接读写)
 - 方案约束:<设计约束摘要——必做的、明确不做的>
 - 任务清单:<tasks.md 全量内容>
 - 测试策略:<design.md 末尾的「测试策略」章节 + tasks.md 中每个 task 的「测试验收标准」>
 
 ## 任务
 
-1. 创建分支 <change-name>(基线 = 创建分支前所在的当前分支;**先记录基线分支名**,创建用 `git checkout -b <change-name>`。分支已存在且无未合并提交 → 复用或重建;有未合并提交 → 停下报告,不要动它)
-2. 按 tasks.md 逐项实现,**严格遵循 design.md 的测试策略**,按 TDD 红→绿→重构执行:
+1. 进入 worktree 工作目录;发现分支有未合并的意外提交 → 停下报告,不要动它
+2. deps 未装先装(pnpm/npm install 等;worktree 不共享 node_modules)
+3. 按 tasks.md 逐项实现,**严格遵循 design.md 的测试策略**,按 TDD 红→绿→重构执行:
    - 先写测试 → 运行确认失败(红)
    - 再写最小实现 → 运行确认通过(绿)
    - 最后重构 → 运行确认仍通过
-3. 每完成一项,立刻在 tasks.md 勾选对应 checkbox
-4. 运行项目测试/lint + 覆盖率检查,失败就修到通过;修不动就如实报告
-5. 返回执行报告
+4. 每完成一项,立刻勾选 worktree 内 tasks.md 的对应 checkbox,**勾选与代码一起提交在 change 分支上**
+5. 运行项目测试/lint + 覆盖率检查,失败就修到通过;修不动就如实报告
+6. 返回执行报告
 
 ## 执行原则
 
@@ -36,7 +38,7 @@ zapply 第 2 步下发子智能体时使用。填充占位符(`<...>`)后,整体
 
 ## 交付物(必须全部返回)
 
-- 分支名 + 基线分支名(切出前所在的分支)
+- 分支名 / worktree 路径
 - 修改文件列表(git diff --name-only)
 - 测试/lint 输出(通过/失败摘要)
 - 覆盖率报告(按 design.md 测试策略的目标逐项核对)

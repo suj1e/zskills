@@ -253,6 +253,11 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "background dispatch missing"
       fi
+      if grep -q 'worktree' "$f"; then
+        ok "git worktree isolation mentioned"
+      else
+        bad "git worktree isolation missing"
+      fi
       ;;
   esac
 
