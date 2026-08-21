@@ -8,12 +8,13 @@
 
 ## 已有
 
-- **zdesign** — 视觉/界面设计 skill。选一套设计系统(消费 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 68 个 `DESIGN.md`),产出严格遵循它的 HTML/CSS,自带实时预览(node watch + SSE)和三层质量门禁(约束/细节/验收)。不依赖 OpenDesign。
-- **zview** — 项目洞察 skill。探测项目结构(openspec/docs/justfile/.zgoal),拉起 zdashboard 看方案文档、服务实时日志、禅道 bug 列表(只读)。
+- **zdesign** — 视觉/界面设计 skill。选一套设计系统(消费 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 68 个 `DESIGN.md`),产出严格遵循它的 HTML/CSS,通过 zdashboard 实时预览,过质量门禁交付。不依赖 OpenDesign。
+- **zview** — 项目洞察 skill。探测项目结构(openspec/docs/justfile/.zdev),拉起 zdashboard 看方案文档、服务实时日志、禅道 bug 列表(只读)。
 - **zreview** — 文档对齐 skill。起草(可选)→ AI 评审官按框架提尖锐问题 → zdashboard 逐项对齐 → 通过。
 - **zgoal** — bug 修复闭环 skill。禅道看 bug(只读)→ openspec 开修复目标 → 分支实施 → tasks 勾进度 → 开 PR。
-- **zapply** — OpenSpec 执行闭环 skill。需求(或已有 change)→ 主智能体开 change → 下发 craftsman 实施 → openspec validate 核实 → archive 归档。不碰禅道、不开 PR,止于 archive。
-- **zarchitect** — 方案设计 skill。探索项目 → 多轮 brainstorm 对齐 → 画图（架构图/流程图/时序图）→ 图文并茂的设计文档 → 开 openspec change。
+- **zapply** — OpenSpec 执行闭环 skill。需求(或已有 change)→ 主智能体开 change → 下发 craftsman 实施(TDD) → 三门禁核实(openspec verify + 测试策略核查 + code review) → archive 归档。不碰禅道、不开 PR,止于 archive。
+- **ztest** — 测试策略设计 skill。读方案 → 出测试策略(分层/覆盖率/测试数据/边界异常并发) → 追加到 design.md + tasks.md → 由 craftsman 按 TDD 执行。
+- **zarchitect** — 通用方案设计 skill。需求文档输入/代码库探索/bug 分析 → 需求分析拆解 → 方案设计(含设计模式建议 + 性能优化点) → 画图 → 图文并茂 → 开 openspec change → 自动触发 ztest 出测试策略。
 - **zdebug** — 调试排查 skill。收集症状 → 派发 debugger agent 深度调查（读日志/trace 调用链）→ 画图辅助理解 → 图文并茂的排查报告 → 如需修复则开 openspec change。
 - **zdoc** — 文档撰写 skill。读源码/设计 → 梳理结构 → 写文档 → 图文并茂（架构图/流程图/ER 图）→ 输出完整文档。
 
