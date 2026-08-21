@@ -66,7 +66,7 @@ git worktree add -b <change-name> .zworktree/<change-name> <base>
 
 ### 2.5. 简化润色(可选)
 
-craftsman 交付后、三门禁**之前**,若装有 `code-simplifier` 子智能体,后台起它对分支 diff 做清晰度/一致性简化(保持功能,后台执行):
+craftsman 交付后、三门禁**之前**,若装有 `code-simplifier` 子智能体,后台起它**在 worktree 内**对分支 diff 做清晰度/一致性简化(保持功能,后台执行):
 - 安全网:simplifier 改完**必须复跑全部测试,仍绿才继续**;红了就打回 craftsman/回滚其简化
 - 未装 code-simplifier 或用户说跳过 → 直接进第 3 步
 - 定位:让 code-reviewer 审的是**最终形态**,结论不过期
@@ -158,7 +158,7 @@ openspec archive <change-name> --yes
 
 ### 3. 批间衔接
 - 前置 change 归档后,释放依赖它的下一批
-- 下发有依赖的 change 时,把前置 change 的 `design.md` 摘要(数据模型/接口契约)注入 craftsman 的「方案约束」,避免接口对不上
+- **有依赖的 change 的 worktree 在前置 merge 进基线之后再建**(此时基线已含前置代码);craftsman 的「方案约束」注入前置 design.md 摘要(数据模型/接口契约)作为补充说明
 - 任何 change 门禁失败 → 按单 change 流程处理(重跑/手动修/中止),**不影响其他并行 change**
 
 ### 4. 进度总览

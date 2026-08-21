@@ -35,13 +35,18 @@ product: 3           # bug 列表按产品拉(必填)
 配好后,在已运行的 zdashboard 中切换到 Bugs 视图(侧边栏「禅道 Bugs」),让用户在 Bugs 视图里看和筛(「我的」= 指派给自己的,默认选中)。会话里给一句汇总(如"23 条,我的 8 · active 15 / resolved 6 / closed 2")并问用户挑哪个(或直接给 bug ID)。
 
 ### 4. 开目标(openspec)
-拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec new change fix-<bugID>-<slug> --description "<bug 标题>"`,否则手建):
+拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec change new`,否则手建):
 - **proposal.md**:bug 复述 + 禅道链接(`{url}/bug-view-{id}.html`)+ 根因分析
 - **design.md**:修复方案 + 取舍
 - **tasks.md**:checkbox 任务清单(能独立验证的粒度)
 
-### 5. 执行
-开分支 `fix/<bugID>-<slug>` → 按方案实施 → **每完成一个 task 立刻勾 tasks.md**(进度唯一真相在这里)→ 常规测试 / lint。
+Change 开好并提交后,**触发 `ztest` 补测试策略**(design.md 追加「测试策略」+ tasks.md 追加验收标准,同 zapply)。
+
+### 5. 执行(与 zapply 同机制)
+- **worktree 隔离**:`git worktree add -b fix/<bugID>-<slug> .zworktree/fix-<bugID>-<slug> <base>`(前提:change 文档已提交)
+- 下发 **craftsman** 按 TDD 执行(按 zapply 的 `references/craftsman-prompt.md` 模板,后台执行);小 bug 可主智能体自己实施,同样 TDD
+- tasks.md 在 worktree 内直接勾,勾选随分支提交
+- 常规测试 / lint + 覆盖率核对
 
 ### 6. 看进度
 在 zdashboard 中切回 view 模式看进度(第 1 步起的实例复用):
@@ -51,7 +56,7 @@ product: 3           # bug 列表按产品拉(必填)
 openspec 进度 + bug 列表一站看(需 zdashboard ≥ 1.0.0;旧版降级为仅会话内表格,不阻塞)。
 
 ### 7. 开 PR
-push → `gh pr create`,body 含:bug 链接、change 路径、tasks 完成度(如 `3/5`)。
+三门禁核实(openspec validate + 测试策略核查 + code review,同 zapply)通过后:merge 分支回基线(询问用户)→ 归档 → push → `gh pr create`,body 含:bug 链接、change 路径、tasks 完成度(如 `3/5`)。PR 创建后清理 worktree:`git worktree remove .zworktree/fix-<bugID>-<slug>`。
 **合并后提示用户**:禅道手动关 bug(本 skill 纯只读)+ `openspec archive` 归档。
 
 ## 边界
