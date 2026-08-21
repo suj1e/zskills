@@ -44,7 +44,7 @@ Change 开好并提交后,**触发 `ztest` 补测试策略**(design.md 追加「
 
 ### 5. 执行(与 zapply 同机制)
 - **worktree 隔离**:`git worktree add -b fix/<bugID>-<slug> .zworktree/fix-<bugID>-<slug> <base>`(前提:change 文档已提交)
-- 下发 **craftsman** 按 TDD 执行(按 zapply 的 `references/craftsman-prompt.md` 模板,后台执行);小 bug 可主智能体自己实施,同样 TDD
+- 下发 **craftsman** 按 TDD 执行(用 zapply skill 的 craftsman-prompt 模板,后台执行);小 bug 可主智能体自己实施,同样 TDD
 - tasks.md 在 worktree 内直接勾,勾选随分支提交
 - 常规测试 / lint + 覆盖率核对
 
