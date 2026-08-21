@@ -17,6 +17,7 @@ OpenSpec 执行闭环 skill:**需求 → 主智能体开 change → craftsman �
 **入口分流**:
 - 用户给**需求描述** → 主智能体从头开 change(下方 A)
 - 用户给**已有 change 路径** → 跳过开 change,直接进第 2 步
+- 需求**复杂**(多模块/架构级/需要方案设计)→ 建议先走 `zarchitect` 出方案再回来执行
 
 **A. 开 change**(`openspec/` 不存在先 `openspec init`):
 
@@ -29,37 +30,29 @@ CLI 不可用则手建 `openspec/changes/<name>/`。在 change 目录写三个�
 | 文件 | 内容 |
 |------|------|
 | `proposal.md` | 需求复述 + 要解决的问题 + 成功标准 |
-| `设计文档` | 技术方案 + 取舍(明确哪些做/哪些不做) |
+| `design.md` | 技术方案 + 取舍(明确哪些做/哪些不做) |
 | `tasks.md` | checkbox 清单,粒度到"可独立验证" |
 
 命名:`<yyyy-mm-dd>-<kebab-slug>`,如 `2026-08-20-add-export`。
 
-### 2. 下发 craftsman 执行
+**A-2. 触发测试策略(必须)**:change 开好后,调用 `ztest` skill 为该 change 补测试策略——在 `design.md` 末尾追加 `## 测试策略` 章节,在 `tasks.md` 每个 task 后面追加测试验收标准。没有测试策略的 change 不下发 craftsman。
+
+### 2. 下发 craftsman 执行(TDD)
 
 下发前先确认 `tasks.md` 粒度足够;太粗就**先细化**(主智能体有权细化 tasks,craftsman 只认细化后清单)。
 
-按 `references/craftsman-prompt.md` 起子智能体 **craftsman**,prompt 必须含:
-
-```markdown
-## 上下文
-- Change 路径:<change-dir>
-- 方案约束:<设计约束摘要——必做项 + 明确不做的>
-- 任务清单:<tasks.md 全量>
-
-## 交付物(必须返回)
-- 分支名
-- 修改文件列表(git diff --name-only)
-- 测试/lint 输出(通过/失败摘要)
-- 任务完成度(x/y)
-- 未完成项与原因、风险、歧义点
-```
+按 `references/craftsman-prompt.md` **完整模板**起子智能体 **craftsman**(模板含 TDD 红→绿→重构流程 + 测试策略上下文 + 覆盖率交付物,勿自行裁剪)。核心要求:
 
 **执行原则**:
+- craftsman 按 **TDD 红→绿→重构**实现每个 task:先写测试确认失败 → 最小实现跑绿 → 重构保持绿
+- 测试必须遵循 `design.md`「测试策略」章节 + `tasks.md` 每个 task 的测试验收标准
 - craftsman 只改代码 + 勾 tasks.md;**禁止修改 proposal.md / design.md**
 - 设计歧义:按最小惊讶原则实现,在报告中标注"歧义点 + 我的选择"
 - 不顺手做与任务无关的重构/优化
 - **不写死魔法常量**:业务阈值/超时/重试/分页等提为命名常量或配置
 - **不造轮子**:项目已有工具、语言标准库、已引入依赖能解决的直接复用;确需自造在报告中说明理由
+
+**交付物**(除模板要求外,必须含覆盖率报告——按 design.md 测试策略目标逐项核对)
 
 ### 3. 核实(三门禁:openspec verify + 测试策略核查 + code review)
 
@@ -77,7 +70,7 @@ openspec status --change <name>   # 查看阻塞项
 **3b. 测试策略核查**(主智能体自己跑):
 - 检查 `design.md` 是否包含 `## 测试策略` 章节
 - 检查 `tasks.md` 每个 task 是否包含测试验收标准
-- 抽查:实际写的测试代码是否覆盖了 test-plan 中的场景(边界/异常/并发)
+- 抽查:实际写的测试代码是否覆盖了 design.md「测试策略」章节中指定的场景(边界/异常/并发)
 - 覆盖率是否达到 design.md 中设定的目标
 
 **3c. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):

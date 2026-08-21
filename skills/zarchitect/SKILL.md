@@ -1,63 +1,117 @@
 ---
 name: zarchitect
 icon: "🏗️"
-description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, or anything that needs thinking before coding. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型'. For design artifacts preview use zdesign; for viewing existing specs use zview."
+description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, bug fix plan, performance optimization, or anything that needs thinking before coding. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型', '这个 bug 怎么修', '性能优化', '重构'. For design artifacts preview use zdesign; for viewing existing specs use zview."
 ---
 
 # zarchitect
 
-方案设计 skill:**探索 → 多轮 brainstorm → 画图 → 图文并茂的设计文档 → 开 openspec change**。
+通用方案设计 skill:**需求输入 → 分析/拆解 → 方案设计 → 图文并茂 → 开 openspec change**。
+
+覆盖场景:
+- **新功能需求**(大/小):从零到有的功能设计
+- **增量需求**:在现有系统上叠加能力
+- **Bug 分析**:根因定位 → 修复方案设计(不实施,只出方案)
+- **性能优化**:瓶颈分析 → 优化方案(缓存/索引/架构调整)
+- **设计模式重构**:识别适用场景 → 模式选型 → 重构方案
 
 ## 何时触发
 - 用户说"帮我设计一下"、"怎么架构"、"方案设计"、"技术选型"
-- 涉及多个模块/服务/接口变更，需要先出方案再落地
+- 用户指定一个/多个文件夹,里面是需求文档(docx/excel/md 等),需要基于文档出方案
+- 涉及多个模块/服务/接口变更,需要先出方案再落地
 - 架构拆分、流程梳理、数据流设计
+- Bug 修复需要设计修复方案(不只是改一行代码)
+- 性能问题需要出优化方案
 - 需要画架构图/流程图/时序图让用户理解
 
 ## 工作流
 
-### 1. 探索
-- 优先用 `openspec view` 看现有规范和变更；如果项目未初始化 openspec 或命令失败，跳过，直接用 `Explore` 扫描代码库
-- 用 `Explore` 子智能体做广域代码库扫描，理解现有架构和依赖关系
+### 1. 输入采集
+根据用户给出的信息,走对应路径:
+
+**路径 A:需求文档文件夹**
+- 用户指定一个/多个文件夹,里面是需求文档(docx/excel/md/pdf 等)
+- 用 `Read` / `Explore` 扫描所有文档,提取需求点
+- 用 `docx` / `xlsx` / `pdf` 技能解析非 markdown 格式
+- 汇总需求清单,标注来源文件和关键段落
+
+**路径 B:代码库探索**
+- 用 `Explore` 子智能体做广域代码库扫描,理解现有架构和依赖关系
+- 用 `openspec view` 看现有规范和变更
 - 必要时用 `WebSearch` / `WebFetch` 查外部资料
 
-### 2. 多轮交互 ask user 4~6 questions
-基于探索结果，主动抛出 4-6 个关键问题（边界、优先级、约束、不想碰的东西、deadline、现有系统里你不知道的细节）。这一轮聚焦在「理解问题」，不在解决方案上——和用户来回对话，直到双方对「问题是什么、往哪个方向解」达成初步共识。
+**路径 C:Bug 分析**
+- 读取 bug 描述、日志、堆栈跟踪
+- 用 `Grep` / `Glob` 定位相关代码
+- 如果是前端问题,用 Chrome DevTools / Playwright 检查控制台和网络
+- 如果是移动端问题,用 android-emulator / ios-simulator 技能读取日志和截图
 
-### 3. 抛出初步思路
-基于共识，主动抛出 2-3 个方向草图（文字描述 + 各自的 trade-off）。
+三条路径可并行采集,不互斥。
 
-### 4. 来回对话
-用户可能推翻你的假设、补充你没想到的约束、或者指出现有系统里有你不知道的东西。继续多轮交互。
+### 2. 统一分析
+无论走哪条路径,进入统一分析阶段:
 
-### 5. 再次对齐确认
-经过方向调整后，再次和用户确认「问题定义 + 推荐方向」达成共识。不要跳过这个确认就直接写文档。
+- **产品漏洞检查**:逻辑闭环、边界条件、异常流、用户场景覆盖
+- **需求拆解**:按模块/层次拆解,识别依赖关系和优先级
+- **现有代码对照**(路径 B/C):兼容性、影响面、技术债
+- **性能考量**(路径 C 或用户提及):瓶颈在哪、优化空间、trade-off
+- **设计模式建议**(路径 C 或重构场景):适用场景、模式选型、侵入程度
 
-### 6. 正式方案设计
-在共识基础上输出完整方案。
+输出:`需求/问题清单 + 拆解结构 + 关键风险`
 
-### 7. 画图（图文并茂，必须）
+### 3. 来回对齐
+基于分析结果,主动抛出 4-6 个关键问题(边界、优先级、约束、不想碰的东西、deadline、细节确认)。
+和用户来回对话,直到双方对「问题定义 + 方向」达成共识。
+
+### 4. 抛出初步思路
+基于共识,抛出 2-3 个方案草图(文字描述 + trade-off)。
+
+### 5. 来回对话
+用户可能推翻假设、补充约束、或指出现有系统里有你不知道的东西。继续多轮交互。
+
+### 6. 再次对齐确认
+再次和用户确认「问题定义 + 推荐方向」达成共识。不要跳过确认直接写文档。
+
+### 7. 正式方案设计
+在共识基础上输出完整方案。**所有方案必须包含设计模式建议和性能优化点**:
+- 背景与目标
+- 现有系统分析(如适用)
+- 方案设计(图文)
+- 接口/数据契约
+- 实施步骤
+- **设计模式建议**:适用场景 + 模式选型 + 侵入程度 + 迁移路径(即使是新功能也要考虑扩展性)
+- **性能优化点**:瓶颈分析 + 优化方案 + 预期收益(即使是小需求也要评估影响面)
+- 风险与 trade-off
+- 开放问题
+
+### 8. 画图（图文并茂，必须）
 使用 `diagram-design` 技能生成架构图、流程图、时序图、数据流图、ER 图等。
-常用类型：architecture、flowchart、sequence、data-flow、component、state-machine、erd。
-图产出后放在项目目录下的 `docs/design/` 或 `openspec/designs/`，并在设计文档中引用路径。
-如果设计方案涉及页面/UI，使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
-
-### 8. 写文档
-输出结构化设计文档，包含：背景与目标、现有系统分析、方案设计（图文）、接口/数据契约、实施步骤、风险与 trade-off、开放问题。
+常用类型:architecture、flowchart、sequence、data-flow、component、state-machine、erd。
+图产出后放在项目目录下的 `docs/design/` 或 `openspec/designs/`,并在设计文档中引用路径。
+如果设计方案涉及页面/UI,使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
 
 ### 9. 开 Change
-执行 `openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."`，在 `openspec/changes/<slug>/` 下写入 `proposal.md` 和 `design.md`，让设计方案进入可执行状态。
+执行 `openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."`,在 `openspec/changes/<slug>/` 下写入 `proposal.md` 和 `design.md`,让设计方案进入可执行状态。
+
+### 9.5. 触发测试策略(自动)
+Change 开后,自动调用 `ztest` skill 为该 change 产出测试计划:
+- ztest 读 `proposal.md` + `design.md` + `tasks.md`
+- 在 `design.md` 末尾追加 `## 测试策略` 章节(分层策略/覆盖率目标/测试数据/边界异常并发)
+- 在 `tasks.md` 每个 task 后面追加测试验收标准
+- 测试策略是方案的**必要组成部分**,不是可选项
 
 ### 10. 交付
-列出「设计方案 + 关键图 + 推荐方案 + 开放问题 + openspec change 路径」，交给用户决策。
+列出「设计方案 + 关键图 + 推荐方案 + 开放问题 + openspec change 路径」,交给用户决策。
 
 ## 输出格式
 ## 背景与目标
 <一段话说明为什么要做这个设计>
 
+## 需求/问题清单
+<从文档或 bug 中提取的需求点/问题点,标注来源>
+
 ## 现有系统分析
-- <现有架构的关键组件和依赖关系>
-- <已知限制或技术债>
+<现有架构的关键组件和依赖关系,有改动的才写>
 
 ## 方案设计
 ### 方案 A：<名称>
@@ -80,6 +134,12 @@ description: "Use when the user wants to design a solution — technical archite
 2. <步骤 2>
 ...
 
+## 性能优化点
+<瓶颈分析 + 优化方案 + 预期收益>
+
+## 设计模式建议
+<适用场景 + 模式选型 + 侵入程度 + 迁移路径>
+
 ## 风险与 Trade-off
 - <风险 1>：<缓解措施>
 - <开放问题 1>：<需要用户确认的点>
@@ -87,7 +147,7 @@ description: "Use when the user wants to design a solution — technical archite
 ## 图示索引
 | 图 | 路径 | 说明 |
 |---|---|---|
-| <架构图> | <路径> | <说明> |
+| <架构图> | <路径> | <说明什么> |
 
 ## OpenSpec Change
 - <change 路径：openspec/changes/<slug>/proposal.md>
@@ -99,3 +159,4 @@ description: "Use when the user wants to design a solution — technical archite
 4. 遇到安全、合规、性能敏感的设计点，明确标注为「需确认」。
 5. 不编造不存在的 API 或框架能力——不确定的先查，查不到就写「待确认」。
 6. 方案输出后开 openspec change 进入可执行状态，不等于自己开始实施。
+7. Bug 分析场景只出修复方案，不实施修复——修复由 craftsman 或主智能体执行。

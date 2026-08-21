@@ -28,7 +28,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
-预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
+预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4190,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
 产出根统一为 `.zdev/`;具体路径由 zdashboard 中用户选择的目录决定。
 
