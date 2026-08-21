@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-SKILLS=("zdesign" "zgoal" "zreview" "zview" "zapply")
+SKILLS=("zdesign" "zgoal" "zreview" "zview" "zapply" "zarchitect" "zdebug" "zdoc" "ztest")
 PASS=0
 FAIL=0
 TOTAL=0
@@ -120,10 +120,10 @@ for skill in "${SKILLS[@]}"; do
       else
         ok "no ZenTao mention (zdesign)"
       fi
-      if grep -q 'npx zdashboard@latest --mode design' "$f"; then
-        ok "zdashboard design mode present"
+      if grep -q 'npx zdashboard@latest --dir' "$f"; then
+        ok "zdashboard launch command present"
       else
-        bad "zdashboard design mode missing"
+        bad "zdashboard launch command missing"
       fi
       if grep -q 'getdesign' "$f"; then
         ok "getdesign reference present"
@@ -142,10 +142,10 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "zentao-api.md not referenced"
       fi
-      if grep -q 'npx zdashboard@latest --mode bugs' "$f"; then
-        ok "zdashboard bugs mode present"
+      if grep -q 'npx zdashboard@latest --dir' "$f"; then
+        ok "zdashboard launch command present"
       else
-        bad "zdashboard bugs mode missing"
+        bad "zdashboard launch command missing"
       fi
       if grep -q 'gh pr create' "$f"; then
         ok "gh pr create present"
@@ -159,37 +159,37 @@ for skill in "${SKILLS[@]}"; do
       fi
       ;;
     zreview)
-      if grep -q 'npx zdashboard@latest --mode review' "$f"; then
-        ok "zdashboard review mode present"
+      if grep -q 'npx zdashboard@latest --dir' "$f"; then
+        ok "zdashboard launch command present"
       else
-        bad "zdashboard review mode missing"
+        bad "zdashboard launch command missing"
       fi
       if grep -q 'review.yaml' "$f"; then
         ok "review.yaml mentioned"
       else
         bad "review.yaml missing"
       fi
-      if grep -qE '\.zreview' "$f"; then
-        ok ".zreview directory mentioned"
+      if grep -qE '\.zdev' "$f"; then
+        ok ".zdev directory mentioned"
       else
-        bad ".zreview directory missing"
+        bad ".zdev directory missing"
       fi
       ;;
     zview)
-      if grep -q 'npx zdashboard@latest --mode view' "$f"; then
-        ok "zdashboard view mode present"
+      if grep -q 'npx zdashboard@latest --dir' "$f"; then
+        ok "zdashboard launch command present"
       else
-        bad "zdashboard view mode missing"
+        bad "zdashboard launch command missing"
       fi
       if grep -qE 'justfile|just --list' "$f"; then
         ok "justfile/log streaming mentioned"
       else
         bad "justfile/log streaming missing"
       fi
-      if grep -qE '\.zgoal/config\.yaml' "$f"; then
-        ok ".zgoal/config.yaml mentioned"
+      if grep -qE '\.zdev/config\.yaml' "$f"; then
+        ok ".zdev/config.yaml mentioned"
       else
-        bad ".zgoal/config.yaml missing"
+        bad ".zdev/config.yaml missing"
       fi
       if grep -qE 'openspec|docs/' "$f"; then
         ok "project detection (openspec/docs) mentioned"
@@ -240,6 +240,18 @@ for skill in "${SKILLS[@]}"; do
       fi
       ;;
   esac
+
+  # 5. global conventions (all skills)
+  if grep -qE '\-\-mode ' "$f"; then
+    bad "--mode flag must not appear (zdashboard is mode-less now)"
+  else
+    ok "no --mode flag"
+  fi
+  if grep -qE '\.zgoal|\.zreview|\.zdesign/' "$f"; then
+    bad "legacy dot-dir (.zgoal/.zreview/.zdesign) must be .zdev"
+  else
+    ok "no legacy dot-dir"
+  fi
 done
 
 # ---------- summary ----------
