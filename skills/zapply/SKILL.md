@@ -124,7 +124,11 @@ openspec archive <change-name> --yes
 
 ## 可视化进度(zdashboard)
 
-执行过程中可拉起 dashboard 看进度:
+执行过程中可拉起 dashboard 看进度。先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
+- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
+  - 用户选「直接使用」→ 沿用当前实例
+  - 用户选「重新拉最新版」→ 继续下面的启动流程
+- 不能访问 → 直接拉起最新版
 
 ```bash
 npx zdashboard@latest --mode apply --dir <项目根> --open

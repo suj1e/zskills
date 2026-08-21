@@ -6,18 +6,24 @@ description: "Use when the user wants to view/browse a project's technical docs 
 
 # zview
 
-项目洞察 skill:**先拉起 zdashboard → 再看方案文档 + 服务实时日志**。
+项目洞察 skill:**拉起 zdashboard → 看方案文档 + 服务实时日志**。
 
 定位与 zdesign 对称:`zdesign` 看设计产出,`zview` 看项目本身(方案 + 运行)。
 
 ## 工作流
 
-### 1. 立即拉起 dashboard
-**先于一切**,直接执行:
+### 1. 检查/拉起 dashboard
+先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
+- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
+  - 用户选「直接使用」→ 沿用当前实例
+  - 用户选「重新拉最新版」→ 继续下面的启动流程
+- 不能访问 → 直接拉起最新版
+
+拉起:
 ```bash
 npx zdashboard@latest --mode view --dir <项目根> --open
 ```
-默认端口 4190;占用自动顺延。把 URL 给用户,让用户看到界面。
+默认端口 4190;占用自动顺延。把 URL 给用户。
 
 ### 2. 探测项目(cwd)
 在拉起 dashboard 的同时或之后,探测项目结构:

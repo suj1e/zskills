@@ -12,8 +12,14 @@ bug 修复闭环 skill:**先拉起 zdashboard → 禅道看 bug(只读)→ opens
 
 ## 工作流
 
-### 1. 立即拉起 dashboard
-**先于一切**,直接执行:
+### 1. 检查/拉起 dashboard
+先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
+- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
+  - 用户选「直接使用」→ 沿用当前实例
+  - 用户选「重新拉最新版」→ 继续下面的启动流程
+- 不能访问 → 直接拉起最新版
+
+拉起:
 ```bash
 npx zdashboard@latest --mode view --dir <项目根> --open
 ```
@@ -37,11 +43,10 @@ npx zdashboard@latest --mode bugs --dir <项目根> --open
 ```
 (如果第 1 步起的实例还在跑,直接复用同一实例切换 mode 即可)
 
-### 3. 看 bug(只读)
 按 `references/zentao-api.md`:取 token → `GET /products/{product}/bugs`,让用户在「Bugs」视图里看和筛(「我的」= 指派给自己的,默认选中)。会话里给一句汇总(如"23 条,我的 8 · active 15 / resolved 6 / closed 2")并问用户挑哪个(或直接给 bug ID)。
 
 ### 4. 开目标(openspec)
-拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec new change fix-<bugID>-<slug> --description "<bug 标题>"`,否则手建):
+拉 bug 详情,建 change `openspec/changes/fix-<bugID>-<slug>/`(CLI 可用则 `openspec change new`,否则手建):
 - **proposal.md**:bug 复述 + 禅道链接(`{url}/bug-view-{id}.html`)+ 根因分析
 - **design.md**:修复方案 + 取舍
 - **tasks.md**:checkbox 任务清单(能独立验证的粒度)
@@ -58,7 +63,7 @@ openspec 进度 + bug 列表一站看(需 zdashboard ≥ 1.0.0;旧版降级为�
 
 ### 7. 开 PR
 push → `gh pr create`,body 含:bug 链接、change 路径、tasks 完成度(如 `3/5`)。
-**合并后提示用户**:禅道手动关 bug(本 skill 纯只读)+ `openspec archive <change> --yes` 归档。
+**合并后提示用户**:禅道手动关 bug(本 skill 纯只读)+ `openspec archive` 归档。
 
 ## 边界
 - **禅道只读**:绝不调写接口(创建 / 解决 / 关闭 / 激活 / 评论 bug 一律不做)

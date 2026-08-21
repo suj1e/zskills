@@ -6,18 +6,24 @@ description: "Use when the user wants to write/align product or technical docs -
 
 # zreview
 
-文档对齐 skill:**先拉起 zdashboard → 再起草/评审 → 逐项对齐 → 通过**。
+文档对齐 skill:**拉起 zdashboard → 再起草/评审 → 逐项对齐 → 通过**。
 
 定位对称:`zdesign` 出设计、`zview` 看项目,zreview 管"写文档并对齐"。
 
 ## 工作流
 
-### 1. 立即拉起评审台
-**先于一切**,直接执行:
+### 1. 检查/拉起评审台
+先检查 zdashboard 是否已在运行(访问 `http://localhost:4190/__config`):
+- 能访问 → 已有实例在运行,询问用户:「检测到 zdashboard 已在运行,直接使用现有实例还是重新拉最新版?」
+  - 用户选「直接使用」→ 沿用当前实例
+  - 用户选「重新拉最新版」→ 继续下面的启动流程
+- 不能访问 → 直接拉起最新版
+
+拉起:
 ```bash
 npx zdashboard@latest --mode review --dir .zreview --open
 ```
-默认端口 4200。给用户 URL,让用户看到评审台界面。
+默认端口 4200。给用户 URL。
 
 ### 2. 收文档
 在 dashboard 运行的同时或之后:
