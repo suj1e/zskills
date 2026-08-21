@@ -93,8 +93,19 @@ description: "Use when the user wants to design a solution — technical archite
 ### 9. 开 Change
 执行 `openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."`,在 `openspec/changes/<slug>/` 下写入 `proposal.md` 和 `design.md`,让设计方案进入可执行状态。
 
+**大方案拆多 change**:方案规模大 / 模块边界清晰 / 可独立交付时,拆成多个 change 而不是塞一个巨型 change:
+- 命名用同前缀分组:`2026-08-21-auth-core` / `2026-08-21-auth-api` / `2026-08-21-auth-ui`
+- 拆分粒度:一个 change = 一个可独立验证、可独立归档的交付单元
+- **依赖标注**:有前置关系的 change,在其 `proposal.md` 写一节:
+
+```markdown
+## 依赖
+- 前置:openspec/changes/2026-08-21-auth-core/(本 change 基于其数据模型)
+```
+- 无依赖关系的 change 天然可并行,交给 zapply 并行编排(见 zapply「多 change 并行编排」)
+
 ### 9.5. 触发测试策略(自动)
-Change 开后,自动调用 `ztest` skill 为该 change 产出测试计划:
+Change 开后,自动调用 `ztest` skill 为**每个** change 产出测试计划(多 change 时逐个处理):
 - ztest 读 `proposal.md` + `design.md` + `tasks.md`
 - 在 `design.md` 末尾追加 `## 测试策略` 章节(分层策略/覆盖率目标/测试数据/边界异常并发)
 - 在 `tasks.md` 每个 task 后面追加测试验收标准

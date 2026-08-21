@@ -17,6 +17,7 @@ OpenSpec 执行闭环 skill:**需求 → 主智能体开 change → craftsman �
 **入口分流**:
 - 用户给**需求描述** → 主智能体从头开 change(下方 A)
 - 用户给**已有 change 路径** → 跳过开 change,直接进第 2 步
+- 用户给**多个 change / 一个前缀**(方案拆分的产物) → 走「多 change 并行编排」
 - 需求**复杂**(多模块/架构级/需要方案设计)→ 建议先走 `zarchitect` 出方案再回来执行
 
 **A. 开 change**(`openspec/` 不存在先 `openspec init`):
@@ -112,14 +113,36 @@ openspec archive <change-name> --yes
 
 提示一句:"需要开 PR / merge 分支请说一声"(zapply 止于 archive,不开 PR)。
 
+## 多 change 并行编排
+
+方案商讨后常会开出多个 change(zarchitect 拆分产物),彼此独立或有限定依赖,可并行推进。编排规则:
+
+### 1. 依赖拓扑分批
+- 读各 change `proposal.md` 的「## 依赖」声明(zarchitect 拆分时写入)
+- 按拓扑排序分批:**无依赖的一批并行,有依赖的等前置归档后进下一批**
+- 依赖缺失(前置 change 未存在/未归档)→ 该 change 挂起并告知用户,不阻塞无依赖的
+
+### 2. 并行度与冲突控制
+- **默认并行度 2**(同时最多 2 个 craftsman),用户可指定更高/串行
+- 下发前**冲突预警**:粗比对各 change `tasks.md` 涉及的模块/文件路径,有重叠的强制串行(重叠 → 后者等前者归档)
+- 每个 change 完全独立:独立分支、独立 TDD 循环、独立三门禁、独立归档,互不掺和
+
+### 3. 批间衔接
+- 前置 change 归档后,释放依赖它的下一批
+- 下发有依赖的 change 时,把前置 change 的 `design.md` 摘要(数据模型/接口契约)注入 craftsman 的「方案约束」,避免接口对不上
+- 任何 change 门禁失败 → 按单 change 流程处理(重跑/手动修/中止),**不影响其他并行 change**
+
+### 4. 进度总览
+zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完成度,直接给用户 URL 一站看。
+
 ## 边界
 
 - **不碰禅道**(zgoal 的事)
 - **不直接写业务代码**,全部委托 craftsman
 - proposal/design 的生成与调整只在主智能体手里,craftsman 只执行
-- 核实 = openspec validate + code-reviewer **双门禁**;blocker 未清零不归档
+- 核实 = openspec validate + 测试策略核查 + code-reviewer **三门禁**;blocker 未清零不归档
 - verify 失败**不自动重试**,必须用户决策
-- **归档前双门禁必须全过**
+- **归档前三门禁必须全过**
 - 止于 archive,不开 PR、不 push
 
 ## 可视化进度(zdashboard)
