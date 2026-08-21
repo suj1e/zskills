@@ -74,7 +74,7 @@ openspec status --change <name>   # 查看阻塞项
 
 **3b. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):
 - **只读**审查分支 diff(相对 base),核对 12 维:设计约束、bug/边界/安全、架构合理性、原则与模式、硬编码/死代码、错误与资源、并发与事务、性能、测试与兼容、依赖与文档同步、风格整洁度、craftsman 报告属实
-- 输出按严重度分级:**blocker**(必须修才能归档)与 **suggestion**(不阻塞,交付时汇报)
+- 输出按严重度分级:**blocker**(优先修,清零才能归档)与 **suggestion**(同样下发修复,优先级次之;确实不该修的说明理由)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
 
 **3c. 主智能体汇总**:validate/status 结果 + code review 报告 + 抽查 diff 与 `git status`(分支干净、无游离文件)
@@ -83,11 +83,11 @@ openspec status --change <name>   # 查看阻塞项
 
 | 场景 | 处理 |
 |------|------|
-| validate 通过 + 无 blocker | → 第 4 步归档(suggestion 一并汇报给用户) |
+| validate 通过 + 无 blocker | → 第 4 步归档(suggestion 已修复或附不修理由,一并汇报给用户) |
 | 实施问题(任务未完成/测试失败/blocker) | 汇报差异 → 用户选:**重跑 craftsman(带修正上下文)/ 手动修 / 中止** |
 | 方案问题(需求理解偏差/设计本身有误) | **主智能体改 proposal.md / design.md / tasks.md** → 回到第 2 步 |
 
-**重跑 craftsman 必须带修正上下文**:上一轮核实差异(validate 结果 + code review blocker)+ 用户决策,结构化追加进 prompt,要求先解决指出的问题、报告时逐条回应。
+**重跑 craftsman 必须带修正上下文**:上一轮核实差异(validate 结果 + code review 全量条目——blocker 优先、suggestion 次之)+ 用户决策,结构化追加进 prompt,要求先 blocker 后 suggestion 逐条解决,报告时逐条回应。
 
 ### 4. 归档
 

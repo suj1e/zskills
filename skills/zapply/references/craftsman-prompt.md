@@ -41,12 +41,12 @@ zapply 第 2 步下发子智能体时使用。填充占位符(`<...>`)后,整体
 ```markdown
 ## 上一轮结果
 
-- 核实差异:<openspec validate 结果 + code review blocker 的具体位置>
+- 核实差异:<openspec validate 结果 + code review 全量条目——blocker 优先、suggestion 次之,各带「文件:行 + 问题」>
 - 用户决策:<方向——重跑 / 修某处 / 范围调整>
 
 ## 本轮要求
 
-1. 先解决上一轮指出的问题,再继续未完成任务
+1. 先解决 blocker,再处理 suggestion,最后继续未完成任务;suggestion 确实不该修的说明理由,不许静默跳过
 2. 报告时逐条回应上一轮差异:每项 = 已修 / 无法修(原因)/ 判定不属于本轮范围(理由)
 3. 其余执行原则与交付物同首次
 ```

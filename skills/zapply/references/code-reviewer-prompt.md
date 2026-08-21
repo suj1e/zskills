@@ -34,7 +34,7 @@ zapply 第 3 步核实阶段(3b),起 code-reviewer 子智能体时使用。填�
 按严重度分级,每条给「文件:行 + 问题 + 理由」:
 
 - **blocker**:必须修才能归档(bug / 安全问题 / 硬编码凭证 / 明显偏离方案约束 / 破坏性变更)
-- **suggestion**:不阻塞归档(风格 / 微优化 / 可读性)
+- **suggestion**:同样下发修复,优先级低于 blocker(风格 / 微优化 / 可读性);确实不该修的由 craftsman 说明理由
 
 没有 blocker 就明说"未发现 blocker",不要为了凑数报低价值问题(置信度过滤)。
 ```
@@ -43,5 +43,5 @@ zapply 第 3 步核实阶段(3b),起 code-reviewer 子智能体时使用。填�
 
 - **只读**:code-reviewer 不写任何文件,只返回审查报告;发现的问题由主智能体决定谁修
 - **独立**:审查者不偏袒 craftsman 的自报,也不受主智能体"希望通过"的心态影响
-- **门禁**:blocker 是归档硬门禁;suggestion 不阻塞,汇总给用户看
-- 用户选择"重跑 craftsman"时,blocker 条目逐条进入重跑 prompt 的"上一轮结果"
+- **门禁**:blocker 是归档硬门禁;suggestion 不改变门禁,但同样下发 craftsman 修复,逐条处理(修复或说明理由)
+- 用户选择"重跑 craftsman"时,blocker + suggestion **全量**进入重跑 prompt 的"上一轮结果",标注优先级:blocker 先、suggestion 后
