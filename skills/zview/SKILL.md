@@ -1,7 +1,7 @@
 ---
 name: zview
 icon: "👁️"
-description: "Use when the user wants to view/browse a project's technical docs or specs — openspec proposals/designs/tasks, docs folder — or to run justfile recipes and watch live service logs, or to browse the read-only ZenTao (禅道) bug list when .zgoal/config.yaml exists. Detects openspec/docs/justfile/.zgoal in the project and launches zdashboard for structured spec preview plus real-time just log streaming (start/stop/restart) plus the Bugs view. For UI design artifacts preview use zdesign instead; for driving a bug to a fix/PR use zgoal."
+description: "Use when the user wants to view/browse a project's technical docs or specs — openspec proposals/designs/tasks, docs folder — or to run justfile recipes and watch live service logs, or to browse the read-only ZenTao (禅道) bug list when .zdev/config.yaml exists. Detects openspec/docs/justfile/.zdev in the project and launches zdashboard for structured spec preview plus real-time just log streaming (start/stop/restart) plus the Bugs view. For UI design artifacts preview use zdesign instead; for driving a bug to a fix/PR use zgoal."
 ---
 
 # zview
@@ -21,7 +21,7 @@ description: "Use when the user wants to view/browse a project's technical docs 
 
 拉起:
 ```bash
-npx zdashboard@latest --mode view --dir <项目根> --open
+npx zdashboard@latest --dir <项目根> --open
 ```
 默认端口 4190;占用自动顺延。把 URL 给用户。
 
@@ -30,9 +30,9 @@ npx zdashboard@latest --mode view --dir <项目根> --open
 - `openspec/` 存在 → 方案文档(openspec 结构感知:进行中 / archive / specs)
 - `docs/` 存在 → 文档聚合
 - `justfile` / `just --list` 可用 → 日志能力(recipes 启停 + 实时流)
-- `.zgoal/config.yaml` 存在 → 禅道 bug 列表能力(只读,需 zdashboard ≥ 1.0.0)
+- `.zdev/config.yaml` 存在 → 禅道 bug 列表能力(只读,需 zdashboard ≥ 1.0.0)
 
-把命中的能力告诉用户(如:"检测到 openspec + justfile + .zgoal,可看方案、日志和禅道 bug 列表")。
+把命中的能力告诉用户(如:"检测到 openspec + justfile + .zdev,可看方案、日志和禅道 bug 列表")。
 
 ### 3. 引导使用
 - 看方案:左侧文件树点 proposal.md / design.md / tasks.md
@@ -43,5 +43,5 @@ npx zdashboard@latest --mode view --dir <项目根> --open
 ## 边界
 - 只读预览,不解析方案内容、不改 openspec(归档等操作用 openspec CLI)
 - 日志仅内存本次会话,不做持久化
-- bug 数据只读来自禅道(凭据在 .zgoal/config.yaml,由 zgoal 管);修复动作(开 openspec / 开 PR)用 zgoal
+- bug 数据只读来自禅道(凭据在 `.zdev/config.yaml`,由 zgoal 管);修复动作(开 openspec / 开 PR)用 zgoal
 - 用户要"看设计原型/token 色板"时 → 用 zdesign

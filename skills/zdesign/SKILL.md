@@ -13,6 +13,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 - **设计系统驱动**:所有视觉决策(配色 / 字体 / 圆角 / 间距)来自选定的 `DESIGN.md`,不自由发挥。
 - **完善交付,不是半成品**:产出必须过【约束】【细节】【验收】三道关,未全过则回炉。
 - **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖);实时预览由独立包 `zdashboard` 提供。
+- **统一输出根**:所有产出默认写入 `.zdev/`,目录选择在 zdashboard 中由用户自行操作,skill 不询问输出路径。
 
 ## 工作流
 
@@ -23,21 +24,16 @@ description: "Use when the user wants concrete UI/visual design produced — lan
   - 用户选「重新拉最新版」→ 继续下面的启动流程
 - 不能访问 → 直接拉起最新版
 
-确认产出根后执行:
+拉起:
 ```bash
-npx zdashboard@latest --mode design --dir <产出根> --open
+npx zdashboard@latest --dir <项目根> --open
 ```
 预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。端口默认 4173,被占用自动顺延(`--port` 可指定),多项目并行不冲突。
 
-产出根确认规则:
-- **独立设计** -> 产出根 = `cwd`(整个文件夹就是为设计而生)
-- **已有项目**(默认)-> 产出根 = `cwd/.zdesign/`(隔离,不污染项目)
-- **自定义** -> 用户填的任意路径(cwd 不是项目根时用这个填项目根)
-
-产出根确定后本次会话沿用,不写持久配置;产出根已存在 / 非空时只写入新文件,不清空。
+产出根统一为 `.zdev/`;具体路径由 zdashboard 中用户选择的目录决定。
 
 ### 2. 确认任务
-再确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
+确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
 
 ### 3. 选风格(动态发现,可插拔源)
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
@@ -59,10 +55,10 @@ npx -y getdesign@latest add <brand-slug>
 ### 5. token → CSS 变量(或图表语义角色)
 UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。参考 `assets/templates/starter.html` 的映射范式。
 
-图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `<产出根>/diagram-style.md`——见下方【图表(diagram)场景】。
+图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `.zdev/diagram-style.md`——见下方【图表(diagram)场景】。
 
 ### 6. 按约束产出 + 打磨细节
-遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入产出根(第 1 步确认的)。预览已在第 1 步启动,每次保存自动刷新,边写边看。
+遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/`。预览已在第 1 步启动,每次保存自动刷新,边写边看。
 
 ### 7. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 6 步修,过了才交付。**

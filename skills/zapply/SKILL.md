@@ -131,7 +131,7 @@ openspec archive <change-name> --yes
 - 不能访问 → 直接拉起最新版
 
 ```bash
-npx zdashboard@latest --mode apply --dir <项目根> --open
+npx zdashboard@latest --dir <项目根> --open
 ```
 
 面板展示:进行中的 change 卡片(名称 + 任务完成度百分比) + 点击展开 proposal/design/tasks 全文。文件变更即时刷新。
