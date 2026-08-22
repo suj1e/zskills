@@ -176,11 +176,14 @@ zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完�
 
 ## 可视化进度(zdashboard)
 
-执行过程中可拉起 dashboard 看进度(zdashboard CLI 查 `.zdev/dashboard.json`:同目录已有活实例直接复用;强制重开加 `--restart`):
+执行过程中可拉起 dashboard 看进度(zdashboard CLI 查 `.zdev/dashboard.json`):
 
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
+
+- 同目录已有活实例:直接复用并打开(**exit 0,非失败**,勿当异常重试)
+- 实例已死或无记录:自动起新实例;强制重开(升级 zdashboard 后**必须加**):`--restart`
 
 面板展示:进行中的 change 卡片(名称 + 任务完成度百分比) + 点击展开 proposal/design/tasks 全文。文件变更即时刷新。
 

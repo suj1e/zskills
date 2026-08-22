@@ -13,14 +13,18 @@ description: "Use when the user wants to view/browse a project's technical docs 
 ## 工作流
 
 ### 1. 拉起 dashboard
-直接执行(zdashboard CLI 查 `.zdev/dashboard.json` 记录:同目录已有活实例直接复用,死了/没有才起新的,端口占用自动顺延):
+直接执行:
 
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
+
+- 同目录已有活实例:直接复用并打开(**exit 0,非失败**——skill 判断启动成败时,复用不算异常,勿重试)
+- 实例已死或无记录:自动起新实例,端口占用自动顺延
+- 强制重开(升级 zdashboard 后**必须加**,否则仍用旧版进程):`--restart`;`--page` 与复用兼容,直达对应工作区
+
 把 URL 给用户。
 
-要强制重开(如换最新版):加 `--restart`。
 ### 2. 探测项目(cwd)
 在拉起 dashboard 的同时或之后,探测项目结构:
 - `openspec/` 存在 → 方案文档(openspec 结构感知:进行中 / archive / specs)

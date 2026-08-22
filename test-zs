@@ -277,10 +277,10 @@ done
 # ---------- dashboard 复用协议(dashboard 启动 skill 必须文档化) ----------
 for skill in zdesign zgoal zreview zview zapply; do
   f="$ROOT/skills/$skill/SKILL.md"
-  if grep -q 'dashboard.json' "$f"; then
-    ok "[$skill] instance record (.zdev/dashboard.json) documented"
+  if grep -q 'exit 0' "$f"; then
+    ok "[$skill] reuse exit-0 semantics documented"
   else
-    bad "[$skill] instance record not documented"
+    bad "[$skill] reuse exit-0 semantics missing"
   fi
   if grep -q '\-\-restart' "$f"; then
     ok "[$skill] --restart documented"
