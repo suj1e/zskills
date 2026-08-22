@@ -18,11 +18,12 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 ## 工作流
 
 ### 1. 拉起实时预览
-直接执行(同目录已有实例时由 zdashboard CLI 自行复用,端口占用自动顺延):
+直接执行(zdashboard CLI 查 `.zdev/dashboard.json` 记录:同目录已有活实例直接复用,死了/没有才起新的,端口占用自动顺延):
 
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
+要强制重开(如换最新版):加 `--restart`。
 预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。多项目并行不冲突(`--port` 可指定)。
 
 产出根统一为 `.zdev/`;具体路径由 zdashboard 中用户选择的目录决定。

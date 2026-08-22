@@ -274,6 +274,21 @@ for skill in "${SKILLS[@]}"; do
   fi
 done
 
+# ---------- dashboard 复用协议(dashboard 启动 skill 必须文档化) ----------
+for skill in zdesign zgoal zreview zview zapply; do
+  f="$ROOT/skills/$skill/SKILL.md"
+  if grep -q 'dashboard.json' "$f"; then
+    ok "[$skill] instance record (.zdev/dashboard.json) documented"
+  else
+    bad "[$skill] instance record not documented"
+  fi
+  if grep -q '\-\-restart' "$f"; then
+    ok "[$skill] --restart documented"
+  else
+    bad "[$skill] --restart missing"
+  fi
+done
+
 # ---------- summary ----------
 say ""
 say "== summary =="

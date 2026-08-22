@@ -176,7 +176,7 @@ zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完�
 
 ## 可视化进度(zdashboard)
 
-执行过程中可拉起 dashboard 看进度(同目录已有实例时由 zdashboard CLI 自行复用,端口占用自动顺延):
+执行过程中可拉起 dashboard 看进度(zdashboard CLI 查 `.zdev/dashboard.json`:同目录已有活实例直接复用;强制重开加 `--restart`):
 
 ```bash
 npx zdashboard@latest --dir <项目根> --open

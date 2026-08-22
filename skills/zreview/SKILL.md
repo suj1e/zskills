@@ -13,13 +13,14 @@ description: "Use when the user wants to write/align product or technical docs -
 ## 工作流
 
 ### 1. 拉起评审台
-直接执行(同目录已有实例时由 zdashboard CLI 自行复用,端口占用自动顺延):
+直接执行(zdashboard CLI 查 `.zdev/dashboard.json` 记录:同目录已有活实例直接复用,死了/没有才起新的,端口占用自动顺延):
 
 ```bash
 npx zdashboard@latest --dir <项目根> --open
 ```
 给用户 URL。
 
+要强制重开(如换最新版):加 `--restart`。
 ### 2. 收文档
 在 dashboard 运行的同时或之后:
 - 用户已有文档 -> 用它(确认放评审目录,默认 `.zdev/`)
