@@ -30,6 +30,18 @@ description: "Use when the user wants to review and decompose a batch of documen
 
 汇总文档清单(文件名 + 类型 + 大小),展示给用户确认。用户可剔除不需要的文档。
 
+**路径 D:代码-文档对齐**(可选,当用户提供项目路径时触发):
+
+用户提供项目根目录,可能包含**多个子仓库**(monorepo / 前后端分离 / 多服务 / 多端 SDK)。
+
+1. **发现子仓库**:扫描根目录下的 `.git` 目录、`package.json`、`go.mod`、`pom.xml`、`Cargo.toml` 等标识,识别独立仓库
+2. **确认扫描范围**:列出发现的所有仓库,让用户确认:"全扫 / 只扫 A,B / 排除 C"
+3. **逐仓库扫描**:每个仓库独立用 `code-explorer` 子智能体扫描,提取"代码实际行为"摘要(入口点、接口签名、核心流程、数据模型)
+4. **跨仓库汇总**:按仓库维度汇总代码行为,进入后续对比流程
+
+**单仓库场景**:用户给单个项目路径,直接进入步骤 3。
+**无文档纯代码场景**:用户不给文档只给代码,zreview 从代码反推"应该写什么文档",产出缺口清单。
+
 ### 2. 扫描解析
 
 逐份解析,输出到 `.zreview/docs/` 目录:
@@ -76,10 +88,29 @@ npx zdashboard@latest --mode review --dir .zreview --open
 
 ```yaml
 status: reviewing
-summary: "扫描 5 份文档,提取 23 个需求点,发现 4 处冲突、7 处缺口、3 处歧义"
+summary: "扫描 5 份文档 + 3 个仓库,提取 23 个需求点,发现 4 处冲突、7 处缺口、3 处歧义"
+
+documents:
+  - id: doc-1
+    path: docs/brief.md
+    title: "产品 brief"
+    type: markdown
+    parsedAt: "2026-08-24T10:00:00Z"
+
+codebases:
+  - id: repo-1
+    path: packages/frontend
+    title: "前端仓库"
+    type: react
+    summary: "基于 React 18 + Vite,核心入口 src/App.tsx,包含用户管理、订单模块..."
+  - id: repo-2
+    path: services/api
+    title: "API 服务"
+    type: nodejs
+    summary: "Express + TypeScript,核心路由 src/routes/,包含用户、订单、支付接口..."
 
 items:
-  # 冲突:两篇以上文档对同一事实/需求表述矛盾
+  # 冲突:两篇以上文档对同一事实/需求表述矛盾,或文档与代码不一致
   - id: c1
     type: conflict
     severity: high
@@ -93,7 +124,7 @@ items:
     question: "确认目标用户范围?"
     answer: ""
 
-  # 缺口:文档提到功能/需求但未定义清楚
+  # 缺口:文档提到功能/需求但未定义清楚,或代码有行为但文档未提及
   - id: g1
     type: gap
     severity: medium
@@ -151,6 +182,9 @@ diagrams:
   - path: diagrams/issues.html
     title: "问题分布图"
     type: bar
+  - path: diagrams/code-gap.html
+    title: "文档-代码差距图"
+    type: quadrant
 ```
 
 **类型定义:**
@@ -185,10 +219,20 @@ diagrams:
 - 文件名: `.zreview/diagrams/issues.html`
 - 展示问题类型分布和严重度
 
-**图 3: 需求全景图** (requirements overview, 可选)
-- 如果文档涉及系统架构/数据流,使用 diagram-design 生成架构图/数据流图
-- 文件名: `.zreview/diagrams/overview.html`
-- 根据文档内容选择合适类型:architecture / data-flow / sequence 等
+**图 3: 文档-代码差距图** (code-gap matrix, 当有 codebases 时必须有)
+- 使用 diagram-design 的 **quadrant** 或 **architecture** 类型
+- 文件名: `.zreview/diagrams/code-gap.html`
+- 展示"文档声称 vs 代码实际"的差距矩阵:
+  - X 轴:文档覆盖度(高/低)
+  - Y 轴:代码复杂度(高/低)
+  - 四个象限:✅ 已对齐 / ⚠️ 文档不足 / 🔴 代码未实现 / 📝 文档虚报
+- 或使用 architecture 类型展示跨仓库架构图,标注每个仓库的实际行为与文档描述的差异
+
+**图 4: 跨仓库架构图** (multi-repo architecture, 有多个 codebases 时必须有)
+- 使用 diagram-design 的 **architecture** 或 **data-flow** 类型
+- 文件名: `.zreview/diagrams/architecture.html`
+- 展示各仓库的依赖关系、数据流、接口契约
+- 标注哪些部分文档已覆盖、哪些是文档盲区
 
 在 review.yaml 末尾追加 diagrams 节:
 
@@ -200,6 +244,12 @@ diagrams:
   - path: diagrams/issues.html
     title: "问题分布图"
     type: bar
+  - path: diagrams/code-gap.html
+    title: "文档-代码差距图"
+    type: quadrant
+  - path: diagrams/architecture.html
+    title: "跨仓库架构图"
+    type: architecture
 ```
 
 ### 6. 引导对齐
