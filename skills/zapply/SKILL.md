@@ -1,7 +1,7 @@
 ---
 name: zapply
 icon: "⚙️"
-description: "Use when the user wants to drive an openspec change to completion — take a requirement (or an existing change) and run the execution loop: main agent opens the change (proposal/design/tasks), delegates implementation to the craftsman agent, verifies with openspec validate/status, and archives on success. Use when the user says 'implement this', '把需求落地', '跑一下这个 change', '执行 #4'. For ZenTao bug-driven fixes use zgoal; for viewing specs/logs use zview; for design artifacts use zdesign."
+description: "Use when the user wants to drive an openspec change to completion — take a requirement (or an existing change) and run the execution loop: main agent opens the change (proposal/design/tasks), delegates implementation to the craftsman agent, verifies with openspec validate/status, and archives on success. Use when the user says 'implement this', '把需求落地', '跑一下这个 change', '执行 #4', '批量执行', 'batch'. For ZenTao bug-driven fixes use zgoal; for viewing specs/logs use zview; for design artifacts use zdesign."
 ---
 
 # zapply
@@ -141,7 +141,54 @@ openspec archive <change-name> --yes
 - 修改文件:n 个
 ```
 
-## 多 change 并行编排
+## zapply batch 子模式
+
+当用户有**多个待执行变更**（方案拆分产物、迭代需求集等）时，使用 `batch` 子模式自动编排执行。
+
+### 入口
+
+```bash
+zapply batch [--parallel N] [--continue] [--retry <name>] [--skip <name>] [--status] [--pause] [--resume]
+```
+
+### 完整流程（按 `references/batch-prompt.md` 执行）
+
+1. **扫描**：扫描 `openspec/changes/` 下所有未归档变更
+2. **分析**：提取依赖、检测文件冲突、识别风险项
+3. **确认**：展示执行计划（依赖图 + 批次 + 风险项），等待用户确认
+4. **执行**：按批次并行调度 craftsman，后台执行
+5. **监控**：实时读取 checkpoint 进度，处理异常
+6. **归档**：验证通过后自动 archive
+7. **报告**：生成执行报告
+
+### 关键机制
+
+| 机制 | 说明 |
+|------|------|
+| **依赖拓扑排序** | 读取 `proposal.md` 的 `## 依赖` 节，自动分层 |
+| **冲突预检测** | 扫描 `design.md` / `tasks.md` 涉及的文件路径，提前发现冲突 |
+| **Checkpoint** | 记录每个 task 级进度，支持断点续跑 |
+| **失败隔离** | 单个 change 失败不影响其他，自动标记并继续 |
+| **自动重试** | 失败自动重试 2 次（可配置） |
+| **状态持久化** | `.zapply/batch-state.json` 记录全局状态 |
+
+### Craftsman 批量模式
+
+batch 模式下使用 `references/craftsman-batch-prompt.md` 代替普通模板。craftsman 需要在每完成一个 task 后汇报 `[CHECKPOINT]` 进度，全部完成后汇报 `[DONE]` 或 `[BLOCKED]`。
+
+### 边界
+
+- **默认全自动**：启动后自动分析、自动执行，只在关键决策点停下来确认
+- **后台运行**：不阻塞会话，可通过 `--status` 查看进度
+- **失败不阻塞**：单个 change 失败不影响其他，自动重试 2 次后仍失败才通知
+- **parked 项**：高风险项（依赖不明确、影响范围大）自动标记为 parked，需用户确认后执行
+- **止于 archive**：不开 PR、不 push
+
+---
+
+## 多 change 并行编排（旧版，保留参考）
+
+以下为历史文档，推荐使用 `zapply batch` 子模式替代。
 
 方案商讨后常会开出多个 change(zarchitect 拆分产物),彼此独立或有限定依赖,可并行推进。编排规则:
 
@@ -170,7 +217,8 @@ zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完�
 - **不直接写业务代码**,全部委托 craftsman
 - proposal/design 的生成与调整只在主智能体手里,craftsman 只执行
 - 核实 = openspec validate + 测试策略核查 + code-reviewer **三门禁**;blocker 未清零不归档
-- verify 失败**不自动重试**,必须用户决策
+- **单 change 模式**：verify 失败**不自动重试**,必须用户决策
+- **batch 模式**：失败自动重试最多 2 次，仍失败才通知用户
 - **归档前三门禁必须全过**
 - 止于 archive,不开 PR、不 push
 

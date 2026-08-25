@@ -70,3 +70,4 @@ zapply 第 2 步下发子智能体时使用。填充占位符(`<...>`)后,整体
 - 分支命名 = change 名(如 `2026-08-20-add-export`),与 openspec change 同名,便于关联
 - 用户选择"手动修"时,主智能体自己修,不再下发 craftsman
 - 用户选择"中止"时,结束流程;分支保留,供后续恢复
+- **batch 模式**：使用 `craftsman-batch-prompt.md` 代替本模板，需要每完成一个 task 汇报 `[CHECKPOINT]` 进度

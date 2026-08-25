@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "zapply batch state",
+  "type": "object",
+  "required": ["version", "status", "changes", "batches", "currentBatchIndex", "parallelism", "logs", "updatedAt"],
+  "properties": {
+    "version": { "type": "string", "const": "1" },
+    "status": {
+      "type": "string",
+      "enum": ["idle", "analyzing", "pending-approval", "running", "paused", "completed", "failed"],
+      "description": "idle: 未开始 / analyzing: 分析依赖中 / pending-approval: 等待用户确认 / running: 执行中 / paused: 用户暂停 / completed: 全部完成 / failed: 全局失败"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "path", "status", "priority", "risk"],
+        "properties": {
+          "name": { "type": "string" },
+          "path": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "completed", "failed", "parked", "skipped"]
+          },
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "risk": { "type": "string", "enum": ["low", "medium", "high", "unknown"] },
+          "dependencies": { "type": "array", "items": { "type": "string" } },
+          "estimatedDuration": { "type": "integer", "description": "预估分钟数" },
+          "batchIndex": { "type": "integer" },
+          "checkpoint": {
+            "type": "object",
+            "properties": {
+              "currentTaskIndex": { "type": "integer" },
+              "totalTasks": { "type": "integer" },
+              "completedTasks": { "type": "integer" },
+              "currentTask": { "type": "string" }
+            }
+          },
+          "error": { "type": "string" },
+          "retryCount": { "type": "integer", "minimum": 0 },
+          "startedAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "batches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "changeNames", "status"],
+        "properties": {
+          "index": { "type": "integer" },
+          "changeNames": { "type": "array", "items": { "type": "string" } },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "completed", "failed"]
+          },
+          "startedAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "currentBatchIndex": { "type": "integer", "minimum": -1 },
+    "parallelism": { "type": "integer", "minimum": 1, "maximum": 8 },
+    "logs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "level", "message"],
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "level": { "type": "string", "enum": ["info", "warn", "error", "success"] },
+          "message": { "type": "string" },
+          "changeName": { "type": "string" }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["changeA", "changeB", "files"],
+        "properties": {
+          "changeA": { "type": "string" },
+          "changeB": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "resolution": { "type": "string", "enum": ["serialize", "merge", "ignore"] }
+        }
+      }
+    },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}
