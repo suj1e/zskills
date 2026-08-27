@@ -1,7 +1,7 @@
 ---
 name: zdesign
 icon: "🎨"
-description: "Use when the user wants concrete UI/visual design produced — landing pages, web app screens, app screens, components, or visual style exploration. Picks a design system, generates HTML/CSS that strictly follows it, self-verifies against quality gates, and delivers polished artifacts (never half-baked). Independent of OpenDesign. For design taste/guidance alone, frontend-design may suffice; use zdesign when actual design artifacts are needed. Also covers branded diagrams (architecture, flowchart, sequence, ER, state machine, SVG schematics) rendered in the chosen design system's style — use zdesign when diagrams must match the brand; plain unbranded diagrams route to diagram-design instead."
+description: "Use when the user wants concrete UI/visual design produced — landing pages, web app screens, app screens, components, or visual style exploration. Picks a design system, generates HTML/CSS that strictly follows it, self-verifies against quality gates, and delivers polished artifacts (never half-baked). Independent of OpenDesign. For design taste/guidance alone, frontend-design may suffice; use zdesign when actual design artifacts are needed. Also covers branded diagrams (architecture, flowchart, sequence, ER, state machine, SVG schematics) rendered in the chosen design system's style — use zdesign when diagrams must match the brand; plain unbranded diagrams route to diagram-design instead. Standalone graphic assets (logo, favicon/app icons, OG share images, banners, posters, illustrations) route to zasset instead."
 ---
 
 # zdesign
@@ -73,7 +73,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 
 ## 图表(diagram)场景
 
-**判据**:图表 + 品牌诉求(要匹配所选设计系统)→ zdesign 承接;纯图表无品牌诉求 → 让 diagram-design 独立处理,不抢。
+**判据**:图表 + 品牌诉求(要匹配所选设计系统)→ zdesign 承接;纯图表无品牌诉求 → 让 diagram-design 独立处理,不抢。**独立图形资产**(logo / favicon / banner / 海报 / 插画 / badge)既不是页面也不是图表 → 路由给 `zasset`,同样不抢。
 
 ### 视觉:token → 语义角色
 图表的视觉真相不是 CSS 变量,是**语义角色**(`paper`/`ink`/`muted`/`accent`/`link` + 字体三元组)。按 `references/diagram-style-mapping.md` 把选定 DESIGN.md 映射落盘为 `.zdev/design/diagram-style.md`(地位等同 DESIGN.md,同品牌复跑直接复用)。要点:

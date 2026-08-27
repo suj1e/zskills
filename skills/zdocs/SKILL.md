@@ -43,6 +43,7 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 
 **落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。
 涉及页面/UI 设计的转介 `zdesign` 产出带品牌风格的设计稿。
+文档需 **logo / favicon / banner / badge 等独立图形资产**时,引用 `zasset` 已产出的文件(`.zdev/design/assets/`);没有则建议用户先跑 zasset,不要现画。
 
 ### 5. 派发执笔（docswriter）
 组装**指令五要素**交给 `docswriter`(可后台执行):
@@ -100,3 +101,4 @@ git add <涉及文档与图> && git commit -m "docs: <主题>" && git push
 5. 代码示例必须与实际代码一致,手写示意必须显式标注。
 6. changelog 时间倒序,每条注明变更类型（feat / fix / refactor / docs 等）。
 7. 文档必须图文并茂——没有图的 README / 设计文档视为不完整。
+8. **图形资产不自制**——logo/banner/badge 类引用 zasset 产出并在嵌入时校验文件存在;擅自现画视为越界。

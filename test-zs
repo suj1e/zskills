@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-SKILLS=("zdesign" "zgoal" "zreview" "zview" "zapply" "zarchitect" "zdebug" "zdoc" "ztest")
+SKILLS=("zasset" "zapply" "zarchitect" "zdash" "zdesign" "zdocs" "ztest")
 PASS=0
 FAIL=0
 TOTAL=0
@@ -30,7 +30,6 @@ has_frontmatter() {
 yaml_val() {
   # extract top-level key value from frontmatter (simple regex)
   local file="$1" key="$2"
-  # match lines like: key: "value" or key: value (until next key or ---)
   awk -v k="$key" '
     BEGIN{found=0}
     /^---/{if(found){exit} else {found=1; next}}
@@ -77,6 +76,11 @@ for skill in "${SKILLS[@]}"; do
   dir="$ROOT/skills/$skill"
   f="$dir/SKILL.md"
 
+  if [[ ! -f "$f" ]]; then
+    bad "SKILL.md not found for skill in array: $skill"
+    continue
+  fi
+
   # 1. references exist if mentioned in SKILL.md
   if grep -qE 'references/[A-Za-z0-9_-]+\.md' "$f"; then
     while IFS= read -r ref; do
@@ -114,21 +118,58 @@ for skill in "${SKILLS[@]}"; do
 
   # 4. skill-specific rules
   case "$skill" in
+    zdash)
+      if grep -q 'npx zdashboard@latest --dir' "$f"; then
+        ok "zdashboard launch command present"
+      else
+        bad "zdashboard launch command missing"
+      fi
+      if grep -q 'exit 0' "$f"; then
+        ok "reuse exit-0 semantics documented"
+      else
+        bad "reuse exit-0 semantics missing"
+      fi
+      if grep -q '\-\-restart' "$f"; then
+        ok "--restart documented"
+      else
+        bad "--restart missing"
+      fi
+      if grep -qE '\.zdev/' "$f"; then
+        ok ".zdev output convention documented"
+      else
+        bad ".zdev output convention missing"
+      fi
+      if grep -qE '不写任何数据|Pure launcher|唯一职责' "$f"; then
+        ok "pure-launcher boundary stated"
+      else
+        bad "pure-launcher boundary missing"
+      fi
+      ;;
     zdesign)
       if grep -q 'zentao\|禅道' "$f"; then
         bad "zdesign must not mention ZenTao (禅道)"
       else
         ok "no ZenTao mention (zdesign)"
       fi
-      if grep -q 'npx zdashboard@latest --dir' "$f"; then
-        ok "zdashboard launch command present"
-      else
-        bad "zdashboard launch command missing"
-      fi
       if grep -q 'getdesign' "$f"; then
         ok "getdesign reference present"
       else
         bad "getdesign reference missing"
+      fi
+      if grep -qE '\.zdev/design/?["`/ ]' "$f"; then
+        ok ".zdev/design output root present"
+      else
+        bad ".zdev/design output root missing"
+      fi
+      if grep -q 'diagram-design' "$f"; then
+        ok "diagram-design routing present"
+      else
+        bad "diagram-design routing missing"
+      fi
+      if grep -q 'zasset' "$f"; then
+        ok "graphic assets routed to zasset"
+      else
+        bad "zasset routing missing"
       fi
       if grep -qE 'diagram-basics|diagram-style-mapping|quality-checklist' "$f"; then
         ok "diagram references present"
@@ -136,72 +177,60 @@ for skill in "${SKILLS[@]}"; do
         bad "diagram references missing"
       fi
       ;;
-    zgoal)
-      if grep -q 'references/zentao-api.md' "$f"; then
-        ok "zentao-api.md referenced"
+    zasset)
+      if grep -qE '\.zdev/design/assets' "$f"; then
+        ok ".zdev/design/assets output root present"
       else
-        bad "zentao-api.md not referenced"
+        bad ".zdev/design/assets output root missing"
       fi
-      if grep -q 'npx zdashboard@latest --dir' "$f"; then
-        ok "zdashboard launch command present"
+      if grep -qE 'brands/' "$f"; then
+        ok "shared brands/ source consumption present"
       else
-        bad "zdashboard launch command missing"
+        bad "brands/ source consumption missing"
       fi
-      if grep -q 'gh pr create' "$f"; then
-        ok "gh pr create present"
+      if grep -qE '临摹|原创性红线' "$f"; then
+        ok "originality red-line (no brand cloning) present"
       else
-        bad "gh pr create missing"
+        bad "originality red-line missing"
       fi
-      if grep -qE '只读|read-only' "$f"; then
-        ok "read-only guarantee mentioned"
+      if grep -qE '授权' "$f"; then
+        ok "font licensing notice present"
       else
-        bad "read-only guarantee missing"
+        bad "font licensing notice missing"
       fi
-      ;;
-    zreview)
-      if grep -q 'npx zdashboard@latest --dir' "$f"; then
-        ok "zdashboard launch command present"
+      if grep -qE '缩放测试|缩放到' "$f"; then
+        ok "scaling gate mentioned"
       else
-        bad "zdashboard launch command missing"
-      fi
-      if grep -q 'review.yaml' "$f"; then
-        ok "review.yaml mentioned"
-      else
-        bad "review.yaml missing"
-      fi
-      if grep -qE '\.zdev' "$f"; then
-        ok ".zdev directory mentioned"
-      else
-        bad ".zdev directory missing"
+        bad "scaling gate missing"
       fi
       ;;
-    zview)
-      if grep -q 'npx zdashboard@latest --dir' "$f"; then
-        ok "zdashboard launch command present"
+    zdocs)
+      if grep -q 'docswriter' "$f"; then
+        ok "docswriter delegation mentioned"
       else
-        bad "zdashboard launch command missing"
+        bad "docswriter delegation missing"
       fi
-      if grep -qE 'justfile|just --list' "$f"; then
-        ok "justfile/log streaming mentioned"
+      if grep -q 'diagram-design' "$f"; then
+        ok "diagram-design usage present"
       else
-        bad "justfile/log streaming missing"
+        bad "diagram-design usage missing"
       fi
-      if grep -qE '\.zdev/config\.yaml' "$f"; then
-        ok ".zdev/config.yaml mentioned"
+      if grep -q 'zasset' "$f"; then
+        ok "graphic assets sourced from zasset"
       else
-        bad ".zdev/config.yaml missing"
+        bad "zasset sourcing missing"
       fi
-      if grep -qE 'openspec|docs/' "$f"; then
-        ok "project detection (openspec/docs) mentioned"
+      if grep -q 'git commit' "$f"; then
+        ok "commit+push delivery present"
       else
-        bad "project detection missing"
+        bad "commit+push delivery missing"
       fi
       ;;
     zapply)
-      if grep -q 'openspec new change' "$f"; then
-        ok "openspec new change present"
+      if grep -qE 'route to zarchitect|路由.*zarchitect' "$f"; then
+        ok "no-change-yet routing to zarchitect present"
       else
-        bad "openspec new change missing"
+        bad "no-change-yet routing missing"
       fi
       if grep -q 'openspec validate' "$f"; then
         ok "openspec validate present (verify stage)"
@@ -274,18 +303,20 @@ for skill in "${SKILLS[@]}"; do
   fi
 done
 
-# ---------- dashboard 复用协议(dashboard 启动 skill 必须文档化) ----------
-for skill in zdesign zgoal zreview zview zapply; do
+# ---------- launcher 归一(只有 zdash 允许内嵌启动命令) ----------
+say ""
+say "== launcher exclusivity =="
+for skill in "${SKILLS[@]}"; do
   f="$ROOT/skills/$skill/SKILL.md"
-  if grep -q 'exit 0' "$f"; then
-    ok "[$skill] reuse exit-0 semantics documented"
+  [[ -f "$f" ]] || continue
+  if grep -q 'npx zdashboard@latest' "$f"; then
+    if [[ "$skill" == "zdash" ]]; then
+      ok "[$skill] is the sole launcher"
+    else
+      bad "[$skill] embeds launcher command (npx zdashboard belongs to zdash only)"
+    fi
   else
-    bad "[$skill] reuse exit-0 semantics missing"
-  fi
-  if grep -q '\-\-restart' "$f"; then
-    ok "[$skill] --restart documented"
-  else
-    bad "[$skill] --restart missing"
+    ok "[$skill] launcher-pure"
   fi
 done
 
