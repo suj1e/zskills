@@ -1,56 +1,39 @@
 # zskills
 
-个人 ZCode skill 集合。
+个人 ZCode **skill 集合**——工作流编排层。
 
-每个 skill 放在 `skills/<name>/SKILL.md`,被 ZCode 自动发现和调度。
+> 三仓分工:[zagents](https://github.com/suj1e/zagents) 放子智能体(执行者),本仓放 skills(编排),[zdashboard](https://github.com/suj1e/zdashboard) 是可视化面板(独立项目)。skill 不启动任何服务、不写展示逻辑——产物落盘约定目录,由面板按约读取。
 
-> 走"宁缺毋滥"原则:只放真正会用的、能减轻重复劳动的 skill。不预防性铺设一堆编排剧本。
+## 约定速览
 
-## 已有
+| 事物 | 位置 |
+|------|------|
+| 可视化产物根 | `.zdev/<域>/`(apply、design…) |
+| 挂 change 的图 | `openspec/changes/<slug>/diagrams/` |
+| 独立文档 / 其配图 | `docs/` · `docs/diagrams/` |
+| 设计资产 | `.zdev/design/`(含 `brands/` 品牌源归档) |
+| batch 三件套 | `.zdev/apply/runs/<runId>/{plan,state.json,impl-report}` |
 
-- **zdesign** — 视觉/界面设计 skill。选一套设计系统(消费 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 68 个 `DESIGN.md`),产出严格遵循它的 HTML/CSS,通过 zdashboard 实时预览,过质量门禁交付。不依赖 OpenDesign。
-- **zview** — 项目洞察 skill。探测项目结构(openspec/docs/justfile/.zdev),拉起 zdashboard 看方案文档、服务实时日志、禅道 bug 列表(只读)。
-- **zreview** — 文档对齐 skill。起草(可选)→ AI 评审官按框架提尖锐问题 → zdashboard 逐项对齐 → 通过。
-- **zgoal** — bug 修复闭环 skill。禅道看 bug(只读)→ openspec 开修复目标 → 分支实施 → tasks 勾进度 → 开 PR。
-- **zapply** — OpenSpec 执行闭环 skill。需求(或已有 change)→ 开 change + ztest 测试策略 → worktree 隔离下发 craftsman(TDD,后台执行)→ code-simplifier 润色(可选)→ 三门禁核实 → merge 收尾 → archive 归档。多 change 并行编排(worktree + 拓扑分批)。不碰禅道、不开 PR,止于 archive。
-- **ztest** — 测试策略设计 skill。读方案 → 出测试策略(分层/覆盖率/测试数据/边界异常并发) → 追加到 design.md + tasks.md → 由 craftsman 按 TDD 执行。
-- **zarchitect** — 通用方案设计 skill。需求文档输入/代码库探索/bug 分析 → 需求分析拆解 → 方案设计(含设计模式建议 + 性能优化点) → 画图 → 图文并茂 → 开 openspec change → 自动触发 ztest 出测试策略。
-- **zdebug** — 调试排查 skill。收集症状 → 派发 debugger agent 深度调查（读日志/trace 调用链）→ 画图辅助理解 → 图文并茂的排查报告 → 如需修复则开 openspec change。
-- **zdoc** — 文档撰写 skill。读源码/设计 → 梳理结构 → 写文档 → 图文并茂（架构图/流程图/ER 图）→ 输出完整文档。
+交付纪律统一为「写入 + commit + push」。
 
-## 怎么用
+## Skills(7)
 
-作为本地插件添加(开发用):
+| Skill | 一句话 |
+|-------|--------|
+| ⚙️ [zapply](skills/zapply/SKILL.md) | 已有 change 的执行与验收闭环(craftsman TDD + 三门禁 + 智能 merge + 归档);多 change 走 batch 子模式(run 隔离 / 三维排序 / plan+report 落盘) |
+| 🏗️ [zarchitect](skills/zarchitect/SKILL.md) | 方案设计全流程:四路输入 → 需求澄清硬门槛 → 头脑风暴对齐 → 开 change + 图 + ztest → commit+push;Bug 深查委派 architecter |
+| 📊 [zdash](skills/zdash/SKILL.md) | 面板纯启动器(全库唯一知道 zdashboard 怎么拉的地方) |
+| 🧪 [ztest](skills/ztest/SKILL.md) | 测试策略:分层 + 量化覆盖率 + 逐任务验收标准 + 金字塔/场景覆盖双图 |
+| 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI/图表产出:.zdev/design/ 输出根,getdesign 选风格,brands/ 归档复用 |
+| 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
+| 🔍 *(已并入)* | Bug 排查能力归 zarchitect(Path D)+ architecter 子智能体 |
 
-```
-/plugin add /path/to/zskills
-```
+## Agents 配套(zagents)
 
-或从 git 安装:在 ZCode 的 Discover 标签 `+` 里加 `https://github.com/suj1e/zskills.git`。
+craftsman(编码执行)· architecter(根因+蓝图)· docswriter(执笔)· zapply-reviewer(分层审查)· glean(检索)
 
-## 怎么加新 skill
+## 更新
 
-```
-skills/
-└── <skill-name>/
-    └── SKILL.md
-```
+marketplace 版本随改动提升;客户端更新/重装 zskills 插件后生效(旧缓存不会自动同步)。
 
-SKILL.md 格式:
-
-```markdown
----
-name: skill-name
-description: Use when ...(何时触发,只写何时用不写做什么)
----
-
-# skill-name
-
-正文...
-```
-
-`description` 是关键——它决定 ZCode 在什么场景调度这个 skill。要写清"何时该用"。
-
-## License
-
-MIT
+MIT License.
