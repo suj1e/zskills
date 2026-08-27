@@ -45,16 +45,16 @@ npx -y getdesign@latest add <brand-slug>
 ### 5. token → CSS 变量(或图表语义角色)
 UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。
 
-图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `.zdev/diagram-style.md`——见下方【图表(diagram)场景】。
+图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `.zdev/design/diagram-style.md`——见下方【图表(diagram)场景】。
 
 ### 6. 按约束产出 + 打磨细节
-遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/`。预览已在第 1 步启动,每次保存自动刷新,边写边看。
+遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/design/`。预览开着就边写边看(保存即热刷新);没开也不阻塞写作。
 
 ### 7. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 6 步修,过了才交付。**
 
 ### 8. 交付
-返回:产出文件路径 + 预览 URL + 所选风格名 + 验收清单结果。
+返回:产出文件路径 + 所选风格名 + 验收清单结果;已开预览的附面板 URL(#design)。
 
 ## 风格源(多源,可插拔)
 zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一命中即可:
@@ -76,7 +76,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 **判据**:图表 + 品牌诉求(要匹配所选设计系统)→ zdesign 承接;纯图表无品牌诉求 → 让 diagram-design 独立处理,不抢。
 
 ### 视觉:token → 语义角色
-图表的视觉真相不是 CSS 变量,是**语义角色**(`paper`/`ink`/`muted`/`accent`/`link` + 字体三元组)。按 `references/diagram-style-mapping.md` 把选定 DESIGN.md 映射落盘为 `.zdev/diagram-style.md`,地位等同 DESIGN.md;同品牌复跑直接复用。要点:
+图表的视觉真相不是 CSS 变量,是**语义角色**(`paper`/`ink`/`muted`/`accent`/`link` + 字体三元组)。按 `references/diagram-style-mapping.md` 把选定 DESIGN.md 映射落盘为 `.zdev/design/diagram-style.md`(地位等同 DESIGN.md,同品牌复跑直接复用)。要点:
 
 - **accent 焦点克制**:品牌 primary 只给 ≤2 个元素(焦点节点/主箭头合计),其余节点一律中性(ink/muted/soft)。品牌感靠整体调性传达,不在图表里刷品牌色。
 - **字体品牌优先 + 缺失退化**:标题←品牌 display(无 serif 用 sans);节点名←品牌 sans;技术子标签←品牌 mono,无 mono 退化 Geist Mono 并披露。
@@ -117,15 +117,15 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 - [ ] 覆盖需求的所有功能与状态
 - [ ] mobile / desktop 响应式都不破
 - [ ] a11y 基础过关(对比度 / 语义 / focus)
-- [ ] 预览打开、亲眼确认过
+- [ ] 面板里亲眼看过成品(web 必做:开过预览直接看,没开此时用 zdash 拉起看)——确认调性/响应式符合预期
 
 **未全过 → 回炉,绝不交付半成品。**
 
 ## app 场景
-DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机查看。移动端规则薄弱时可参考 `references/`。
+DESIGN.md 的 token 同样适用,但落点不同:web 落 HTML/CSS 且可进面板实时预览;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机验证。
 
 ## 输出格式
-交付时给出:产出文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
+交付时给出:产出文件路径(`.zdev/design/` 下)+ 所选风格名 + 验收清单结果(逐项 ✓);开了预览附面板 URL。
 
 ## 资产
 - `references/diagram-style-mapping.md` — 图表 token → 语义角色映射权威细节(含 diagram-style.md 格式定义、上游 URL 常量)
