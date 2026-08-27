@@ -26,7 +26,7 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 和用户确认：
 - 文档类型（README / API 文档 / changelog / 迁移指南 / 代码注释 / 设计文档）
 - 目标读者（终端用户 / 开发者 / 运维 / 新成员）
-- 输出路径（如已知；未指定则按项目惯例——README 在根目录、其余在 `zdocs/`）
+- 输出路径（如已知；未指定则按项目惯例——README 在根目录、其余在 `docs/`）
 
 ### 2. 收集素材
 - 用 `Read` 阅读源码、注释、设计文档
@@ -41,7 +41,7 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 使用 `diagram-design` 技能生成文档所需图表：
 - 架构图（architecture）/ 流程图（flowchart）/ 时序图（sequence）/ ER 图（erd）/ 数据流图（data-flow）
 
-**落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `zdocs/diagrams/`。
+**落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。
 涉及页面/UI 设计的转介 `zdesign` 产出带品牌风格的设计稿。
 
 ### 5. 派发执笔（docswriter）
