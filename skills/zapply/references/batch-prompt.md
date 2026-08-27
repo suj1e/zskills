@@ -108,7 +108,7 @@
 - **依赖不明确**：`## 依赖` 节缺失或为空，且 change 名称暗示它依赖其他功能
 - **影响范围大**：修改超过 10 个文件，或涉及数据库 schema、核心接口
 - **第三方依赖**：涉及外部 API、支付、认证等
-- **无测试策略**：`design.md` 缺少 `## 测试策略` 章节
+- **无测试策略**：`design.md` 缺少 `## 测试策略` 章节 → 不进入风险协商,直接拦截:提示用户先跑 `ztest` 补齐后再执行(zapply 不代笔)
 
 高风险项自动进入 `parked` 状态，需要用户确认后才能执行。
 
@@ -202,7 +202,7 @@ for each batch in batches:
    - 有 worktree 且未完成 → 复用，继续执行
    - 有 worktree 且已完成 → 跳过
    - 无 worktree → 新建 worktree
-2. 用 `references/craftsman-prompt.md`（首次）或 `references/craftsman-batch-prompt.md`（batch 模式）下发 craftsman
+2. 用 `references/craftsman-batch-prompt.md` 下发 craftsman（首跑为全量模板，重跑在其上追加修正上下文）
 3. **后台执行**：不阻塞会话，等待 craftsman 完成通知
 
 ### 5.2 监控进度
@@ -234,9 +234,9 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
   - <推测 2>
 
 建议操作：
-  (1) 手动修复后运行 `zapply batch --retry <name>`
-  (2) 跳过：`zapply batch --skip <name>`
-  (3) 暂停批量，进入交互模式
+  (1) 手动修复后对主智能体说「重试 <name>」
+  (2) 说「跳过 <name>」
+  (3) 说「暂停批量」,转交互逐项处理
 
 [10 秒后自动标记为 failed，继续执行其余任务]
 ```
@@ -267,14 +267,14 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 - 每次修复后重试原操作（编译/测试/合并）
 - 最多自动修复 2 次，仍失败则通知用户
 
-### 5.4 验证和归档
+### 5.4 核实三门禁（与单 change 同标准）
 
- craftsman 完成后：
-1. 运行 `openspec validate <change-dir>` 验证结构
-2. 运行项目测试/lint
-3. 检查 tasks.md 是否全部勾选
-4. 如果全部通过，运行 `openspec archive <change-name> --yes`
-5. 如果验证失败，标记为 failed，通知用户
+ craftsman 完成后，对每个 change 依次执行：
+1. **结构核实**：运行 `openspec validate <change-name>`（命令名以本地 `openspec --help` 为准）
+2. **测试策略核查**：design.md 含「测试策略」章节、抽查测试代码覆盖指定场景、覆盖率达标
+3. **代码审查**：后台起独立 code-reviewer 子智能体（模板见 `code-reviewer-prompt.md`），blocker 清零才能进入下一步，suggestion 一并修复（优先级次之）
+4. 有 blocker/suggestion → 结构化汇总为修正上下文，**自动重跑 craftsman**（计入 retryCount，上限 2 次），要求逐条回应
+5. 三门禁全过 + tasks 全勾 + 分支干净 → 该项标记 completed；超限仍未过 → failed（附全部差异），不阻塞其他项
 
 ---
 
@@ -290,7 +290,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 - 异常发生时：记录 error 和 retryCount
 
 **断点续跑**：
-- 用户可运行 `zapply batch --continue` 续跑
+- 用户说「继续跑」即续跑
 - 读取 `.zdev/apply/batch-state.json`，跳过已完成的 change，从当前批次继续
 
 ---
@@ -326,10 +326,10 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
   - 总用时：<duration>
   - 平均每批：<duration>
 
-下一步：
-  - 继续处理 parked 项：zapply batch --resume
-  - 重试失败项：zapply batch --retry <name>
-  - 查看详细报告：zapply batch --report
+下一步（等用户口头指令）：
+  - 「处理 parked 项」→ 确认后将其纳入执行队列
+  - 「重试 X」→ 更新状态重跑该项
+  - 「看详细报告」→ 输出各项差异明细与全程日志
 ```
 
 ---
@@ -375,42 +375,22 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ### 使用方式
 
-```bash
-# 查看历史记录
-zapply batch --history
-
-# 清除历史记录（重置信任）
-zapply batch --clear-history
-```
+- 用户说「看看决策历史」→ 读 `.zdev/apply/history.json` 向用户汇报画像结论
+- 用户说「清除历史 / 重置信任」→ 删除该文件，回到默认策略
 
 **渐进式信任是可选的**，默认启用。用户可随时 `--clear-history` 重置。
 
 ---
 
-## 使用方式
+## 会话指令对照（无真实 CLI）
 
-```bash
-# 启动批量执行（自动分析 + 自动执行）
-zapply batch
+本流程由主智能体在会话中编排执行,**不存在任何 zapply 命令行工具**。用户口头发起时的路由:
 
-# 带并行度
-zapply batch --parallel 3
+| 用户说 | 主智能体动作 |
+|--------|-------------|
+| 「批量执行这些 change」「batch 跑起来」 | 从第一步扫描开始完整执行 |
+| 「并行度改成 N」 | 在确认环节或运行中调整 parallelism 写回 state |
+| 「继续跑」 | 断点续跑(跳过 completed) |
+| 「看看批量进度」 | 读 state 文件汇报批次/checkpoint/耗时 |
+| 「跳过 X」「重试 X」「暂停」「恢复」 | 更新对应变更状态并落盘生效 |
 
-# 断点续跑
-zapply batch --continue
-
-# 查看状态
-zapply batch --status
-
-# 重试指定 change
-zapply batch --retry <change-name>
-
-# 跳过指定 change
-zapply batch --skip <change-name>
-
-# 暂停
-zapply batch --pause
-
-# 恢复
-zapply batch --resume
-```
