@@ -1,7 +1,7 @@
 ---
 name: zdoc
 icon: "📝"
-description: "Use when the user wants to write or update documentation — README, API docs, code comments, changelog, user guides, migration docs, onboarding guides. Triggers on '写文档', '更新 README', '写 API 文档', 'changelog', '文档整理'. For design artifacts preview use zdesign."
+description: "Use when the user wants to write or update documentation — README, API docs, code comments, changelog, user guides, migration docs, onboarding guides. Triggers on '写文档', '更新 README', '写 API 文档', 'changelog', '文档整理'. For design artifact authoring use zdesign."
 ---
 
 # zdoc
