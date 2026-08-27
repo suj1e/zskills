@@ -1,7 +1,7 @@
 ---
 name: zdoc
 icon: "📝"
-description: "Use when the user wants to write or update documentation — README, API docs, code comments, changelog, user guides, migration docs, onboarding guides. Triggers on '写文档', '更新 README', '写 API 文档', 'changelog', '文档整理'. For design artifacts preview use zdesign; for viewing existing docs use zview."
+description: "Use when the user wants to write or update documentation — README, API docs, code comments, changelog, user guides, migration docs, onboarding guides. Triggers on '写文档', '更新 README', '写 API 文档', 'changelog', '文档整理'. For design artifacts preview use zdesign."
 ---
 
 # zdoc
@@ -31,7 +31,6 @@ description: "Use when the user wants to write or update documentation — READM
 - 用 `Read` 阅读源码、注释、设计文档
 - 用 `Explore` 子智能体扫描代码库，理解整体结构和模块职责
 - 用 `WebSearch` / `WebFetch` 查外部资料（同类项目的文档风格、行业规范）
-- 如果 zdashboard 已启动，用浏览器访问看现有文档结构
 - 查看现有文档的风格、术语、结构，保持一致性
 
 ### 3. 梳理结构
@@ -48,7 +47,7 @@ description: "Use when the user wants to write or update documentation — READM
 - ER 图（erd）—— 展示数据模型
 - 数据流图（data-flow）—— 展示数据流转
 
-图产出后放在项目目录下的 `docs/diagrams/` 或 `docs/images/`，并在文档中引用路径。
+图产出后:服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/images/`。在文档中引用相对路径。
 如果文档涉及页面/UI 设计，使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
 
 ### 6. 自检
@@ -59,7 +58,7 @@ description: "Use when the user wants to write or update documentation — READM
 - 检查代码示例是否与实际代码一致
 
 ### 7. 交付
-输出文档内容，交给主智能体审查。
+输出完整文档,自检通过后交付。
 
 ## 输出格式
 ## 文档类型

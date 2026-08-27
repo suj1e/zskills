@@ -6,31 +6,21 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 # zdesign
 
-独立的视觉 / 界面设计 skill。**先拉起 zdashboard 实时预览 → 再选设计系统 → 产出 HTML/CSS → 过质量门禁交付**。不依赖 OpenDesign。
+独立的视觉 / 界面设计 skill。**选设计系统 → 产出 HTML/CSS → 过质量门禁交付**;实时预览按需由 zdash 拉起面板(#design 直达)。不依赖 OpenDesign。
 
 ## 核心理念
 
 - **设计系统驱动**:所有视觉决策(配色 / 字体 / 圆角 / 间距)来自选定的 `DESIGN.md`,不自由发挥。
 - **完善交付,不是半成品**:产出必须过【约束】【细节】【验收】三道关,未全过则回炉。
-- **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖);实时预览由独立包 `zdashboard` 提供。
-- **统一输出根**:所有产出默认写入 `.zdev/`,目录选择在 zdashboard 中由用户自行操作,skill 不询问输出路径。
+- **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖);预览由面板(zdash)按需提供。
+- **统一输出根**:所有产出默认写入 `.zdev/design/`,skill 不询问输出路径。
 
 ## 工作流
 
-### 1. 拉起实时预览
-直接执行:
+### 1. 预览(可选)
+用户想边写边看时,用 zdash 拉起面板(#design 直达),保存即热刷新。本 skill 自身不启动任何服务。
 
-```bash
-npx zdashboard@latest --dir <项目根> --open
-```
-
-- 同目录已有活实例:直接复用并打开(**exit 0,非失败**——skill 判断启动成败时,复用不算异常,勿重试)
-- 实例已死或无记录:自动起新实例,端口占用自动顺延
-- 强制重开(升级 zdashboard 后**必须加**,否则仍用旧版进程):`--restart`;`--page` 与复用兼容,直达对应工作区
-
-预览由独立 npm 包 `zdashboard` 提供(无需自带,npx 自动拉起)。浏览器自动打开,每次保存自动刷新。把 URL 给用户。多项目并行不冲突(`--port` 可指定)。
-
-产出根统一为 `.zdev/`;具体路径由 zdashboard 中用户选择的目录决定。
+产出根统一为 `.zdev/design/`。
 
 ### 2. 确认任务
 确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
@@ -53,7 +43,7 @@ npx -y getdesign@latest add <brand-slug>
 > 若无网络 / CLI 不可用,可改用 WebFetch 抓 `https://getdesign.md/<brand-slug>/design-md` 兜底。
 
 ### 5. token → CSS 变量(或图表语义角色)
-UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。参考 `assets/templates/starter.html` 的映射范式。
+UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。
 
 图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `.zdev/diagram-style.md`——见下方【图表(diagram)场景】。
 
@@ -90,7 +80,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 
 - **accent 焦点克制**:品牌 primary 只给 ≤2 个元素(焦点节点/主箭头合计),其余节点一律中性(ink/muted/soft)。品牌感靠整体调性传达,不在图表里刷品牌色。
 - **字体品牌优先 + 缺失退化**:标题←品牌 display(无 serif 用 sans);节点名←品牌 sans;技术子标签←品牌 mono,无 mono 退化 Geist Mono 并披露。
-- 角色注入 CSS 变量后 inline SVG 直接 `fill="var(--ink)"` 消费,骨架见 `assets/templates/diagram-starter.html`。
+- 角色注入 CSS 变量后 inline SVG 直接 `fill="var(--ink)"` 消费。
 
 ### 布局:语法源四级降级(拉最新优先)
 类型数/版本**不硬编码**,以实际拉到的为准(上游持续演进)。依次尝试,任一级成功即用:
@@ -138,10 +128,6 @@ DESIGN.md 的 token 同样适用。但实时预览 server 服务 web;app 产出 
 交付时给出:产出文件路径 + 预览 URL(web)+ 所选风格名 + 验收清单结果(逐项 ✓)。
 
 ## 资产
-- 实时预览由独立 npm 包 `zdashboard` 提供,见第 1 步(`npx zdashboard@latest --dir <项目根> --open`)
-- `assets/templates/starter.html` — token → CSS 变量的骨架范式
-- `assets/components/button.html` — 组件如何消费 token 的示范
-- `assets/templates/diagram-starter.html` — 图表语义角色 → CSS 变量 + SVG 原语骨架范式
 - `references/diagram-style-mapping.md` — 图表 token → 语义角色映射权威细节(含 diagram-style.md 格式定义、上游 URL 常量)
 - `references/diagram-basics.md` — 图表兜底布局规则(语法源四级降级全失败时用)
 - `references/quality-checklist.md` — 约束 / 细节 / 验收的详细速查(含图表专项)

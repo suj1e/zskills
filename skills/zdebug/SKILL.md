@@ -56,7 +56,7 @@ description: "Use when the user reports a bug, error, crash, test failure, or un
 - 架构图（architecture）—— 如果问题涉及多个服务/模块
 - 内存分析图—— 如果是内存泄漏/OOM
 
-图产出后放在项目目录下的 `docs/debug/` 或 `openspec/debug/`，并在排查报告中引用路径。
+图产出到对应修复 change 的 `openspec/changes/<slug>/diagrams/`(若第 6 步未开 change 则暂缓落库,开完移入),在排查报告中引用相对路径。
 
 ### 5. 整合报告
 将 debugger agent 的排查结果整合成结构化报告，加上你收集的初步证据。

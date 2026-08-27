@@ -280,7 +280,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 第六步：状态持久化
 
-所有状态写入 `.zapply/batch-state.json`，格式遵循 `batch-state.schema.json`。
+所有状态写入 `.zdev/apply/batch-state.json`，格式遵循 `batch-state.schema.json`。
 
 **更新时机**：
 - 扫描完成后：写入 changes 列表、批次计划
@@ -291,7 +291,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 **断点续跑**：
 - 用户可运行 `zapply batch --continue` 续跑
-- 读取 `.zapply/batch-state.json`，跳过已完成的 change，从当前批次继续
+- 读取 `.zdev/apply/batch-state.json`，跳过已完成的 change，从当前批次继续
 
 ---
 
@@ -340,12 +340,12 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 2. **失败隔离**：单个 change 失败不影响其他 change
 3. **自动重试**：失败自动重试最多 2 次
 4. **用户最小干预**：只在需要决策时才停下来询问
-5. **状态持久化**：所有状态写入 `.zapply/batch-state.json`，支持断点续跑
+5. **状态持久化**：所有状态写入 `.zdev/apply/batch-state.json`，支持断点续跑
 6. **检查点可恢复**：每个 change 的 task 级进度记录，重试时从断点继续
 
 ## 渐进式信任
 
-系统记录用户决策历史（`.zapply/history.json`），自动调整执行策略。
+系统记录用户决策历史（`.zdev/apply/history.json`），自动调整执行策略。
 
 ### 记录内容
 

@@ -86,7 +86,7 @@ description: "Use when the user wants a test strategy for a feature, bug fix, or
 - **数据流图**:展示测试数据如何流入/流出
 - **架构图**(如适用):展示测试环境和生产环境的隔离
 
-图产出后放在项目目录下,并在 `design.md` 的测试策略章节中引用路径。
+图产出到该 change 目录下的 `diagrams/`,并在 `design.md` 测试策略章节中引用相对路径。
 
 ### 6. 交付
 输出:修改后的 `design.md`(含测试策略) + 修改后的 `tasks.md`(含测试验收标准) + 图示

@@ -1,14 +1,14 @@
 ---
 name: zapply
 icon: "⚙️"
-description: "Use when the user wants to drive an openspec change to completion — take a requirement (or an existing change) and run the execution loop: main agent opens the change (proposal/design/tasks), delegates implementation to the craftsman agent, verifies with openspec validate/status, and archives on success. Use when the user says 'implement this', '把需求落地', '跑一下这个 change', '执行 #4', '批量执行', 'batch'. For ZenTao bug-driven fixes use zgoal; for viewing specs/logs use zview; for design artifacts use zdesign."
+description: "Use when the user wants to drive an openspec change to completion — take a requirement (or an existing change) and run the execution loop: main agent opens the change (proposal/design/tasks), delegates implementation to the craftsman agent, verifies with openspec validate/status, and archives on success. Use when the user says 'implement this', '把需求落地', '跑一下这个 change', '执行 #4', '批量执行', 'batch'. For design artifacts preview use zdesign."
 ---
 
 # zapply
 
 OpenSpec 执行闭环 skill:**需求 → 主智能体开 change → craftsman 实施 → verify → archive**。
 
-定位对称:`zgoal` 管"禅道 bug → fix → PR",`zapply` 管"任意需求/任务 → 落地 → 归档"。共用 openspec + craftsman;zapply **不碰禅道、不开 PR,止于 archive**。
+`zapply` 管「任意需求/任务 → 落地 → 归档」,基于 openspec + craftsman;**不开 PR,止于 archive**。
 
 ## 工作流
 
@@ -17,7 +17,7 @@ OpenSpec 执行闭环 skill:**需求 → 主智能体开 change → craftsman �
 **入口分流**:
 - 用户给**需求描述** → 主智能体从头开 change(下方 A)
 - 用户给**已有 change 路径** → 跳过开 change,直接进第 2 步
-- 用户给**多个 change / 一个前缀**(方案拆分的产物) → 走「多 change 并行编排」
+- 用户给**多个 change / 一个前缀**(方案拆分的产物) → 走下方 batch 子模式
 - 需求**复杂**(多模块/架构级/需要方案设计)→ 建议先走 `zarchitect` 出方案再回来执行
 
 **A. 开 change**(`openspec/` 不存在先 `openspec init`):
@@ -49,7 +49,7 @@ git worktree add -b <change-name> .zworktree/<change-name> <base>
 - `<base>` = 当前基线分支;提醒用户项目 `.gitignore` 加 `.zworktree/`
 - **前提:change 文档已提交**(openspec/changes/ 随 git 提交,worktree 从基线切出即包含 proposal/design/tasks)——开 change 后先 commit 再建 worktree
 - craftsman 工作目录 = `.zworktree/<change-name>/`(deps 不共享,进去先装)
-- tasks.md 就在 worktree 里直接勾,**勾选与代码一起提交在 change 分支上**(merge 后进度自动同步回主目录);要看单 change 的实时进度,可给它单独起 dashboard:`npx zdashboard@latest --dir .zworktree/<change-name> --open`
+- tasks.md 就在 worktree 里直接勾,**勾选与代码一起提交在 change 分支上**(merge 后进度自动同步回主目录)
 
 按 `references/craftsman-prompt.md` **完整模板**起子智能体 **craftsman**,用**后台执行**下发(不阻塞会话等结果;完成通知到达后再进第 2.5 步。多 change 并行时同时后台起多个)。核心要求:
 
@@ -170,7 +170,7 @@ zapply batch [--parallel N] [--continue] [--retry <name>] [--skip <name>] [--sta
 | **Checkpoint** | 记录每个 task 级进度，支持断点续跑 |
 | **失败隔离** | 单个 change 失败不影响其他，自动标记并继续 |
 | **自动重试** | 失败自动重试 2 次（可配置） |
-| **状态持久化** | `.zapply/batch-state.json` 记录全局状态 |
+| **状态持久化** | `.zdev/apply/batch-state.json` 记录全局状态 |
 
 ### Craftsman 批量模式
 
@@ -186,34 +186,12 @@ batch 模式下使用 `references/craftsman-batch-prompt.md` 代替普通模板�
 
 ---
 
-## 多 change 并行编排（旧版，保留参考）
+## 多 change 编排
 
-以下为历史文档，推荐使用 `zapply batch` 子模式替代。
-
-方案商讨后常会开出多个 change(zarchitect 拆分产物),彼此独立或有限定依赖,可并行推进。编排规则:
-
-### 1. 依赖拓扑分批
-- 读各 change `proposal.md` 的「## 依赖」声明(zarchitect 拆分时写入)
-- 按拓扑排序分批:**无依赖的一批并行,有依赖的等前置归档后进下一批**
-- 依赖缺失(前置 change 未存在/未归档)→ 该 change 挂起并告知用户,不阻塞无依赖的
-
-### 2. 并行度与冲突控制
-- worktree 隔离是通用机制(见第 2 步):每个 change 独立 worktree + 独立分支,天然互不践踏
-- **默认并行度 2**(同时最多 2 个 craftsman),用户可指定更高/串行;多个 craftsman 一律**后台执行**并行跑,完成一个处理一个
-- 下发前**冲突预警**:粗比对各 change `tasks.md` 涉及的模块/文件路径,有重叠的强制串行(重叠 → 后者等前者归档)
-- 每个 change 完全独立:独立 worktree、独立分支、独立 TDD 循环、独立简化、独立三门禁、独立归档,互不掺和
-
-### 3. 批间衔接
-- 前置 change 归档后,释放依赖它的下一批
-- **有依赖的 change 的 worktree 在前置 merge 进基线之后再建**(此时基线已含前置代码);craftsman 的「方案约束」注入前置 design.md 摘要(数据模型/接口契约)作为补充说明
-- 任何 change 门禁失败 → 按单 change 流程处理(重跑/手动修/中止),**不影响其他并行 change**
-
-### 4. 进度总览
-zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完成度,直接给用户 URL 一站看。
+多个 change(zarchitect 拆分产物)的依赖拓扑、冲突预警、批间衔接与进度总览,**统一走上方 batch 子模式**,不再单设编排规则。
 
 ## 边界
 
-- **不碰禅道**(zgoal 的事)
 - **不直接写业务代码**,全部委托 craftsman
 - proposal/design 的生成与调整只在主智能体手里,craftsman 只执行
 - 核实 = openspec validate + 测试策略核查 + code-reviewer **三门禁**;blocker 未清零不归档
@@ -222,20 +200,15 @@ zdashboard 执行进度视图天然展示全部进行中 change 的卡片与完�
 - **归档前三门禁必须全过**
 - 止于 archive,不开 PR、不 push
 
-## 可视化进度(zdashboard)
+## 产出与约定
 
-执行过程中可拉起 dashboard 看进度(zdashboard CLI 查 `.zdev/dashboard.json`):
-
-```bash
-npx zdashboard@latest --dir <项目根> --open
-```
-
-- 同目录已有活实例:直接复用并打开(**exit 0,非失败**,勿当异常重试)
-- 实例已死或无记录:自动起新实例;强制重开(升级 zdashboard 后**必须加**):`--restart`
-
-面板展示:进行中的 change 卡片(名称 + 任务完成度百分比) + 点击展开 proposal/design/tasks 全文。文件变更即时刷新。
+- 批量状态持久化:`.zdev/apply/batch-state.json`(schema 见资产);单 change 进度天然在 openspec/changes/ 与 worktree 分支上
+- 可视化:面板(见 zdash skill)`#apply-batch` 直达批量驾驶舱,`#apply` 查看执行进度;文件变更由面板自行热刷新
 
 ## 资产
 
 - `references/craftsman-prompt.md` — craftsman 子智能体 prompt 模板(含重跑变体与交付物规范)
 - `references/code-reviewer-prompt.md` — code-reviewer 审查 prompt 模板(分级输出规范)
+- `references/batch-prompt.md` — batch 子模式主智能体编排 prompt(扫描/分析/确认/执行/报告全流程)
+- `references/craftsman-batch-prompt.md` — batch 模式 craftsman 变体(CHECKPOINT/DONE/BLOCKED 协议)
+- `references/batch-state.schema.json` — `.zdev/apply/batch-state.json` 状态格式定义

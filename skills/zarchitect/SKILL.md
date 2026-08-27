@@ -1,7 +1,7 @@
 ---
 name: zarchitect
 icon: "🏗️"
-description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, bug fix plan, performance optimization, or anything that needs thinking before coding. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型', '这个 bug 怎么修', '性能优化', '重构'. For design artifacts preview use zdesign; for viewing existing specs use zview."
+description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, bug fix plan, performance optimization, or anything that needs thinking before coding. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型', '这个 bug 怎么修', '性能优化', '重构'. For design artifacts preview use zdesign."
 ---
 
 # zarchitect
@@ -87,7 +87,7 @@ description: "Use when the user wants to design a solution — technical archite
 ### 8. 画图（图文并茂，必须）
 使用 `diagram-design` 技能生成架构图、流程图、时序图、数据流图、ER 图等。
 常用类型:architecture、flowchart、sequence、data-flow、component、state-machine、erd。
-图产出后放在项目目录下的 `docs/design/` 或 `openspec/designs/`,并在设计文档中引用路径。
+图产出到对应 change 的 `openspec/changes/<slug>/diagrams/`(第 9 步开完 change 后落位),在设计文档中引用相对路径。
 如果设计方案涉及页面/UI,使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
 
 ### 9. 开 Change
