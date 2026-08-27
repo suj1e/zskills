@@ -43,9 +43,9 @@ description: "Use when the user wants to design a solution — technical archite
 - 必要时 `WebSearch` / `WebFetch` 查外部资料
 
 **路径 D:Bug 分析**
-- 读取 bug 描述、日志、堆栈跟踪
-- 用 `Grep` / `Glob` 定位相关代码
-- 前端问题用 Chrome DevTools / Playwright 查控制台和网络;移动端用 android-emulator / ios-simulator 读日志截图
+- 浅层自查:`Grep` / `Glob` 定位、查配置与环境,能一眼定性的不兴师动众
+- **深度调查优先后台派发 `architecter` 子智能体**(根因诊断 + 文件级修复蓝图一体;未装则本路径自查)——复杂故障、跨服务牵连、性能劣化必派
+- 非代码问题(环境/配置/脏数据/误操作):拿到定性后直接给用户处置建议收尾,**不开 change、不进方案设计**
 
 ### 2. 统一分析
 无论哪条路径,汇入统一分析:
