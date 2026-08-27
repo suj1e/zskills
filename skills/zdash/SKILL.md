@@ -21,12 +21,12 @@ npx zdashboard@latest --dir <项目根> --open
 1. 直接执行上述命令即可：
    - 同目录已有活实例 → 自动复用并打开（**exit 0，非失败**，勿当异常重试）
    - 实例已死或无记录 → 自动起新实例
-2. 把输出的 URL 给用户；需要直达某页可在 URL 后加 `#<mode>`（如 `#apply-batch`、`#review`、`#bugs`、`#design`）
+2. 把输出的 URL 给用户；需要直达某页可在 URL 后加 `#<mode>`（现有模式:`#apply`、`#apply-batch`、`#view`、`#stats`、`#just`、`#design`）
 3. 升级 zdashboard 后必须加 `--restart` 强制重开（旧进程会驻留旧版本代码）
 4. 多项目并行用 `--dir` 区分根目录；端口被占自动 +1，无需干预
 
 ## 边界
 
-- 不写任何数据、不改任何配置（凭据类配置如 `.zdev/config.yaml` 由各业务 skill 自管）
+- 不写任何数据、不改任何配置；凭据等敏感配置由各业务 skill 自管
 - 不判断哪个面板「有没有东西」——空面板让用户自行切换侧边栏
 - 止步于打开浏览器；页内交互归对应业务 skill
