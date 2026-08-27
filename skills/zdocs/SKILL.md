@@ -1,14 +1,14 @@
 ---
-name: zdoc
+name: zdocs
 icon: "📝"
 description: "Use when the user wants to write or update documentation — README, API docs, code comments, changelog, user guides, migration docs, onboarding guides. Triggers on '写文档', '更新 README', '写 API 文档', 'changelog', '文档整理'. For design artifact authoring use zdesign."
 ---
 
-# zdoc
+# zdocs
 
-文档编排 skill:**接单定纲 → 收集素材 → 协调配图 → 派发 docwriter 执笔 → 验收 → commit+push 交付**。
+文档编排 skill:**接单定纲 → 收集素材 → 协调配图 → 派发 docswriter 执笔 → 验收 → commit+push 交付**。
 
-zdoc 自己不逐字执笔——写作由 `docwriter` 子智能体(zagents 提供)完成,它自带"示例必真实 / 绝不编造 / 术语锁定"三纪律;未装则本 skill 按同款纪律兜底自写。
+zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提供)完成,它自带"示例必真实 / 绝不编造 / 术语锁定"三纪律;未装则本 skill 按同款纪律兜底自写。
 
 ## 何时触发
 - 用户说"写文档"、"更新 README"、"写 API 文档"、"changelog"、"文档整理"
@@ -26,7 +26,7 @@ zdoc 自己不逐字执笔——写作由 `docwriter` 子智能体(zagents 提�
 和用户确认：
 - 文档类型（README / API 文档 / changelog / 迁移指南 / 代码注释 / 设计文档）
 - 目标读者（终端用户 / 开发者 / 运维 / 新成员）
-- 输出路径（如已知；未指定则按项目惯例——README 在根目录、其余在 `docs/`）
+- 输出路径（如已知；未指定则按项目惯例——README 在根目录、其余在 `zdocs/`）
 
 ### 2. 收集素材
 - 用 `Read` 阅读源码、注释、设计文档
@@ -41,11 +41,11 @@ zdoc 自己不逐字执笔——写作由 `docwriter` 子智能体(zagents 提�
 使用 `diagram-design` 技能生成文档所需图表：
 - 架构图（architecture）/ 流程图（flowchart）/ 时序图（sequence）/ ER 图（erd）/ 数据流图（data-flow）
 
-**落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。
+**落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `zdocs/diagrams/`。
 涉及页面/UI 设计的转介 `zdesign` 产出带品牌风格的设计稿。
 
-### 5. 派发执笔（docwriter）
-组装**指令五要素**交给 `docwriter`(可后台执行):
+### 5. 派发执笔（docswriter）
+组装**指令五要素**交给 `docswriter`(可后台执行):
 
 | 要素 | 内容 |
 |------|------|
@@ -55,7 +55,7 @@ zdoc 自己不逐字执笔——写作由 `docwriter` 子智能体(zagents 提�
 | 素材索引 | 文件路径 : 为何相关 / 重点段落 |
 | 落盘目标 | 输出路径 + 图表清单(已产出的相对路径) |
 
-> 不要灌任何额外风格范文正文——纪律(docwriter 自带):示例必摘真实代码、绝不编造、术语锁定。未装 docwriter 则自写并执行同款三纪律。
+> 不要灌任何额外风格范文正文——纪律(docswriter 自带):示例必摘真实代码、绝不编造、术语锁定。未装 docswriter 则自写并执行同款三纪律。
 
 ### 6. 验收
 - 章节结构与确认过的大纲对齐(偏离须有理由)
