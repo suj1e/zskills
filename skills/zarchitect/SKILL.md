@@ -92,7 +92,13 @@ description: "Use when the user wants to design a solution — technical archite
 - **性能优化点**:瓶颈 + 方案 + 预期收益(小需求也评估影响面)
 - 风险与 trade-off、开放问题
 
-### 6. 开 change
+### 6. 开 change(按可交付单元切:能多不开一)
+
+**拆分判定先行**:方案中凡同时满足 ①可独立验证 ②可独立归档 ③与他部只经声明接口交互 的单元,**一律各自成 change**——三个独立模块、前后端分离、"功能+其文档+其测试基建",都是天然多分;只有真原子的小修(单文件小改/纯配置翻转)才允许单个。
+
+> ❌ 反面模式:把数据层+接口层+UI 揉进一个巨型 tasks.md——batch 并行红利归零、任一门禁失败全体连坐、也没法按单元回滚。与其贪一个大 change 省事,不如让下游 batch 吃满并行。
+
+每个单元各执行:
 ```bash
 openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."
 ```
@@ -104,7 +110,7 @@ CLI 不可用则手建 `openspec/changes/<name>/`,写入三文件:
 | `design.md` | 技术方案 + 取舍(明确哪些做/哪些不做) |
 | `tasks.md` | checkbox 清单,粒度到"可独立验证" |
 
-**大方案拆多 change**(规模大/边界清晰/可独立交付):
+**多 change 命名与声明**:
 - 同前缀分组命名:`2026-08-21-auth-core` / `2026-08-21-auth-api` / `2026-08-21-auth-ui`
 - 一个 change = 一个可独立验证、可独立归档的交付单元
 - 有前置关系的在 `proposal.md` 写:
