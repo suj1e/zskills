@@ -47,7 +47,7 @@ description: "Use when the user wants to write or update documentation — READM
 - ER 图（erd）—— 展示数据模型
 - 数据流图（data-flow）—— 展示数据流转
 
-图产出后:服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/images/`。在文档中引用相对路径。
+图产出后:服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。在文档中引用相对路径。
 如果文档涉及页面/UI 设计，使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
 
 ### 6. 自检
