@@ -72,7 +72,7 @@ openspec status --change <name>   # 查看阻塞项
 - 抽查:实际写的测试代码是否覆盖了 design.md「测试策略」章节中指定的场景(边界/异常/并发)
 - 覆盖率是否达到 design.md 中设定的目标
 
-**3c. 代码审查**(起子智能体 **code-reviewer**,按 `references/code-reviewer-prompt.md`):
+**3c. 代码审查**(优先起子智能体 **`zapply-reviewer`**——分层审查:依赖决策阶梯 + 14 维自审,再内调内置 code-reviewer 深审;zagents 仓库提供。dispatch **只注入上下文四要素**:change 路径 / 审查分支 / 方案约束摘要 / craftsman 交付报告要点,**不要灌任何清单模板正文**,清单它自带。未装则降级:派内置 `code-reviewer`,按 `references/code-reviewer-prompt.md` 填充模板派发):
 - **只读**审查分支 diff(相对 base),核对 14 维:设计约束、bug/边界/安全、架构合理性、原则与模式、**禁止魔法常量**、**禁止造轮子**、死代码残留、错误与资源、并发与事务、性能、**测试策略遵循**、测试与兼容、依赖与文档同步、风格整洁度、craftsman 报告属实
 - 输出按严重度分级:**blocker**(优先修,清零才能归档)与 **suggestion**(同样下发修复,优先级次之;确实不该修的说明理由)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码

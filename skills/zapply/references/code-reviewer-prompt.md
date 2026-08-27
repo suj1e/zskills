@@ -1,6 +1,11 @@
 # Code Reviewer 审查 Prompt 模板
 
-zapply 第 3 步核实阶段(3b),起 code-reviewer 子智能体时使用。填充占位符(`<...>`)后,整体作为子智能体的任务描述。
+zapply 第 3c 步代码审查的**两用文档**:
+
+1. **降级路径任务模板**:未安装 `zapply-reviewer`(zagents)时,填充占位符(`<...>`)后整体作为**内置 code-reviewer** 的任务描述。
+2. **维度权威源**:本清单与 `zagents/agents/zapply-reviewer.md` 内置清单**镜像维护**——在这里改维度,必须双向同步到那边。
+
+> ⚠️ 若已装 `zapply-reviewer`:它**自含同款清单与分层机制**,dispatch 时只给上下文四要素(change 路径 / 审查分支 / 方案约束 / craftsman 报告要点),**不要**把本模板正文灌给它,否则两套指令互相打架。
 
 ## 模板
 
