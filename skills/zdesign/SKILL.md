@@ -6,26 +6,21 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 
 # zdesign
 
-独立的视觉 / 界面设计 skill。**选设计系统 → 产出 HTML/CSS → 过质量门禁交付**;实时预览按需由 zdash 拉起面板(#design 直达)。不依赖 OpenDesign。
+独立的视觉 / 界面设计 skill。**选设计系统 → 产出 HTML/CSS → 过质量门禁交付**。不依赖 OpenDesign。
 
 ## 核心理念
 
 - **设计系统驱动**:所有视觉决策(配色 / 字体 / 圆角 / 间距)来自选定的 `DESIGN.md`,不自由发挥。
 - **完善交付,不是半成品**:产出必须过【约束】【细节】【验收】三道关,未全过则回炉。
-- **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖);预览由面板(zdash)按需提供。
+- **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖),浏览器直接打开即所见。
 - **统一输出根**:所有产出默认写入 `.zdev/design/`,skill 不询问输出路径。
 
 ## 工作流
 
-### 1. 预览(可选)
-用户想边写边看时,用 zdash 拉起面板(#design 直达),保存即热刷新。本 skill 自身不启动任何服务。
-
-产出根统一为 `.zdev/design/`。
-
-### 2. 确认任务
+### 1. 确认任务
 确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
 
-### 3. 选风格(动态发现,可插拔源)
+### 2. 选风格(动态发现,可插拔源)
 **查找顺序**:`.zdev/design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ getdesign 官方库 → 现场蒸馏(产出回填 brands/)。
 
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
@@ -35,7 +30,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 - **按分类**展示给用户选;**视觉探索**场景并排 2-3 个对比。
 - 用户也可直接指定("用 Linear 风格")。
 
-### 4. 取 DESIGN.md(官方 CLI,拿完整 token)
+### 3. 取 DESIGN.md(官方 CLI,拿完整 token)
 选定品牌后,拉取并归档到品牌源目录(`brands/` 已有同 slug 的 DESIGN.md 则跳过拉取):
 
 ```bash
@@ -47,19 +42,19 @@ cd -  # 回项目根继续后续步骤
 
 > 若无网络 / CLI 不可用,可改用 WebFetch 抓 `https://getdesign.md/<brand-slug>/design-md` 兜底。
 
-### 5. token → CSS 变量(或图表语义角色)
+### 4. token → CSS 变量(或图表语义角色)
 UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。
 
 图表产出:不走 CSS 变量直连,改走 **token → 图表语义角色** 映射,落盘 `.zdev/design/diagram-style.md`——见下方【图表(diagram)场景】。
 
-### 6. 按约束产出 + 打磨细节
-遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/design/`。预览开着就边写边看(保存即热刷新);没开也不阻塞写作。
+### 5. 按约束产出 + 打磨细节
+遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/design/`;过程中随时可用浏览器打开文件自查。
 
-### 7. 验收(闭环)
+### 6. 验收(闭环)
 按【验收】清单逐项自检 + 预览确认。**未全过 → 回第 6 步修,过了才交付。**
 
-### 8. 交付
-返回:产出文件路径 + 所选风格名 + 验收清单结果;已开预览的附面板 URL(#design)。
+### 7. 交付
+返回:产出文件路径 + 所选风格名 + 验收清单结果。
 
 ## 风格源(多源,可插拔)
 zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一命中即可:
@@ -98,7 +93,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 无论哪级:**不修改 diagram-design 任何文件**;换肤靠产出时以 diagram-style.md 覆盖语义角色。
 
 ### 场景 × 尺寸
-文档/README 配图 → `doc-inline`/`doc-wide`(可按需导出 PNG/SVG,手动不问不导);设计稿内嵌 → `fit`(随 dashboard 预览);独立单图 → `slide-16x9`/`social-og`;风格探索 → 并排 2-3 张。尺寸同时约束字号阶梯(slide 的节点名是 16px 不是 12px)。
+文档/README 配图 → `doc-inline`/`doc-wide`(可按需导出 PNG/SVG,手动不问不导);设计稿内嵌 → `fit`(随所在页面容器自适应);独立单图 → `slide-16x9`/`social-og`;风格探索 → 并排 2-3 张。尺寸同时约束字号阶梯(slide 的节点名是 16px 不是 12px)。
 
 ### 交付
 图表产出交付时另报:diagram-style.md 路径 + 所选品牌 + **所用语法源的 diagram-design 版本与级别**(最新 main / 本地缓存 x.y.z / 兜底)。验收走 `references/quality-checklist.md` 图表专项。
@@ -122,15 +117,15 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 - [ ] 覆盖需求的所有功能与状态
 - [ ] mobile / desktop 响应式都不破
 - [ ] a11y 基础过关(对比度 / 语义 / focus)
-- [ ] 面板里亲眼看过成品(web 必做:开过预览直接看,没开此时用 zdash 拉起看)——确认调性/响应式符合预期
+- [ ] 浏览器打开成品页亲眼确认(web 必做)——调性 / 响应式 / 交互状态与预期一致
 
 **未全过 → 回炉,绝不交付半成品。**
 
 ## app 场景
-DESIGN.md 的 token 同样适用,但落点不同:web 落 HTML/CSS 且可进面板实时预览;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机验证。
+DESIGN.md 的 token 同样适用,但落点不同:web 落 HTML/CSS;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机验证。
 
 ## 输出格式
-交付时给出:产出文件路径(`.zdev/design/` 下)+ 所选风格名 + 验收清单结果(逐项 ✓);开了预览附面板 URL。
+交付时给出:产出文件路径(`.zdev/design/` 下)+ 所选风格名 + 验收清单结果(逐项 ✓)。
 
 ## 资产
 - `references/diagram-style-mapping.md` — 图表 token → 语义角色映射权威细节(含 diagram-style.md 格式定义、上游 URL 常量)

@@ -184,7 +184,6 @@ batch 模式下使用 `references/craftsman-batch-prompt.md` 代替普通模板�
 ## 产出与约定
 
 - 批量状态持久化:`.zdev/apply/batch-state.json`(schema 见资产);单 change 进度天然在 openspec/changes/ 与 worktree 分支上
-- 可视化:面板(见 zdash skill)`#apply-batch` 直达批量驾驶舱,`#apply` 查看执行进度;文件变更由面板自行热刷新
 
 ## 资产
 
