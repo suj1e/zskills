@@ -36,6 +36,10 @@
 
 ---
 
+### 1.5 Run 隔离
+
+每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。若 CURRENT 已存在且对应 run 未达终态,先问用户:继续该 run 还是另起新的。
+
 ## 第二步：依赖分析
 
 ### 2.1 构建依赖图
@@ -175,10 +179,10 @@
 - (5) 先执行非 parked 项，parked 项稍后处理
 - (6) 退出，保存状态
 
-**确认通过即冻结决策**：主智能体随即将最终计划写入 `.zdev/apply/batch-plan.md`（人类可读的实施策略快照），然后才进入第五步执行循环。此后 `batch-state.json` 是运行态持续变动，而该 md 是**决策基线不再随手修改**；执行中确需经用户同意调整顺序/范围时，只在文末「变更记录」追加条目。模板：
+**确认通过即冻结决策**：主智能体随即将最终计划写入 `.zdev/apply/runs/<runId>/plan.md`（人类可读的实施策略快照），然后才进入第五步执行循环。此后 `batch-state.json` 是运行态持续变动，而该 md 是**决策基线不再随手修改**；执行中确需经用户同意调整顺序/范围时，只在文末「变更记录」追加条目。模板：
 
 ```markdown
-# 实施策略 <yyyy-MM-dd HH:mm>
+# 实施策略（runId: <yyyy-MM-dd-HHmm>）
 
 ## 输入清单
 | change | 层 | 优先级 | 风险 | 预估 | 去向 |
@@ -312,7 +316,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 第六步：状态持久化
 
-所有状态写入 `.zdev/apply/batch-state.json`，格式遵循 `batch-state.schema.json`。
+所有状态写入 `.zdev/apply/runs/<runId>/state.json`，格式遵循 `batch-state.schema.json`。
 
 **更新时机**：
 - 扫描完成后：写入 changes 列表、批次计划
@@ -323,7 +327,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 **断点续跑**：
 - 用户说「继续跑」即续跑
-- 读取 `.zdev/apply/batch-state.json`，跳过已完成的 change，从当前批次继续
+- 读取 `.zdev/apply/runs/<runId>/state.json`，跳过已完成的 change，从当前批次继续
 
 ---
 
@@ -366,13 +370,40 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ---
 
+## 实施验收报告（runs/<runId>/impl-report.md）
+
+第七步的报告除在会话中呈现外,**必须落盘为该 run 的验收文档**,与会话摘要分开维护。模板：
+
+```markdown
+# 实施验收报告（runId: <yyyy-MM-dd-HHmm>）
+
+## 结果总览
+总 N · completed a · failed b · parked c · skipped d · 总用时 T
+
+## 批次回放
+| 批次 | 成员 | 开始 | 结束 | 结果 |
+
+## 逐项终态
+| change | 终态 | tasks x/y | 门禁(结构/测试/审查) | 重试次数 | 耗时 |
+
+## 计划偏差对照
+<相对 plan.md：顺序变更 / AI 新增判定的实际验证 / 冲突是否真实发生；无则写「按计划执行」>
+
+## 遗留与建议
+<failed 根因分类；parked/skipped 的处置建议与入口提示>
+
+## 验收结论
+<主智能体依据三门禁结果与抽查给出的结论>
+验收人签署：________
+```
+
 ## 关键原则
 
 1. **后台执行**：所有 craftsman 都在后台运行，不阻塞会话
 2. **失败隔离**：单个 change 失败不影响其他 change
 3. **自动重试**：失败自动重试最多 2 次
 4. **用户最小干预**：只在需要决策时才停下来询问
-5. **状态持久化**：所有状态写入 `.zdev/apply/batch-state.json`，支持断点续跑
+5. **状态持久化**：所有状态写入 `.zdev/apply/runs/<runId>/state.json`，支持断点续跑
 6. **检查点可恢复**：每个 change 的 task 级进度记录，重试时从断点继续
 
 ## 渐进式信任
