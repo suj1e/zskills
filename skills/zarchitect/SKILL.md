@@ -1,23 +1,24 @@
 ---
 name: zarchitect
 icon: "🏗️"
-description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, bug fix plan, performance optimization, or anything that needs thinking before coding. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型', '这个 bug 怎么修', '性能优化', '重构'. For design artifacts preview use zdesign."
+description: "Use when the user wants to design a solution — technical architecture, module breakdown, interface design, flow restructuring, bug fix plan, performance optimization, or anything needing thinking before coding. Also the entry for batch requirement documents (docx/pptx/xlsx/md/pdf): extract needs, check cross-document conflicts/gaps/ambiguities, clarify, then produce the solution. Triggers on '帮我设计一下', '怎么架构', '方案设计', '技术选型', '这个 bug 怎么修', '性能优化', '重构', '基于这批文档出方案', '这些文档有没有冲突', '理一下需求'. Opening changes + diagrams + coordinating ztest are its job; executing ready changes belongs to zapply."
 ---
 
 # zarchitect
 
-通用方案设计 skill:**需求输入 → 分析/拆解 → 方案设计 → 图文并茂 → 开 openspec change**。
+通用方案设计 skill:**输入采集 → 统一分析 → 需求澄清 → 多轮对齐 → 方案设计 → 开 change → diagram-design 图文 → 触发 ztest → 交付(commit + push)**。
 
 覆盖场景:
 - **新功能需求**(大/小):从零到有的功能设计
 - **增量需求**:在现有系统上叠加能力
+- **需求文档集**:一批 docx/pptx/xlsx/md/pdf,理需求、查跨文档冲突/缺口/歧义,再出方案
 - **Bug 分析**:根因定位 → 修复方案设计(不实施,只出方案)
 - **性能优化**:瓶颈分析 → 优化方案(缓存/索引/架构调整)
 - **设计模式重构**:识别适用场景 → 模式选型 → 重构方案
 
 ## 何时触发
 - 用户说"帮我设计一下"、"怎么架构"、"方案设计"、"技术选型"
-- 用户指定一个/多个文件夹,里面是需求文档(docx/excel/md 等),需要基于文档出方案
+- 用户指定一个/多个文件夹的需求文档(docx/excel/md 等),要基于文档出方案或核对一致性
 - 涉及多个模块/服务/接口变更,需要先出方案再落地
 - 架构拆分、流程梳理、数据流设计
 - Bug 修复需要设计修复方案(不只是改一行代码)
@@ -26,148 +27,158 @@ description: "Use when the user wants to design a solution — technical archite
 
 ## 工作流
 
-### 1. 输入采集
-根据用户给出的信息,走对应路径:
+### 1. 输入采集(四条路径,可并行)
 
-**路径 A:需求文档文件夹**
-- 用户指定一个/多个文件夹,里面是需求文档(docx/excel/md/pdf 等)
-- 用 `Read` / `Explore` 扫描所有文档,提取需求点
+**路径 A:需求描述**
+- 用户口头/文字给的需求,直接进入第 2 步分析素材
+
+**路径 B:需求文档集**
+- 用 `Read` / `Explore` 扫描用户指定的所有文档
 - 用 `docx` / `xlsx` / `pdf` 技能解析非 markdown 格式
-- 汇总需求清单,标注来源文件和关键段落
+- **跨文档一致性核对**:冲突(同一事项两种说法)/ 缺口(该有而没人写的)/ 歧义(可多种理解的表述),逐条标注来源文件与关键段落
 
-**路径 B:代码库探索**
-- **优先用 `code-explorer` 子智能体**做深度代码库分析(执行路径/架构分层/模式/依赖文档化);未装则降级用 `Explore` 子智能体做广域扫描
+**路径 C:代码库探索**
+- **优先用 `code-explorer` 子智能体**做深度代码库分析(执行路径/架构分层/模式/依赖);未装则降级 `Explore`
 - 用 `openspec view` 看现有规范和变更
-- 必要时用 `WebSearch` / `WebFetch` 查外部资料
+- 必要时 `WebSearch` / `WebFetch` 查外部资料
 
-**路径 C:Bug 分析**
+**路径 D:Bug 分析**
 - 读取 bug 描述、日志、堆栈跟踪
 - 用 `Grep` / `Glob` 定位相关代码
-- 如果是前端问题,用 Chrome DevTools / Playwright 检查控制台和网络
-- 如果是移动端问题,用 android-emulator / ios-simulator 技能读取日志和截图
-
-三条路径可并行采集,不互斥。
+- 前端问题用 Chrome DevTools / Playwright 查控制台和网络;移动端用 android-emulator / ios-simulator 读日志截图
 
 ### 2. 统一分析
-无论走哪条路径,进入统一分析阶段:
-
+无论哪条路径,汇入统一分析:
 - **产品漏洞检查**:逻辑闭环、边界条件、异常流、用户场景覆盖
 - **需求拆解**:按模块/层次拆解,识别依赖关系和优先级
-- **现有代码对照**(路径 B/C):兼容性、影响面、技术债
-- **性能考量**(路径 C 或用户提及):瓶颈在哪、优化空间、trade-off
-- **设计模式建议**(路径 C 或重构场景):适用场景、模式选型、侵入程度
+- **现有代码对照**(C/D):兼容性、影响面、技术债
+- **性能考量**(D 或提及):瓶颈在哪、优化空间、trade-off
+- **设计模式建议**(D 或重构场景):适用场景、模式选型、侵入程度
 
 输出:`需求/问题清单 + 拆解结构 + 关键风险`
 
-### 3. 来回对齐
-基于分析结果,主动抛出 4-6 个关键问题(边界、优先级、约束、不想碰的东西、deadline、细节确认)。
-和用户来回对话,直到双方对「问题定义 + 方向」达成共识。
+### 3. 需求澄清(进入方案前的硬门槛)
+就**需求本身**的疑点向用户集中提问,一次抛清:
+- 逻辑闭环缺口、未覆盖的场景
+- 边界条件与异常流的行为预期
+- 术语口径、概念定义不一致处
+- 成功标准是什么、怎么算做完
 
-### 4. 抛出初步思路
-基于共识,抛出 2-3 个方案草图(文字描述 + trade-off)。
+输出:`澄清后的需求清单(每条带来源)`。**存在未澄清歧义时不得进入方案设计**。
 
-### 5. 来回对话
-用户可能推翻假设、补充约束、或指出现有系统里有你不知道的东西。继续多轮交互。
+### 4. 多轮对齐(方向层)
+基于澄清后的需求:
+1. 抛出 4-6 个方向性问题(优先级、约束、不想碰的东西、deadline、技术偏好)
+2. 给出 2-3 个方案草图(文字思路 + trade-off)
+3. 用户可能推翻假设、补充约束、指出系统里有你不知道的东西 → 继续往返
+4. 双方对「问题定义 + 推荐方向」再次确认共识,**不要跳过确认直接写文档**
 
-### 6. 再次对齐确认
-再次和用户确认「问题定义 + 推荐方向」达成共识。不要跳过确认直接写文档。
+### 5. 方案设计
+在共识基础上输出完整方案。复杂方案(多模块/新架构)且装有 `code-architect` 子智能体时,可后台起它产出实现蓝图作为骨架,主智能体补齐取舍与开放问题;未装则自己写。**必须包含**:
+- 背景与目标 / 现有系统分析(如适用)
+- 方案设计(含备选与取舍)、接口/数据契约、实施步骤
+- **设计模式建议**:适用场景 + 选型 + 侵入程度 + 迁移路径(新功能也要考虑扩展性)
+- **性能优化点**:瓶颈 + 方案 + 预期收益(小需求也评估影响面)
+- 风险与 trade-off、开放问题
 
-### 7. 正式方案设计
-在共识基础上输出完整方案。复杂方案(多模块/新架构)且装有 `code-architect` 子智能体时,可后台起它产出实现蓝图(文件清单/组件设计/数据流/构建顺序)作为方案骨架,主智能体在其上补齐取舍与开放问题;未装则自己写。**所有方案必须包含设计模式建议和性能优化点**:
-- 背景与目标
-- 现有系统分析(如适用)
-- 方案设计(图文)
-- 接口/数据契约
-- 实施步骤
-- **设计模式建议**:适用场景 + 模式选型 + 侵入程度 + 迁移路径(即使是新功能也要考虑扩展性)
-- **性能优化点**:瓶颈分析 + 优化方案 + 预期收益(即使是小需求也要评估影响面)
-- 风险与 trade-off
-- 开放问题
+### 6. 开 change
+```bash
+openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."
+```
+CLI 不可用则手建 `openspec/changes/<name>/`,写入三文件:
 
-### 8. 画图（图文并茂，必须）
+| 文件 | 内容 |
+|------|------|
+| `proposal.md` | 需求复述 + 要解决的问题 + 成功标准 |
+| `design.md` | 技术方案 + 取舍(明确哪些做/哪些不做) |
+| `tasks.md` | checkbox 清单,粒度到"可独立验证" |
+
+**大方案拆多 change**(规模大/边界清晰/可独立交付):
+- 同前缀分组命名:`2026-08-21-auth-core` / `2026-08-21-auth-api` / `2026-08-21-auth-ui`
+- 一个 change = 一个可独立验证、可独立归档的交付单元
+- 有前置关系的在 `proposal.md` 写:
+
+  ```markdown
+  ## 依赖
+  - 前置:openspec/changes/2026-08-21-auth-core/(本 change 基于其数据模型)
+  ```
+
+  (此格式是下游 zapply batch 拓扑排序的数据源,不能省)
+
+### 7. 图文并茂(必须)
 使用 `diagram-design` 技能生成架构图、流程图、时序图、数据流图、ER 图等。
 常用类型:architecture、flowchart、sequence、data-flow、component、state-machine、erd。
-图产出到对应 change 的 `openspec/changes/<slug>/diagrams/`(第 9 步开完 change 后落位),在设计文档中引用相对路径。
-如果设计方案涉及页面/UI,使用 `zdesign` 技能生成带品牌风格的 HTML/CSS 设计稿。
+图统一落到**本 change 目录下** `openspec/changes/<slug>/diagrams/`(多 change 则各归各),在 design.md 中以相对路径引用。
+设计方案涉及页面/UI 时,用 `zdesign` 技能产出带品牌风格的 HTML/CSS 设计稿。
 
-### 9. 开 Change
-执行 `openspec new change <yyyy-mm-dd>-<kebab-slug> --description "..."`,在 `openspec/changes/<slug>/` 下写入 `proposal.md` 和 `design.md`,让设计方案进入可执行状态。
-
-**大方案拆多 change**:方案规模大 / 模块边界清晰 / 可独立交付时,拆成多个 change 而不是塞一个巨型 change:
-- 命名用同前缀分组:`2026-08-21-auth-core` / `2026-08-21-auth-api` / `2026-08-21-auth-ui`
-- 拆分粒度:一个 change = 一个可独立验证、可独立归档的交付单元
-- **依赖标注**:有前置关系的 change,在其 `proposal.md` 写一节:
-
-```markdown
-## 依赖
-- 前置:openspec/changes/2026-08-21-auth-core/(本 change 基于其数据模型)
-```
-- 无依赖关系的 change 天然可并行,交给 zapply 并行编排(见 zapply「多 change 并行编排」)
-
-### 9.5. 触发测试策略(自动)
-Change 开后,自动调用 `ztest` skill 为**每个** change 产出测试计划(多 change 时逐个处理):
-- ztest 读 `proposal.md` + `design.md` + `tasks.md`
+### 8. 触发测试策略(自动)
+调用 `ztest` 为**每个** change 补测试计划(多 change 逐个处理):
 - 在 `design.md` 末尾追加 `## 测试策略` 章节(分层策略/覆盖率目标/测试数据/边界异常并发)
-- 在 `tasks.md` 每个 task 后面追加测试验收标准
-- 测试策略是方案的**必要组成部分**,不是可选项
+- 在 `tasks.md` 每个 task 后追加测试验收标准
+- 测试策略是方案的必要组成部分,不是可选项
 
-### 10. 交付
-列出「设计方案 + 关键图 + 推荐方案 + 开放问题 + openspec change 路径」,交给用户决策。
+### 9. 交付(commit + push)
+全部文档与图落盘并核引无误后:
+
+```bash
+git add openspec/changes/<slug> && git commit -m "docs(change): <slug> 方案与图" && git push
+```
+
+**commit + push 是交付的一部分,不是可选项**——下游 zapply 建 worktree 的前提就是 change 文档已在基线分支上。多 change 全部一并提交。
+交付汇报包含:设计方案要点 + 关键图 + 推荐 + 开放问题 + change 路径。
 
 ## 输出格式
+
+````markdown
 ## 背景与目标
 <一段话说明为什么要做这个设计>
 
-## 需求/问题清单
-<从文档或 bug 中提取的需求点/问题点,标注来源>
+## 需求清单(澄清后)
+<来自第 3 步的清单,标注来源>
 
 ## 现有系统分析
-<现有架构的关键组件和依赖关系,有改动的才写>
+<关键组件与依赖关系,有改动的才写>
 
 ## 方案设计
 ### 方案 A：<名称>
 - 思路：<核心思路>
-- 图示：<图文件路径>
-- 优点：<...>
-- 缺点：<...>
+- 图示：<diagrams/ 下相对路径>
+- 优点 / 缺点
 
 ### 方案 B：<名称>（可选）
-- ...
 
 ## 推荐方案
-<推荐哪个方案 + 理由>
+<推荐哪个 + 理由>
 
 ## 接口 / 数据契约
-<如有，列出关键接口签名、数据结构、消息格式>
+<关键接口签名、数据结构、消息格式>
 
 ## 实施步骤
 1. <步骤 1>
-2. <步骤 2>
-...
 
 ## 性能优化点
 <瓶颈分析 + 优化方案 + 预期收益>
 
 ## 设计模式建议
-<适用场景 + 模式选型 + 侵入程度 + 迁移路径>
+<适用场景 + 选型 + 侵入程度 + 迁移路径>
 
 ## 风险与 Trade-off
 - <风险 1>：<缓解措施>
-- <开放问题 1>：<需要用户确认的点>
+- <开放问题 1>：<需用户确认的点>
 
 ## 图示索引
-| 图 | 路径 | 说明 |
-|---|---|---|
-| <架构图> | <路径> | <说明什么> |
+| 图 | 相对路径 | 说明 |
 
 ## OpenSpec Change
-- <change 路径：openspec/changes/<slug>/proposal.md>
+- <openspec/changes/<slug>/ 路径列表>
+````
 
 ## 约束
-1. 不修改代码、不执行 Git 操作——只出方案和图。
+1. **不修改业务代码、不创建实现分支**——只产出方案文档、图与 openspec change;实施由 zapply/craftsman 完成。
 2. 方案必须附带图——没有图的设计文档视为不完整。
-3. 有多个可行方案时，列出 trade-off，不自行拍板"就这么干"。
-4. 遇到安全、合规、性能敏感的设计点，明确标注为「需确认」。
-5. 不编造不存在的 API 或框架能力——不确定的先查，查不到就写「待确认」。
-6. 方案输出后开 openspec change 进入可执行状态，不等于自己开始实施。
-7. Bug 分析场景只出修复方案，不实施修复——修复由 craftsman 或主智能体执行。
+3. 有多个可行方案时列出 trade-off,不自行拍板"就这么干"。
+4. 遇到安全、合规、性能敏感的设计点,明确标注为「需确认」。
+5. 不编造不存在的 API 或框架能力——不确定先查,查不到写「待确认」。
+6. **需求澄清有未决项时不进入方案设计**(第 3 步硬门槛)。
+7. **交付必须 commit + push**(第 9 步);留在工作区的 change 文档等于没交付。
+8. Bug 分析只出修复方案,不实施修复。
