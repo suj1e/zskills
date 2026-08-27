@@ -26,6 +26,8 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 / **图表**(架构图 / 流程图 / 时序图 / ER / 状态机等))?给谁用?有无参考?目标设备与断点?
 
 ### 3. 选风格(动态发现,可插拔源)
+**查找顺序**:`.zdev/design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ getdesign 官方库 → 现场蒸馏(产出回填 brands/)。
+
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
 
 - 用 WebFetch 抓 `https://raw.githubusercontent.com/VoltAgent/awesome-claude-design/main/README.md`
@@ -34,9 +36,12 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 - 用户也可直接指定("用 Linear 风格")。
 
 ### 4. 取 DESIGN.md(官方 CLI,拿完整 token)
-选定品牌后,在一个临时目录运行:
+选定品牌后,拉取并归档到品牌源目录(`brands/` 已有同 slug 的 DESIGN.md 则跳过拉取):
+
 ```bash
+mkdir -p .zdev/design/brands/<brand-slug> && cd .zdev/design/brands/<brand-slug>
 npx -y getdesign@latest add <brand-slug>
+cd -  # 回项目根继续后续步骤
 ```
 产出的 `DESIGN.md` 是 YAML frontmatter,含完整 token:`colors` / `typography`(type scale)/ `rounded` / `spacing` / `components` / `layout` / `shadows` / `motion` / do's & don'ts。读它,这是本次产出的唯一视觉真相来源。
 
@@ -61,7 +66,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 
 **A. DESIGN.md 库(token 现成,直接消费)**
 - `getdesign` 官方库(首选):`npx -y getdesign@latest add <brand>`(73+ 品牌,如 linear.app / stripe / notion / vercel / apple…)。菜单可从 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README 抓取(68 条分类索引)。
-- 本地 `DESIGN.md`:用户项目里已有的,直接 Read。
+- 本地 `DESIGN.md`:用户项目里已有的直接 Read;zdesign 自产的统一归档 `.zdev/design/brands/<slug>/DESIGN.md`,是查找的第一优先级。
 - 任意 YAML / DESIGN.md 文件:符合 token 格式即可。
 
 **B. 参考驱动(库内没有时,现场蒸馏成 token)**
@@ -69,7 +74,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 - 官方规范页 / 品牌官网 URL → WebFetch 抓 → 提炼 token
 - 截图 → 视觉分析提炼 token
 - 已知范式(如 shadcn 的 zinc 色阶 + ring-offset)→ 直接落 token
-蒸馏出的 DESIGN.md 后续当 A 类本地源复用。
+蒸馏产物落盘 `.zdev/design/brands/<slug>/DESIGN.md` 归档——从此它就是 A 类本地源,同品牌复跑零成本。
 
 ## 图表(diagram)场景
 
