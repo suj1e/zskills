@@ -142,7 +142,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 
 1. **扫描**：扫描 `openspec/changes/` 下所有未归档变更
 2. **分析**：提取依赖、检测文件冲突、识别风险项（含测试策略缺失→拦截回 ztest）
-3. **确认**：展示执行计划（依赖图 + 批次 + 风险项），等待用户确认
+3. **确认**：展示执行计划（依赖图 + 批次 + 优先级 + 风险项），等待用户确认；**通过即冻结决策**，落盘 `.zdev/apply/batch-plan.md` 实施策略快照（模板见 batch-prompt），执行态(json)与决策态(md)自此分离
 4. **执行**：按批次并行调度 craftsman，后台执行
 5. **监控**：实时读取 checkpoint 进度，处理异常（环境类故障自动修复,实现类问题带修正上下文自动重跑）
 6. **核实**：每项逐一过**三门禁**(validate + 测试策略核查 + code-reviewer);blocker 自动带修正上下文重跑 craftsman 至清零,suggestion 一并修复;仍不过 → 该项 failed/parked,**不阻塞其他项**
@@ -159,6 +159,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 | **自动重试** | 失败自动重试 2 次（可配置） |
 | **三门禁照常** | batch 不是降级通道:每项逐一批 validate + 测试核查 + code-reviewer,quality bar 与单 change 完全一致 |
 | **智能 merge** | 主智能体按依赖序执行;冲突停下问用户 |
+| **实施策略落盘** | 确认通过即写 `.zdev/apply/batch-plan.md` 快照(输入清单/依赖判定/编排结果/用户决策/变更记录)，决策基线与运行态分离 |
 | **状态持久化** | `.zdev/apply/batch-state.json` 记录全局状态 |
 
 ### Craftsman 批量模式
