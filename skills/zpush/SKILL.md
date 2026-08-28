@@ -16,9 +16,14 @@ description: "Use whenever anything is about to be git-pushed — user says 'pus
      - (a) 已执行,推送
      - (b) 先去执行,稍后再推
      - (c) 照推——自担风险,**必须写入对应 impl-report/变更记录,不静默**
-2. **工作区卫生**:`git status --porcelain` 有游离未提交文件 → 列出问用户(一并提交推送 / 先留着)
-3. **分支 sanity**:确认推送分支 = 预期基线;feature 分支要当基线推、或基线名字对不上 → 拦下确认
-4. **force push**:任何 `-f` 一律要求用户显式复述目标后确认,不给默认
+2. **merge/归档一致性(收尾完整性)**
+   - 遍历本地分支,分支名 = change 名(zapply 约定),排除基线与 archive/ 已有目录:
+     - `git log <base>..<branch>` 非空 且 `openspec/changes/<branch>/` 存在 → **已核实未合并**:问用户 (a) merge 后推 (b) 跳过该分支照推+留痕
+     - 分支已全并入但 `openspec/changes/<dir>/` 仍在 → **已合并未归档**:问 (a) 先 `openspec archive` 再推 (b) 照推+留痕
+   - 用户说明"故意保留分支 / 暂不归档" → 留痕跳过,本会话不再重复追问
+3. **工作区卫生**:`git status --porcelain` 有游离未提交文件 → 列出问用户(一并提交推送 / 先留着)
+4. **分支 sanity**:确认推送分支 = 预期基线;feature 分支要当基线推、或基线名字对不上 → 拦下确认
+5. **force push**:任何 `-f` 一律要求用户显式复述目标后确认,不给默认
 
 ## 决策协议
 
