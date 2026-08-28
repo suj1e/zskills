@@ -17,9 +17,11 @@ description: "Use when the user wants to open, start, restart, or re-pull the vi
 ### 1. 打开（默认）
 
 ```bash
-npx zdashboard@latest --dir <项目根> --open
+nohup npx zdashboard@latest --dir <项目根> --open > .zdev/dashboard.log 2>&1 &
 ```
 
+- **后台驻留是默认姿势**：进程脱离会话存活，命令立即返回，不阻塞对话（用 Bash 工具的后台执行或 `nohup … &`）
+- 日志统一落 `.zdev/dashboard.log`——「面板不对劲」时先看它
 - 同目录已有活实例 → 复用并打开（**exit 0，非失败**，勿当异常重试）；无 → 新起
 - URL 给用户；直达某页加 `#<mode>`（现有模式：`#apply`、`#apply-batch`、`#view`、`#stats`、`#just`、`#design`）
 - 端口被占自动 +1，无需干预
@@ -28,7 +30,7 @@ npx zdashboard@latest --dir <项目根> --open
 ### 2. 重拉（触发词：重拉 / 重启面板 / 面板更新了 / 面板不对劲）
 
 ```bash
-npx zdashboard@latest --dir <项目根> --open --restart
+nohup npx zdashboard@latest --dir <项目根> --open --restart > .zdev/dashboard.log 2>&1 &
 ```
 
 - `--restart` 杀旧起新，保证跑到**最新发布版**——dashboard 迭代频繁，复用旧进程会驻留旧代码
@@ -39,3 +41,4 @@ npx zdashboard@latest --dir <项目根> --open --restart
 - 不写业务数据、不改配置；凭据等敏感配置由各业务 skill 自管
 - 不判空面板、不解释页内内容——止步浏览器
 - `.zdev/dashboard.json` 的 pid/port 由 zdashboard 维护，zdash 只消费
+- 驻留进程的启停诊断：状态看 `.zdev/dashboard.json`，日志看 `.zdev/dashboard.log`
