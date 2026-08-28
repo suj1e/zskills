@@ -123,8 +123,9 @@ openspec archive <change-name> --yes
 - change:openspec/changes/<name>/
 - 归档:openspec/archive/<name>/
 - 分支:<name>(基线:<base>,已 merge / 保留)
-- 任务完成度:x/y
+- 任务完成度:x/y(不含 🔧[人工] 项)
 - 修改文件:n 个
+- 待人工动作:x 项(见 design.md「上线与人工动作」;无则省略此行)
 ```
 
 ## zapply batch 子模式
