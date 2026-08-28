@@ -38,7 +38,7 @@
 
 ### 1.5 Run 隔离
 
-每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。**已在跑时又发起 batch(多战线规则)**:先读 CURRENT 指向 run 的 `state.json`——
+每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;`state.json` 额外写入 **`front`(战线别名)**——从本批 change 的共同前缀/主题提炼(如 `auth`、`hotfix-0808`),用户口头给了名字就用他的。随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。**已在跑时又发起 batch(多战线规则)**:先读 CURRENT 指向 run 的 `state.json`——
 
 - 已达终态(completed / failed) → 正常另起新 run
 - 未达终态(analyzing / pending-approval / running / paused) → 停下问用户,三选一:
@@ -196,7 +196,7 @@
 **确认通过即冻结决策**：主智能体随即将最终计划写入 `.zdev/apply/runs/<runId>/plan.md`（人类可读的实施策略快照），然后才进入第五步执行循环。此后 `batch-state.json` 是运行态持续变动，而该 md 是**决策基线不再随手修改**；执行中确需经用户同意调整顺序/范围时，只在文末「变更记录」追加条目。模板：
 
 ```markdown
-# 实施策略（runId: <yyyy-MM-dd-HHmm>）
+# 实施策略（战线: <front> · runId: <yyyy-MM-dd-HHmm>）
 
 ## 输入清单
 | change | 层 | 优先级 | 风险 | 预估 | 去向 |
@@ -389,7 +389,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 第七步的报告除在会话中呈现外,**必须落盘为该 run 的验收文档**,与会话摘要分开维护。模板：
 
 ```markdown
-# 实施验收报告（runId: <yyyy-MM-dd-HHmm>）
+# 实施验收报告（战线: <front> · runId: <yyyy-MM-dd-HHmm>）
 
 ## 结果总览
 总 N · completed a · failed b · parked c · skipped d · 总用时 T
@@ -465,9 +465,12 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 | 用户说 | 主智能体动作 |
 |--------|-------------|
-| 「批量执行这些 change」「batch 跑起来」 | 从第一步扫描开始完整执行 |
-| 「并行度改成 N」 | 在确认环节或运行中调整 parallelism 写回 state |
-| 「继续跑」 | 断点续跑(跳过 completed) |
-| 「看看批量进度」 | 读 state 文件汇报批次/checkpoint/耗时 |
-| 「跳过 X」「重试 X」「暂停」「恢复」 | 更新对应变更状态并落盘生效 |
+| 「跑这批」「batch 起来」 | 完整执行;创建战线时提炼/询问 front 别名 |
+| 「并行再开一条线:<主题>」 | 走多战线三选一;新战线带别名 |
+| 「看进度」 | **全部非终态战线总览**;点名别名则单战线明细 |
+| 「继续跑」 | 无参 = 恢复**全部** paused 战线;点名 = 单个 |
+| 「暂停」 | 无参 = 暂停全部非终态;点名 = 单个 |
+| 「重试 X」「跳过 X」 | 自动定位 X 所在战线(占用排除保证 change 全局唯一) |
+| 「收摊 <战线>」 | **必须点名**——无参不执行(危险操作) |
+| 「切到 <战线>」 | 改写 CURRENT 焦点 |
 
