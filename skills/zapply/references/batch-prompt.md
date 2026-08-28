@@ -386,7 +386,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 实施验收报告（runs/<runId>/impl-report.md）
 
-第七步的报告除在会话中呈现外,**必须落盘为该 run 的验收文档**,与会话摘要分开维护。模板：
+第七步的报告除在会话中呈现外,**必须落盘为该 run 的验收文档**,与会话摘要分开维护。落盘后若用户要求 push → 执行 zapply SKILL「push 安全网」扫描(以本报告「待人工执行清单」为扫描源),确认后放行。模板：
 
 ```markdown
 # 实施验收报告（战线: <front> · runId: <yyyy-MM-dd-HHmm>）
