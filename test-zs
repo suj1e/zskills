@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-SKILLS=("zasset" "zapply" "zarchitect" "zdash" "zdesign" "zdocs" "ztest")
+SKILLS=("zasset" "zapply" "zarchitect" "zdash" "zdesign" "zdocs" "zpush" "ztest")
 PASS=0
 FAIL=0
 TOTAL=0

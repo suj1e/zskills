@@ -16,7 +16,7 @@
 
 交付纪律统一为「写入 + commit + push」。
 
-## Skills(7)
+## Skills(8)
 
 | Skill | 一句话 |
 |-------|--------|
@@ -26,6 +26,7 @@
 | 🧪 [ztest](skills/ztest/SKILL.md) | 测试策略:分层 + 量化覆盖率 + 逐任务验收标准 + 金字塔/场景覆盖双图 |
 | 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI/图表产出:.zdev/design/ 输出根,getdesign 选风格,brands/ 归档复用 |
 | 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
+| 🚦 [zpush](skills/zpush/SKILL.md) | 推送安全网:人工动作扫描 + 工作区卫生 + 分支 sanity + force 确认;全库唯一管"推之前查什么"的地方 |
 | 🔍 *(已并入)* | Bug 排查能力归 zarchitect(Path D)+ doctor 子智能体 |
 
 ## Agents 配套(zagents)

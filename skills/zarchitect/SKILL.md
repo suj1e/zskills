@@ -147,7 +147,7 @@ CLI 不可用则手建 `openspec/changes/<name>/`,写入三文件:
 全部文档与图落盘并核引无误后:
 
 ```bash
-git add openspec/changes/<slug> && git commit -m "docs(change): <slug> 方案与图" && git push
+git add openspec/changes/<slug> && git commit -m "docs(change): <slug> 方案与图" && git push  # 推送前过 zpush 安全网
 ```
 
 **commit + push 是交付的一部分,不是可选项**——下游 zapply 建 worktree 的前提就是 change 文档已在基线分支上。多 change 全部一并提交。
