@@ -164,7 +164,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 | **三门禁照常** | batch 不是降级通道:每项逐一批 validate + 测试核查 + code-reviewer,quality bar 与单 change 完全一致 |
 | **智能 merge** | 主智能体按依赖序执行;冲突停下问用户 |
 | **Run 隔离与落盘** | 每 batch 一个 `runs/<runId>/`:plan(冻结)/state(运行)/impl-report(验收)三件套;CURRENT 定位活动批次,历史只读 |
-| **双战线规则** | 活动 run 未终态时再发 batch 三选一:等(默认)/收摊中止/显式并行(不相交+不偷 CURRENT+并行度各降 1);同 change 禁止双占 |
+| **多战线规则** | 活动战线未终态时再发 batch 三选一:等(默认)/收摊中止/并行新战线(与所有活动战线不相交+不抢 CURRENT+全局 craftsman 预算 ≤4);同 change 任何时刻至多一个战线占用 |
 | **状态持久化** | 本 run 的 `state.json` 记录全局状态 |
 
 ### Craftsman 批量模式

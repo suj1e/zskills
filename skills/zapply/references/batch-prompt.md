@@ -20,7 +20,7 @@
 
 ## 第一步：扫描变更
 
-扫描 `openspec/changes/` 目录，找出所有**未归档**的 change：
+扫描 `openspec/changes/` 目录，找出所有**未归档**的 change。扫描前先收集 `.zdev/apply/runs/` 下所有**非终态**战线的占用名单——这些 change 从候选剔除，并在计划报告标注「被 run <id> 占用」：
 - 排除 `archive/` 目录
 - 排除以 `.` 开头的目录
 - 读取每个 change 的 `proposal.md`、`design.md`、`tasks.md`
@@ -38,15 +38,15 @@
 
 ### 1.5 Run 隔离
 
-每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。**已在跑时又发起 batch(双战线规则)**:先读 CURRENT 指向 run 的 `state.json`——
+每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。**已在跑时又发起 batch(多战线规则)**:先读 CURRENT 指向 run 的 `state.json`——
 
 - 已达终态(completed / failed) → 正常另起新 run
 - 未达终态(analyzing / pending-approval / running / paused) → 停下问用户,三选一:
   - **(a) 等**(默认推荐):新需求挂起,当前 run 到终态后再开
   - **(b) 收摊**:优雅中止当前 run——在跑的 craftsman 终止,其 change 记回 pending 并写入新 plan 的「变更记录」,然后开新 run
-  - **(c) 并行二战线**(仅当用户明说"并行",且两批 change 经核对完全不相交):新 run 照开,但 ① `CURRENT` 不动仍指旧 run,新 run 一律用显式 runId 寻址 ② 扫描自动排除旧 run 占用的 change ③ 两个 run 的并行度各降 1
+  - **(c) 并行新战线**(仅当用户明说"并行",且新批次与**所有**活动战线的 change 核对互不相交):新 run 照开,但 ① `CURRENT` 不动仍指原焦点 run,新战线一律用显式 runId 寻址,「看进度」改报全部非终态战线总览 ② 扫描自动排除所有活动战线占用的 change ③ 全局并发预算:所有战线在跑 craftsman 总数 ≤ 4,预算满则各活动战线并行度 -1、新战线以 1 起步
 
-> 铁律(任何分支生效):**同一个 change 绝不允许两个 run 同时占用**——双 craftsman 同 worktree = tasks.md 互踩、TDD 交叉污染,属于事故而非冲突。
+> 铁律(任何分支生效):**同一个 change 任何时刻至多被一个战线占用**——多 craftsman 同 worktree = tasks.md 互踩、TDD 交叉污染,属于事故而非冲突。
 
 ## 第二步：依赖分析
 
