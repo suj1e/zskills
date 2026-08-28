@@ -38,7 +38,15 @@
 
 ### 1.5 Run 隔离
 
-每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。若 CURRENT 已存在且对应 run 未达终态,先问用户:继续该 run 还是另起新的。
+每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;随即将 `.zdev/apply/CURRENT` 写为该 runId。「继续跑」「看进度」只作用于 CURRENT 指向的 run;**历史 run 只读留档,永不复用**。**已在跑时又发起 batch(双战线规则)**:先读 CURRENT 指向 run 的 `state.json`——
+
+- 已达终态(completed / failed) → 正常另起新 run
+- 未达终态(analyzing / pending-approval / running / paused) → 停下问用户,三选一:
+  - **(a) 等**(默认推荐):新需求挂起,当前 run 到终态后再开
+  - **(b) 收摊**:优雅中止当前 run——在跑的 craftsman 终止,其 change 记回 pending 并写入新 plan 的「变更记录」,然后开新 run
+  - **(c) 并行二战线**(仅当用户明说"并行",且两批 change 经核对完全不相交):新 run 照开,但 ① `CURRENT` 不动仍指旧 run,新 run 一律用显式 runId 寻址 ② 扫描自动排除旧 run 占用的 change ③ 两个 run 的并行度各降 1
+
+> 铁律(任何分支生效):**同一个 change 绝不允许两个 run 同时占用**——双 craftsman 同 worktree = tasks.md 互踩、TDD 交叉污染,属于事故而非冲突。
 
 ## 第二步：依赖分析
 

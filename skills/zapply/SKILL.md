@@ -144,7 +144,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 
 ### 完整流程（按 `references/batch-prompt.md` 执行）
 
-1. **扫描**：扫描 `openspec/changes/` 下所有未归档变更
+1. **扫描**：扫描 `openspec/changes/` 下所有未归档变更（自动排除活动 run 占用项）
 2. **分析**：提取依赖、检测文件冲突、识别风险项（含测试策略缺失→拦截回 ztest）
 3. **确认**：展示执行计划（依赖图 + 批次 + 优先级 + 风险项），等待用户确认；**通过即冻结决策**，写入本 run 的 `plan.md`（模板见 batch-prompt），执行态(state.json)与决策态(plan.md)自此分离
 4. **执行**：按批次并行调度 craftsman，后台执行
@@ -164,6 +164,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 | **三门禁照常** | batch 不是降级通道:每项逐一批 validate + 测试核查 + code-reviewer,quality bar 与单 change 完全一致 |
 | **智能 merge** | 主智能体按依赖序执行;冲突停下问用户 |
 | **Run 隔离与落盘** | 每 batch 一个 `runs/<runId>/`:plan(冻结)/state(运行)/impl-report(验收)三件套;CURRENT 定位活动批次,历史只读 |
+| **双战线规则** | 活动 run 未终态时再发 batch 三选一:等(默认)/收摊中止/显式并行(不相交+不偷 CURRENT+并行度各降 1);同 change 禁止双占 |
 | **状态持久化** | 本 run 的 `state.json` 记录全局状态 |
 
 ### Craftsman 批量模式
