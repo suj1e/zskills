@@ -6,7 +6,9 @@ description: "Use when the user wants to verify actual implementation status ite
 
 # zverify
 
-功能点 ↔ 代码实现一致性核查 skill:**提功能点 → 定判据 → 并行取证 → 逐项裁定 → 报告落 `.zdev/verify/`**。
+功能点 ↔ 代码实现一致性核查 skill:**提功能点 → 定判据 → 并行取证 → 逐项裁定 → 会话内汇报**。
+
+汇报就是交付物——默认零落盘,用户明确要存档才写文件。
 
 输入双源平等:**产品文档**（docx/pptx/xlsx/md/pdf）或**用户口述清单**。回答的永远是同一类问题:"这个功能真的做了吗？做到什么程度？"
 
@@ -36,16 +38,16 @@ description: "Use when the user wants to verify actual implementation status ite
 - ✅ 已实现 / 🟡 部分实现（缺什么） / ❌ 未找到实现 / ⚠️ 实现但与描述不符（偏差点）
 - **低置信度项必须二次复核**（换关键词/换代理再查一轮）后才允许下 ❌——漏报比多查代价高
 
-### 5. 报告落盘
-`.zdev/verify/<yyyy-MM-dd>-<主题>.md`：
+### 5. 会话内汇报（默认零落盘）
 - 总览统计（✅a / 🟡b / ❌c / ⚠️d）
 - 逐项对照表：功能点（原文+出处） | 判定 | 证据（文件:行） | 差距说明
 - **差距清单**（❌+⚠️+🟡 缺口汇总）——只列出不流转，转不转 zarchitect 由用户点名
+- 用户明确要存档 → 才落盘（路径听用户的），并如实 commit 与否也听用户
 
 ## 边界
 - 只读核查：可运行测试/构建作为辅助证据，不改任何源码
 - 不开 change、不修复——差距修复走 zarchitect → zapply，由用户点名发起
-- `.zdev/verify/` 是一次性核查产物：不 commit 不 push，历史报告删留随意（零机制依赖）
+- 核查默认**零落盘**——不产生任何文件，自然无 commit 之扰
 
 ## 资产
 - 无 references；证据格式与裁定规则内联于工作流

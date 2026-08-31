@@ -1,7 +1,7 @@
 # Tasks
 
 ## 1. 新增 skill
-- [x] 创建 `skills/zverify/SKILL.md`（frontmatter + 五步工作流 + 边界）
+- [x] 创建 `skills/zverify/SKILL.md`（frontmatter + 五步工作流 + 边界；报告会话内交付,默认零落盘）
 
 ## 2. 配套同步
 - [x] test-zs SKILLS 数组加 "zverify"

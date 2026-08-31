@@ -6,7 +6,7 @@
 ## What Changes
 - 新增 `skills/zverify/`：功能点 ↔ 代码实现一致性核查
   - 输入双源平等：产品文档（docx/pptx/xlsx/md/pdf）或用户口述清单
-  - 工作流：提功能点清单（含实现判据对齐）→ 按模块聚类定证据锚点 → 后台并行派发只读探索子智能体（Explore / code-explorer）取证 → 四态裁定（✅/🟡/❌/⚠️，低置信度强制二次复核）→ 报告落 `.zdev/verify/<date>-<主题>.md`
+  - 工作流：提功能点清单（含实现判据对齐）→ 按模块聚类定证据锚点 → 后台并行派发只读探索子智能体（Explore / code-explorer）取证 → 四态裁定（✅/🟡/❌/⚠️，低置信度强制二次复核）→ 报告会话内交付(默认零落盘,用户要求才存档)
   - 差距清单只列不流转，转 zarchitect 由用户点名
   - 边界：只读核查（可跑测试/构建作辅助证据，不改源码）；`.zdev/verify/` 不 commit
 - 配套：test-zs SKILLS 数组、README Skills 表、AGENTS.md、版本 0.7.0 → 0.8.0

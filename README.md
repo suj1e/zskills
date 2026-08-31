@@ -27,7 +27,7 @@
 | 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI/图表产出:.zdev/design/ 输出根,getdesign 选风格,brands/ 归档复用 |
 | 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
 | 🚦 [zpush](skills/zpush/SKILL.md) | 推送安全网:人工动作扫描 + 工作区卫生 + 分支 sanity + force 确认;全库唯一管"推之前查什么"的地方 |
-| 🔎 [zverify](skills/zverify/SKILL.md) | 功能点↔代码实现一致性核查:文档/口述双源,只读代理并行取证,四态裁定报告落 `.zdev/verify/` |
+| 🔎 [zverify](skills/zverify/SKILL.md) | 功能点↔代码实现一致性核查:文档/口述双源,只读代理并行取证,四态裁定会话内汇报(默认零落盘) |
 | 🔍 *(已并入)* | Bug 排查能力归 zarchitect(Path D)+ doctor 子智能体 |
 
 ## Agents 配套(zagents)
