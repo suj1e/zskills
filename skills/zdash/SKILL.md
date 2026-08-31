@@ -23,7 +23,7 @@ nohup npx zdashboard@latest --dir <项目根> --open > .zdev/dashboard.log 2>&1 
 - **后台驻留是默认姿势**：进程脱离会话存活，命令立即返回，不阻塞对话（用 Bash 工具的后台执行或 `nohup … &`）
 - 日志统一落 `.zdev/dashboard.log`——「面板不对劲」时先看它
 - 同目录已有活实例 → 复用并打开（**exit 0，非失败**，勿当异常重试）；无 → 新起
-- URL 给用户；直达某页加 `#<mode>`（现有模式：`#apply`、`#apply-batch`、`#view`、`#stats`、`#just`、`#design`）
+- URL 给用户；直达某页加 `#<mode>`（现有模式：`#market`、`#view`、`#stats`、`#just`、`#design`）
 - 端口被占自动 +1，无需干预
 - 注意：复用不会升级版本——新发布的版本来**重拉模式**
 
