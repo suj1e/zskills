@@ -1,7 +1,7 @@
 ---
 name: zdash
 icon: "📊"
-description: "Use when the user wants to open, start, restart, or re-pull the visualization panel — 拉起/重启/重拉 zdashboard（执行进度 / 批量驾驶舱 / 设计预览 / 文档视图）。Pure launcher. Triggers on '打开面板', '启动面板', '拉起dashboard', '看板', '重启面板', '重拉面板', '面板更新了', '面板不对劲'. Does not read or write any business data."
+description: "Use when the user wants to open, start, restart, re-pull the visualization panel, or ask its version — 拉起/重启/重拉 zdashboard（执行进度 / 批量驾驶舱 / 设计预览 / 文档视图），或询问面板版本。Pure launcher. Triggers on '打开面板', '启动面板', '拉起dashboard', '看板', '重启面板', '重拉面板', '面板更新了', '面板不对劲', '面板版本'. Does not read or write any business data."
 ---
 
 # zdash
@@ -10,7 +10,7 @@ description: "Use when the user wants to open, start, restart, or re-pull the vi
 
 ## 约定背景
 
-所有 skill 的可视化产物统一写入 `<项目根>/.zdev/` 下各自子目录（`apply/`、`design/` 等），由 zdashboard 内置插件按固定路径读取展示。**端口与实例由 zdashboard 自己记录**在 `<项目根>/.zdev/dashboard.json`（pid / port / root / startedAt），复用判断全靠它——zdash 只消费，不重复记账。
+所有 skill 的可视化产物统一写入 `<项目根>/.zdev/` 下各自子目录（`apply/`、`design/` 等），由 zdashboard 内置插件按固定路径读取展示。**端口与实例由 zdashboard 自己记录**在 `<项目根>/.zdev/dashboard.json`（pid / port / root / version / startedAt），复用判断全靠它——zdash 只消费（含读 version 汇报），不重复记账。
 
 ## 两种模式（按用户意图分流）
 
@@ -25,7 +25,8 @@ nohup npx zdashboard@latest --dir <项目根> --open > .zdev/dashboard.log 2>&1 
 - 同目录已有活实例 → 复用并打开（**exit 0，非失败**，勿当异常重试）；无 → 新起
 - URL 给用户；直达某页加 `#<mode>`（现有模式：`#market`、`#view`、`#stats`、`#just`、`#design`）
 - 端口被占自动 +1，无需干预
-- 注意：**复用不会升级版本**——发包后想看新版，走重拉模式
+- **版本自愈**：新版面板 cli 会比对 `dashboard.json.version` 与自身，发现旧实例自动重启接管——普通「打开」即完成升级
+- 旧版面板（record 无 version 字段）无自愈能力，复用旧实例属正常——怀疑不是最新，先打开试，不对劲再走重拉
 - npx 缓存按 spec 字符串分槽，多版本槽位共存属正常；重拉模式钉版本号后天然命中正确槽位
 
 ### 2. 重拉（触发词：重拉 / 重启面板 / 面板更新了 / 面板不对劲）
@@ -45,5 +46,6 @@ VER=$(npm view zdashboard version --prefer-online) && nohup npx -y zdashboard@$V
 - 不写业务数据、不改配置；凭据等敏感配置由各业务 skill 自管
 - 不判空面板、不解释页内内容——止步浏览器
 - `.zdev/dashboard.json` 的 pid/port 由 zdashboard 维护，zdash 只消费
+- 用户问「面板版本」→ 读 `dashboard.json` 的 `version` 汇报；字段缺失 → 答「旧版面板（未知版本），建议重拉」
 - 已知边界：Windows 下 pid 回收快，活探针可能误判僵尸实例为存活——表现即"复用了不存在的端口"；遇到打不开的面板，直接重拉
 - 驻留进程的启停诊断：状态看 `.zdev/dashboard.json`，日志看 `.zdev/dashboard.log`
