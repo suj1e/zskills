@@ -59,23 +59,6 @@ notify:
 
 常用：`notify.sh test`（链路自测）/ `notify.sh retry`（手动补投死信）。死信账本 `~/.zdev/notify/dead.jsonl`（上限 50 条）。
 
-### Stop hook 兜底（可选，用户侧配置）
-
-工作区 `<项目>/.zcode/config.json` 加入（确保会话结束补投漏发通知；`hooks.enabled` 必须为 true）：
-
-```json
-{
-  "hooks": {
-    "enabled": true,
-    "events": {
-      "Stop": [
-        { "hooks": [ { "type": "command", "command": "bash -c '~/.zdev/bin/notify.sh retry >/dev/null 2>&1 &' >/dev/null 2>&1; exit 0", "timeoutMs": 3000 } ] }
-      ]
-    }
-  }
-}
-```
-
 ## 写 SKILL 的约定
 
 - frontmatter：`name` / `icon` / `description`——**description 是触发面**，中英触发词都要写；正文中文。
