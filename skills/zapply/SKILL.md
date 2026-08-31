@@ -122,7 +122,7 @@ openspec archive <change-name> --yes
 
 归档后汇报:
 
-**通知义务**:此时触发 `notify done "<name> 已归档" "<完成度 x/y,修改 n 个文件>"`。通知义务不阻塞交付——脚本异步发送,失败自动进死信补投,无需等待或重试(约定见 AGENTS.md「通知义务」)。
+**通知义务**:待人工动作 = 0 → `notify done "<name> 已归档" "<完成度 x/y,修改 n 个文件>"`;**有待人工项 → 改发 `needs-you`**:`notify needs-you "<name> 已归档,人工 x 项待办" "<各项一句话,详见 design.md「上线与人工动作」>"`。通知义务不阻塞交付——脚本异步发送,失败自动进死信补投,无需等待或重试(约定见 AGENTS.md「通知义务」)。
 
 ```markdown
 ✅ Change 已完成并归档
@@ -157,7 +157,7 @@ zapply 是 skill 不是命令——以下均为会话语义,主智能体据此�
 4. **执行**：按批次并行调度 craftsman，后台执行
 5. **监控**：实时读取 checkpoint 进度，处理异常（环境类故障自动修复,实现类问题带修正上下文自动重跑）
 6. **核实**：每项逐一过**三门禁**(validate + 测试策略核查 + code-reviewer);blocker 自动带修正上下文重跑 craftsman 至清零,suggestion 一并修复;仍不过 → 该项 failed/parked,**不阻塞其他项**——parked 项即时触发**通知义务** `notify needs-you "<change> parked" "<失败原因一句话>"`(batch 内单项全绿**不发**)
-7. **合并归档**：本批全过后按依赖序**智能 merge**,归档,生成执行报告——run 结束触发**通知义务** `notify done "batch <runId> 结案" "<过 x/parked y/总 z,一句话>"`
+7. **合并归档**：本批全过后按依赖序**智能 merge**,归档,生成执行报告——run 结束触发**通知义务**:全绿且无待人工项 → `notify done "batch <runId> 结案" "<过 x/parked y/总 z,一句话>"`;**有 parked 或待人工项 → `needs-you`**,body 汇总 parked 数与人工待办数
 
 ### 关键机制
 

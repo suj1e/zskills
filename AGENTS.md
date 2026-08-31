@@ -33,7 +33,7 @@ openspec archive <change> --yes                  # 归档
 4. **batch run 结构**（`.zdev/apply/<runId>/`）：只有 `brief.md` / `state.json` / `report.md` 三件，**禁止子目录、禁止搬家、禁止第二账本**（todo/summary 类派生文件一律不建）。`report.md` 出现即结案；活动战线 = 无 report 的 run；同一 change 任何时刻至多被一个战线占用；全局 craftsman 并发预算 ≤ 4。
 5. **🔧[人工] 标记**：tasks.md 中该前缀条目 = 用户亲自执行（SQL/外部配置/人眼验证），craftsman 跳过永不勾选；push 前由 zpush 安全网扫描确认。
 6. **镜像维护**：15 维审查清单在 `skills/zapply/references/code-reviewer-prompt.md` 与 zagents `agents/zapply-reviewer.md` **双向同步**；craftsman 执行原则同理（TDD、DESIGN.md 强制）。改任一侧必须同步另一侧。
-7. **通知义务**：skill 在语义时刻（结案/冲突停/parked）必须触发通知——调用规范路径 `~/.zdev/bin/notify.sh <event> "<title>" "<body>"`（event 用 `done` / `needs-you`）。**异步不阻塞交付**：脚本后台发送、失败自动进死信补投，调用方不等待不重试。通知配置机器级收敛在 `~/.zdev/config.yaml` 的 `notify` 节，换 webhook 平台只改 config；**skill 文本与任何 git 仓里不得出现 webhook URL/secret**。脚本未部署时从本仓 `scripts/notify.sh` 复制过去。
+7. **通知义务**：skill 在语义时刻（结案/冲突停/parked/**待人工项**）必须触发通知——调用规范路径 `~/.zdev/bin/notify.sh <event> "<title>" "<body>"`（event 用 `done` / `needs-you`；**存在 🔧[人工] 待办时一律 `needs-you`**,全清才是 `done`）。**异步不阻塞交付**：脚本后台发送、失败自动进死信补投，调用方不等待不重试。通知配置机器级收敛在 `~/.zdev/config.yaml` 的 `notify` 节，换 webhook 平台只改 config；**skill 文本与任何 git 仓里不得出现 webhook URL/secret**。脚本未部署时从本仓 `scripts/notify.sh` 复制过去。
 
 ## 通知配置（~/.zdev/config.yaml，机器级，不进任何 git 仓）
 
