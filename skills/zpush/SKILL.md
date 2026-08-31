@@ -11,11 +11,11 @@ description: "Use whenever anything is about to be git-pushed — user says 'pus
 ## 安全网扫描(按序)
 
 1. **🔧[人工] 未执行项(最高优先)**
-   - 扫描源:本会话归档 change 的 `tasks.md` + 各战线 impl-report 的「待人工执行清单」(至少含最近终态 run)
+   - 扫描源:本会话归档 change 的 `tasks.md` + 各 run `report.md` 的「待人工执行清单」(report 出现即结案;至少扫最近结算的 run)
    - 收集未勾选的 `- [ ] 🔧[人工]` 行,逐条列出(动作 / 目标环境),问用户:
      - (a) 已执行,推送
      - (b) 先去执行,稍后再推
-     - (c) 照推——自担风险,**必须写入对应 impl-report/变更记录,不静默**
+     - (c) 照推——自担风险,**必须写入对应 report/变更记录,不静默**
 2. **merge/归档一致性(收尾完整性)**
    - 遍历本地分支,分支名 = change 名(zapply 约定),排除基线与 archive/ 已有目录:
      - `git log <base>..<branch>` 非空 且 `openspec/changes/<branch>/` 存在 → **已核实未合并**:问用户 (a) merge 后推 (b) 跳过该分支照推+留痕

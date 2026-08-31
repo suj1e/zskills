@@ -20,7 +20,7 @@
 
 ## 第一步：扫描变更
 
-扫描 `openspec/changes/` 目录，找出所有**未归档**的 change。扫描前先收集 `.zdev/apply/runs/` 下所有**非终态**战线的占用名单——这些 change 从候选剔除，并在计划报告标注「被 run <id> 占用」：
+扫描 `openspec/changes/` 目录，找出所有**未归档**的 change。扫描前先收集 `.zdev/apply/` 下所有**活动战线**（run 目录内**尚无 `report.md`** 的 run）的占用名单——这些 change 从候选剔除，并在计划报告标注「被 run <id> 占用」：
 - 排除 `archive/` 目录
 - 排除以 `.` 开头的目录
 - 读取每个 change 的 `proposal.md`、`design.md`、`tasks.md`
@@ -38,17 +38,17 @@
 
 ### 1.5 Run 隔离
 
-每次启动 batch 先创建本次运行目录 `.zdev/apply/runs/<runId>/`(runId = `<日期>-<HHmm>`,如 `2026-08-27-1540`),三件套同住:`plan.md` / `state.json` / `impl-report.md`;`state.json` 额外写入 **`front`(战线别名)**——从本批 change 的共同前缀/主题提炼(如 `auth`、`hotfix-0808`),用户口头给了名字就用他的。**历史 run 只读留档,永不复用**。无参数命令(看进度/继续跑/暂停)一律**全局语义**,作用全部非终态战线;活动名单永远由各 `state.json` 非终态推导——没有焦点指针,不做记忆态。**已在跑时又发起 batch(多战线规则)**:先扫全部战线状态——
+每次启动 batch 先创建运行目录 `.zdev/apply/<runId>/`(runId = `<MMDD-HHmm>-<name>`,如 `0827-1540-auth`;name = 战线别名,从本批 change 的共同主题提炼,用户口头给了就用他的),开跑前先落两件:`brief.md`(决策基线,开跑前冻结) + `state.json`(运行态:`name` / `status` / `changes[]` / `checkpoint` / `retryCount`)。**`report.md` 结算时才生成——它出现,该战线即了结**。历史 run 只读留档,删留随你。无参数命令(看进度/继续跑/暂停)一律**全局语义**,作用全部活动战线;活动战线 = run 目录内**尚无 report.md** 的 run——没有焦点指针,没有子目录状态机,零记忆态。**已在跑时又发起 batch(多战线规则)**:先 `ls` 各 run——
 
 - 已达终态(completed / failed) → 正常另起新 run
 - 未达终态(analyzing / pending-approval / running / paused) → 停下问用户,三选一:
   - **(a) 等**(默认推荐):新需求挂起,当前 run 到终态后再开
-  - **(b) 收摊**:优雅中止当前 run——在跑的 craftsman 终止,其 change 记回 pending 并写入新 plan 的「变更记录」,然后开新 run
+  - **(b) 收摊**:优雅中止当前 run——在跑的 craftsman 终止,其 change 记回 pending,写入该 run `report.md` 的「遗留与建议」后照常结算,然后开新 run
   - **(c) 并行新战线**(仅当用户明说"并行",且新批次与**所有**活动战线的 change 核对互不相交):新 run 照开,但 ① 各战线一律用**别名 / runId** 显式寻址,「看进度」报全部非终态战线总览 ② 扫描自动排除所有活动战线占用的 change ③ 全局并发预算:所有战线在跑 craftsman 总数 ≤ 4,预算满则各活动战线并行度 -1、新战线以 1 起步
 
 > 铁律(任何分支生效):**同一个 change 任何时刻至多被一个战线占用**——多 craftsman 同 worktree = tasks.md 互踩、TDD 交叉污染,属于事故而非冲突。
 
-**战后报告入口(推导,非记忆)**:全部终态时,「看进度」自动展示 `completedAt` 最新的 run 的 impl-report;想看更早的,点名别名/runId。
+**战后报告入口(推导,非记忆)**:全部终态时,「看进度」自动展示**最近结算**(report.md 最新)run 的验收报告;想看更早的,点名别名/runId。
 
 ## 第二步：依赖分析
 
@@ -189,10 +189,10 @@
 - (5) 先执行非 parked 项，parked 项稍后处理
 - (6) 退出，保存状态
 
-**确认通过即冻结决策**：主智能体随即将最终计划写入 `.zdev/apply/runs/<runId>/plan.md`（人类可读的实施策略快照），然后才进入第五步执行循环。此后 `batch-state.json` 是运行态持续变动，而该 md 是**决策基线不再随手修改**；执行中确需经用户同意调整顺序/范围时，只在文末「变更记录」追加条目。模板：
+**确认通过即冻结决策**：主智能体随即将最终决策写入 `.zdev/apply/<runId>/brief.md`（人类可读的实施简报），然后才进入第五步执行循环。此后 `state.json` 是运行态持续变动，而 brief 是**决策基线不再随手修改**；执行中确需经用户同意调整顺序/范围时，只在文末「变更记录」追加条目。模板：
 
 ```markdown
-# 实施策略（战线: <front> · runId: <yyyy-MM-dd-HHmm>）
+# 实施简报（name: <name> · runId: <MMDD-HHmm>-<name>）
 
 ## 输入清单
 | change | 层 | 优先级 | 风险 | 预估 | 去向 |
@@ -326,7 +326,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 第六步：状态持久化
 
-所有状态写入 `.zdev/apply/runs/<runId>/state.json`，格式遵循 `batch-state.schema.json`。
+所有状态写入 `.zdev/apply/<runId>/state.json`，格式遵循 `run-state.schema.json`。
 
 **更新时机**：
 - 扫描完成后：写入 changes 列表、批次计划
@@ -337,7 +337,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 **断点续跑**：
 - 用户说「继续跑」即续跑
-- 读取 `.zdev/apply/runs/<runId>/state.json`，跳过已完成的 change，从当前批次继续
+- 读取各 run 的 `state.json`（活动战线 = 目录内尚无 `report.md` 的 run），跳过已结算的 change，从当前批次继续
 
 ---
 
@@ -380,12 +380,12 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ---
 
-## 实施验收报告（runs/<runId>/impl-report.md）
+## 结案报告（<runId>/report.md）
 
-第七步的报告除在会话中呈现外,**必须落盘为该 run 的验收文档**,与会话摘要分开维护。落盘后若用户要求 push → 走 `zpush` 安全网(以本报告「待人工执行清单」为扫描源),确认后放行。模板：
+第七步的报告除在会话中呈现外,**必须落盘为该 run 的 `report.md`**——**落盘即结案**,该战线自动移出活动名单,无任何搬家动作。落盘后若用户要求 push → 走 `zpush` 安全网(以本报告「待人工执行清单」为扫描源),确认后放行。模板：
 
 ```markdown
-# 实施验收报告（战线: <front> · runId: <yyyy-MM-dd-HHmm>）
+# 实施验收报告（name: <name> · runId: <MMDD-HHmm>-<name>）
 
 ## 结果总览
 总 N · completed a · failed b · parked c · skipped d · 总用时 T
@@ -397,7 +397,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 | change | 终态 | tasks x/y | 门禁(结构/测试/审查) | 重试次数 | 耗时 |
 
 ## 计划偏差对照
-<相对 plan.md：顺序变更 / AI 新增判定的实际验证 / 冲突是否真实发生；无则写「按计划执行」>
+<相对 brief.md：顺序变更 / AI 新增判定的实际验证 / 冲突是否真实发生；无则写「按 brief 执行」>
 
 ## 遗留与建议
 <failed 根因分类；parked/skipped 的处置建议与入口提示>
@@ -418,7 +418,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 2. **失败隔离**：单个 change 失败不影响其他 change
 3. **自动重试**：失败自动重试最多 2 次
 4. **用户最小干预**：只在需要决策时才停下来询问
-5. **状态持久化**：所有状态写入 `.zdev/apply/runs/<runId>/state.json`，支持断点续跑
+5. **状态持久化**：所有状态写入 `<runId>/state.json`，支持断点续跑
 6. **检查点可恢复**：每个 change 的 task 级进度记录，重试时从断点继续
 
 ## 渐进式信任
@@ -466,7 +466,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 | 用户说 | 主智能体动作 |
 |--------|-------------|
-| 「跑这批」「batch 起来」 | 完整执行;创建战线时提炼/询问 front 别名 |
+| 「跑这批」「batch 起来」 | 完整执行;创建战线时提炼/询问战线 name |
 | 「并行再开一条线:<主题>」 | 走多战线三选一;新战线带别名 |
 | 「看进度」 | **全部非终态战线总览**;点名别名则单线明细;全部终态 → 最近完成战线的验收报告 |
 | 「继续跑」 | 无参 = 恢复**全部** paused 战线;点名 = 单个 |

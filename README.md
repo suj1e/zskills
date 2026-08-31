@@ -12,7 +12,7 @@
 | 挂 change 的图 | `openspec/changes/<slug>/diagrams/` |
 | 独立文档 / 其配图 | `docs/` · `docs/diagrams/` |
 | 设计资产 | `.zdev/design/`(含 `brands/` 品牌源归档) |
-| batch 三件套 | `.zdev/apply/runs/<runId>/{plan,state.json,impl-report}` |
+| batch run | `.zdev/apply/<runId>/{brief,state.json,report}`——report 出现即结案,零子目录零搬家 |
 
 交付纪律统一为「写入 + commit + push」。
 
