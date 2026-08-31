@@ -24,31 +24,64 @@ DEAD_FILE="$DEAD_DIR/dead.jsonl"
 DEAD_MAX=50
 CURL_MAX_TIME=10
 
-# ---------- yaml 极简读取(只支持两层缩进的 key: value) ----------
-# 用法: cfg_get "notify.default" → 输出值或空
+# ---------- yaml 极简读取(缩进感知,只依赖 python3,不依赖 pyyaml) ----------
+# 用法: cfg_get "notify.default" → 输出值或空。按完整路径逐级匹配(避免多通道同名叶子撞行)
 cfg_get() {
-  local key="$1" leaf
-  leaf="${key##*.}"
-  awk -v leaf="$leaf" '
-    /^[[:space:]]*#/ {next}
-    $0 ~ "^[[:space:]]*"leaf":[[:space:]]*" {
-      sub("^[[:space:]]*"leaf":[[:space:]]*", "")
-      sub(/[[:space:]]+#.*$/, "")
-      gsub(/^["'\'']|["'\'']$/, "")
-      print
-      exit
-    }
-  ' "$CONFIG_FILE" 2>/dev/null
+  python3 - "$CONFIG_FILE" "$1" 2>/dev/null <<'PY'
+import sys
+try:
+    lines = open(sys.argv[1]).read().splitlines()
+except Exception:
+    sys.exit(0)
+path = sys.argv[2].split('.')
+stack = []  # (indent, key)
+for line in lines:
+    s = line.strip()
+    if not s or s.startswith('#'):
+        continue
+    indent = len(line) - len(line.lstrip())
+    key, _, val = s.partition(':')
+    key = key.strip()
+    val = val.strip().strip('"\'')
+    while stack and stack[-1][0] >= indent:
+        stack.pop()
+    stack.append((indent, key))
+    if [k for _, k in stack] == path:
+        print(val)
+        sys.exit(0)
+PY
 }
 
-# default 通道列表(单值或 YAML 数组都归一成多行)
+# default 通道列表(标量单值或 YAML 数组都归一成多行)
 cfg_channels() {
-  awk '
-    /^[[:space:]]*#/ {next}
-    /^default:/        {in_def=1; sub(/^default:[[:space:]]*/, ""); if ($0 != "") {print; exit} next}
-    in_def && /^[[:space:]]*-[[:space:]]*/ {sub(/^[[:space:]]*-[[:space:]]*/, ""); gsub(/^["'\'']|["'\'']$/, ""); print; next}
-    in_def && /^[^[:space:]]/ {exit}
-  ' "$CONFIG_FILE" 2>/dev/null
+  python3 - "$CONFIG_FILE" 2>/dev/null <<'PY'
+import sys
+try:
+    lines = open(sys.argv[1]).read().splitlines()
+except Exception:
+    sys.exit(0)
+in_def = False
+def_indent = 0
+for line in lines:
+    s = line.strip()
+    if not s or s.startswith('#'):
+        continue
+    indent = len(line) - len(line.lstrip())
+    if not in_def:
+        key, _, val = s.partition(':')
+        if key.strip() == 'default':
+            v = val.strip().strip('"\'')
+            if v:                       # 标量单通道
+                print(v)
+                sys.exit(0)
+            in_def = True               # 数组形态,继续收集下面的 - 项
+            def_indent = indent
+        continue
+    if indent <= def_indent:            # 离开 default 块
+        sys.exit(0)
+    if s.startswith('- '):
+        print(s[2:].strip().strip('"\''))
+PY
 }
 
 mask_url() {
@@ -63,35 +96,41 @@ json_escape() {
 # ---------- 通道适配器(各平台 payload 拼装,新增平台加一个 case) ----------
 # 入参: type url title body group level event;成功输出 nothing,失败 exit 非 0
 send_channel() {
-  local type="$1" url="$2" title="$3" body="$4" group="$5" level="$6" event="$7"
-  local t b g payload
+  local type="$1" url="$2" title="$3" body="$4" group="$5" level="$6" event="${7:-}"
+  local t b g payload resp
   t=$(json_escape "$title"); b=$(json_escape "$body"); g=$(json_escape "$group")
   case "$type" in
     bark)
-      # GET 拼参格式(title/body 走 query,绕开路径段数坑)
+      # GET 拼参格式(title/body 走 query,绕开路径段数坑);-f:HTTP>=400 视为失败
       local enc_t enc_b
       enc_t=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$title")
       enc_b=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$body")
-      curl -sS --max-time "$CURL_MAX_TIME" \
-        "${url}?title=${enc_t}&body=${enc_b}&group=${group}&level=${level}" >/dev/null
+      # 业务失败(Bark 对假 key 返回 HTTP400+code:400)两层都要查
+      resp=$(curl -fsS --max-time "$CURL_MAX_TIME" \
+        "${url}?title=${enc_t}&body=${enc_b}&group=${group}&level=${level}" 2>/dev/null) || return 1
+      [[ "$resp" == *'"code":200'* ]] || return 1
       ;;
     feishu)
       payload="{\"msg_type\":\"text\",\"content\":{\"text\":\"$(json_escape "[$group] $title
 $body")\"}}"
-      curl -sS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
-        -d "$payload" "$url" >/dev/null
+      resp=$(curl -fsS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
+        -d "$payload" "$url" 2>/dev/null) || return 1
+      # 飞书成功: {"code":0,...}(旧版字段 StatusCode:0 也认)
+      [[ "$resp" == *'"code":0'* || "$resp" == *'"StatusCode":0'* ]] || return 1
       ;;
     dingtalk)
       payload="{\"msgtype\":\"text\",\"text\":{\"content\":\"$(json_escape "[$group] $title
 $body")\"}}"
-      curl -sS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
-        -d "$payload" "$url" >/dev/null
+      resp=$(curl -fsS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
+        -d "$payload" "$url" 2>/dev/null) || return 1
+      # 钉钉成功: {"errcode":0,...}
+      [[ "$resp" == *'"errcode":0'* ]] || return 1
       ;;
     generic|*)
-      # 兜底:POST JSON {event,title,body,group,level}——未识别 type 也走这里试一把
+      # 兜底:POST JSON {event,title,body,group,level}——未识别 type 也走这里试一把;仅 HTTP 状态可判
       payload="{\"event\":\"$(json_escape "$event")\",\"title\":\"$t\",\"body\":\"$b\",\"group\":\"$g\",\"level\":\"$(json_escape "$level")\"}"
-      curl -sS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
-        -d "$payload" "$url" >/dev/null
+      curl -fsS --max-time "$CURL_MAX_TIME" -H 'Content-Type: application/json' \
+        -d "$payload" "$url" >/dev/null 2>&1
       ;;
   esac
 }
@@ -102,7 +141,7 @@ deliver() {
   local attempt=0 delays=(0 2 5)
   for attempt in 0 1 2; do
     sleep "${delays[$attempt]}" || true
-    if send_channel "$ch_type" "$ch_url" "$title" "$body" "$group" "$level" 2>/dev/null; then
+    if send_channel "$ch_type" "$ch_url" "$title" "$body" "$group" "$level" "$event" 2>/dev/null; then
       return 0
     fi
   done
