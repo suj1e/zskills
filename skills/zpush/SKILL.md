@@ -11,7 +11,7 @@ description: "Use whenever anything is about to be git-pushed — user says 'pus
 ## 安全网扫描(按序)
 
 1. **🔧[人工] 未执行项(最高优先)**
-   - 扫描源:本会话归档 change 的 `tasks.md` + `.zdev/apply/FOCUS` 指向 run 的 impl-report「待人工执行清单」
+   - 扫描源:本会话归档 change 的 `tasks.md` + 各战线 impl-report 的「待人工执行清单」(至少含最近终态 run)
    - 收集未勾选的 `- [ ] 🔧[人工]` 行,逐条列出(动作 / 目标环境),问用户:
      - (a) 已执行,推送
      - (b) 先去执行,稍后再推
