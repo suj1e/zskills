@@ -39,7 +39,8 @@ VER=$(npm view zdashboard version --prefer-online) && nohup npx -y zdashboard@$V
 
 - `npm view --prefer-online` 绕过本地元数据缓存，实时拿 registry 的 latest
 - 钉 `@<具体版本>` 直接命中对应缓存槽，绕开 tag 解析歧义与历史老槽位
-- `--restart` 杀旧起新——**后台驻留的实例活得久，复用永远给你旧版 UI**；判断口诀：怀疑面板不是最新，不要诊断，直接重拉
+- `--restart` 杀旧起新——兜底硬手段：自愈失败（升级中断 / 实例僵尸 / 旧版面板无 version 自愈能力）时使用
+- 判断顺序：先普通打开（新面板自动比对 version 自愈）→ 仍不对劲 → 重拉兜底
 
 ## 边界
 
