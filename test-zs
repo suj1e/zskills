@@ -339,7 +339,7 @@ if grep -q 'notify done' "$f" && grep -q 'notify needs-you' "$f"; then
 else
   bad "[zapply] notify obligations missing"
 fi
-if grep -q '人工 x 项待办' "$f" && grep -q '待人工项 → `needs-you`' "$ROOT/AGENTS.md"; then
+if grep -q '人工 x 项待办' "$f" && grep -q '待办时一律 `needs-you`' "$ROOT/AGENTS.md"; then
   ok "manual-action items escalate to needs-you (zapply + AGENTS.md)"
 else
   bad "manual-action escalation missing"
