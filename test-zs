@@ -320,6 +320,36 @@ for skill in "${SKILLS[@]}"; do
   fi
 done
 
+# ---------- 通知义务体系 ----------
+say ""
+say "== notify obligation =="
+if [[ -x "$ROOT/scripts/notify.sh" ]]; then
+  ok "scripts/notify.sh exists and executable"
+else
+  bad "scripts/notify.sh missing or not executable"
+fi
+if bash -n "$ROOT/scripts/notify.sh" 2>/dev/null; then
+  ok "scripts/notify.sh syntax valid"
+else
+  bad "scripts/notify.sh has syntax errors"
+fi
+f="$ROOT/skills/zapply/SKILL.md"
+if grep -q 'notify done' "$f" && grep -q 'notify needs-you' "$f"; then
+  ok "[zapply] notify obligations wired (done + needs-you)"
+else
+  bad "[zapply] notify obligations missing"
+fi
+if grep -q '通知义务' "$ROOT/AGENTS.md" && grep -q '~/.zdev/bin/notify.sh' "$ROOT/AGENTS.md" && grep -q 'notify:' "$ROOT/AGENTS.md"; then
+  ok "AGENTS.md notify clause + config schema present"
+else
+  bad "AGENTS.md notify clause missing"
+fi
+if grep -qE 'api\.day\.app|open-apis/bot|access_token' "$ROOT/skills/zapply/SKILL.md"; then
+  bad "zapply SKILL leaks webhook URL patterns (secrets belong in ~/.zdev/config.yaml only)"
+else
+  ok "zapply SKILL contains no webhook secrets"
+fi
+
 # ---------- summary ----------
 say ""
 say "== summary =="

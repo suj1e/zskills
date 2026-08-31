@@ -33,6 +33,48 @@ openspec archive <change> --yes                  # 归档
 4. **batch run 结构**（`.zdev/apply/<runId>/`）：只有 `brief.md` / `state.json` / `report.md` 三件，**禁止子目录、禁止搬家、禁止第二账本**（todo/summary 类派生文件一律不建）。`report.md` 出现即结案；活动战线 = 无 report 的 run；同一 change 任何时刻至多被一个战线占用；全局 craftsman 并发预算 ≤ 4。
 5. **🔧[人工] 标记**：tasks.md 中该前缀条目 = 用户亲自执行（SQL/外部配置/人眼验证），craftsman 跳过永不勾选；push 前由 zpush 安全网扫描确认。
 6. **镜像维护**：15 维审查清单在 `skills/zapply/references/code-reviewer-prompt.md` 与 zagents `agents/zapply-reviewer.md` **双向同步**；craftsman 执行原则同理（TDD、DESIGN.md 强制）。改任一侧必须同步另一侧。
+7. **通知义务**：skill 在语义时刻（结案/冲突停/parked）必须触发通知——调用规范路径 `~/.zdev/bin/notify.sh <event> "<title>" "<body>"`（event 用 `done` / `needs-you`）。**异步不阻塞交付**：脚本后台发送、失败自动进死信补投，调用方不等待不重试。通知配置机器级收敛在 `~/.zdev/config.yaml` 的 `notify` 节，换 webhook 平台只改 config；**skill 文本与任何 git 仓里不得出现 webhook URL/secret**。脚本未部署时从本仓 `scripts/notify.sh` 复制过去。
+
+## 通知配置（~/.zdev/config.yaml，机器级，不进任何 git 仓）
+
+```yaml
+notify:
+  default: bark            # 主通道;写数组即 fan-out 多通道
+  level: timeSensitive     # 透传给通道(仅 bark 消费)
+  # group: zskills         # 缺省取项目目录名
+  channels:
+    bark:
+      type: bark           # URL 拼参
+      url: https://api.day.app/<key>
+    feishu:
+      type: feishu         # bot webhook,JSON {"msg_type":"text",...}
+      url: https://open.feishu.cn/open-apis/bot/v2/hook/<token>
+    dingtalk:
+      type: dingtalk       # {"msgtype":"text",...}
+      url: https://oapi.dingtalk.com/robot/send?access_token=<token>
+    generic:               # 未知类型兜底:POST JSON {event,title,body,group,level}
+      type: generic
+      url: https://example.com/hook
+```
+
+常用：`notify.sh test`（链路自测）/ `notify.sh retry`（手动补投死信）。死信账本 `~/.zdev/notify/dead.jsonl`（上限 50 条）。
+
+### Stop hook 兜底（可选，用户侧配置）
+
+工作区 `<项目>/.zcode/config.json` 加入（确保会话结束补投漏发通知；`hooks.enabled` 必须为 true）：
+
+```json
+{
+  "hooks": {
+    "enabled": true,
+    "events": {
+      "Stop": [
+        { "hooks": [ { "type": "command", "command": "bash -c '~/.zdev/bin/notify.sh retry >/dev/null 2>&1 &' >/dev/null 2>&1; exit 0", "timeoutMs": 3000 } ] }
+      ]
+    }
+  }
+}
+```
 
 ## 写 SKILL 的约定
 
