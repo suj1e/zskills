@@ -78,7 +78,7 @@ openspec status --change <name>   # 查看阻塞项
 
 **3c. 代码审查**(优先起子智能体 **`zapply-reviewer`**——分层审查:依赖决策阶梯 + 15 维自审,再内调内置 code-reviewer 深审;zagents 仓库提供。dispatch **只注入上下文四要素**:change 路径 / 审查分支 / 方案约束摘要 / craftsman 交付报告要点,**不要灌任何清单模板正文**,清单它自带。未装则降级:派内置 `code-reviewer`,按 `references/code-reviewer-prompt.md` 填充模板派发):
 - **只读**审查分支 diff(相对 base),核对 15 维:设计约束(含 DESIGN.md)、bug/边界、安全、架构、原则模式、魔法常量、造轮子、死代码、错误资源、并发事务、性能、测试兼容、依赖文档、**代码臭味**、报告属实
-- 输出按严重度分级:**blocker**(优先修,清零才能归档)与 **suggestion**(同样下发修复,优先级次之;确实不该修的说明理由)
+- 输出按严重度分级:**blocker**(优先修,清零才能归档)与 **suggestion**(同样下发修复,优先级次之;豁免受「豁免反腐」约束,见 3d)
 - 审查者必须独立于 craftsman 与主智能体,不自审、不修代码
 
 **3d. 主智能体汇总**:validate/status 结果 + 测试策略核查结果 + code review 报告 + 抽查 diff 与 `git status`(分支干净、无游离文件)。抽查≠复审:全量审查是 reviewer 的职责,主智能体只抽核心任务对应的 2-3 个文件,对照报告验证"声称改的真的改了、无漏报",不做全量重复审查
