@@ -37,14 +37,14 @@ CURL_MAX_TIME=10
 # ---------- yaml 极简读取(缩进感知,只依赖 python3,不依赖 pyyaml) ----------
 # 用法: cfg_get "notify.default" → 输出值或空。按完整路径逐级匹配(避免多通道同名叶子撞行)
 cfg_get() {
-  "$PYTHON_BIN" - "$CONFIG_FILE" "$1" 2>/dev/null <<'PY'
+  "$PYTHON_BIN" - "$CONFIG_FILE" "$1" 2>/dev/null <<'PY' | tr -d '\r' | tr -d '\r'
 import sys
 try:
     lines = open(sys.argv[1]).read().splitlines()
 except Exception:
     sys.exit(0)
 path = sys.argv[2].split('.')
-stack = []  # (indent, key)
+stack = []
 for line in lines:
     s = line.strip()
     if not s or s.startswith('#'):
@@ -62,9 +62,8 @@ for line in lines:
 PY
 }
 
-# default 通道列表(标量单值或 YAML 数组都归一成多行)
 cfg_channels() {
-  "$PYTHON_BIN" - "$CONFIG_FILE" 2>/dev/null <<'PY'
+  "$PYTHON_BIN" - "$CONFIG_FILE" 2>/dev/null <<'PY' | tr -d '\r' | tr -d '\r'
 import sys
 try:
     lines = open(sys.argv[1]).read().splitlines()
@@ -81,13 +80,13 @@ for line in lines:
         key, _, val = s.partition(':')
         if key.strip() == 'default':
             v = val.strip().strip('"\'')
-            if v:                       # 标量单通道
+            if v:
                 print(v)
                 sys.exit(0)
-            in_def = True               # 数组形态,继续收集下面的 - 项
+            in_def = True
             def_indent = indent
         continue
-    if indent <= def_indent:            # 离开 default 块
+    if indent <= def_indent:
         sys.exit(0)
     if s.startswith('- '):
         print(s[2:].strip().strip('"\''))
@@ -244,6 +243,8 @@ group=$(group_default)
 # fan-out:default 单值或数组
 sent_fail=0
 while IFS= read -r ch_name; do
+  ch_name="${ch_name%$'
+'}"
   [[ -z "$ch_name" ]] && continue
   ch_type=$(cfg_get "notify.channels.${ch_name}.type")
   ch_url=$(cfg_get "notify.channels.${ch_name}.url")
