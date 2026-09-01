@@ -17,6 +17,16 @@
 # - 未配置 notify 节 = 静默跳过(零打扰)
 set -euo pipefail
 
+# Windows 兼容:python3 常被微软商店占位符劫持,回退到 python
+# 探测真正可用的解释器(微软商店 python3 占位符能通过 command -v 却跑不了真代码)
+PYTHON_BIN=""
+for _c in python3 python; do
+  if command -v "$_c" >/dev/null 2>&1 && "$_c" -c 'pass' >/dev/null 2>&1; then
+    PYTHON_BIN="$(command -v "$_c")"; break
+  fi
+done
+[ -n "$PYTHON_BIN" ] || PYTHON_BIN=python3
+
 ZDEV_DIR="${ZDEV_DIR:-$HOME/.zdev}"
 CONFIG_FILE="$ZDEV_DIR/config.yaml"
 DEAD_DIR="$ZDEV_DIR/notify"
@@ -27,7 +37,7 @@ CURL_MAX_TIME=10
 # ---------- yaml 极简读取(缩进感知,只依赖 python3,不依赖 pyyaml) ----------
 # 用法: cfg_get "notify.default" → 输出值或空。按完整路径逐级匹配(避免多通道同名叶子撞行)
 cfg_get() {
-  python3 - "$CONFIG_FILE" "$1" 2>/dev/null <<'PY'
+  "$PYTHON_BIN" - "$CONFIG_FILE" "$1" 2>/dev/null <<'PY'
 import sys
 try:
     lines = open(sys.argv[1]).read().splitlines()
@@ -54,7 +64,7 @@ PY
 
 # default 通道列表(标量单值或 YAML 数组都归一成多行)
 cfg_channels() {
-  python3 - "$CONFIG_FILE" 2>/dev/null <<'PY'
+  "$PYTHON_BIN" - "$CONFIG_FILE" 2>/dev/null <<'PY'
 import sys
 try:
     lines = open(sys.argv[1]).read().splitlines()
@@ -103,8 +113,8 @@ send_channel() {
     bark)
       # GET 拼参格式(title/body 走 query,绕开路径段数坑);-f:HTTP>=400 视为失败
       local enc_t enc_b
-      enc_t=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$title")
-      enc_b=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$body")
+      enc_t=$("$PYTHON_BIN" -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$title")
+      enc_b=$("$PYTHON_BIN" -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$body")
       # 业务失败(Bark 对假 key 返回 HTTP400+code:400)两层都要查
       resp=$(curl -fsS --max-time "$CURL_MAX_TIME" \
         "${url}?title=${enc_t}&body=${enc_b}&group=${group}&level=${level}" 2>/dev/null) || return 1
