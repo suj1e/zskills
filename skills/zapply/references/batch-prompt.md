@@ -319,7 +319,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 1. **结构核实**：运行 `openspec validate <change-name>`（命令名以本地 `openspec --help` 为准）
 2. **测试策略核查**：design.md 含「测试策略」章节、抽查测试代码覆盖指定场景、覆盖率达标
 3. **代码审查**：后台起独立 code-reviewer 子智能体（模板见 `code-reviewer-prompt.md`），blocker 清零才能进入下一步，suggestion 一并修复（优先级次之）
-4. 有 blocker/suggestion → 结构化汇总为修正上下文，**自动重跑 craftsman**（计入 retryCount，上限 2 次），要求逐条回应
+4. 有 blocker/suggestion → 结构化汇总为修正上下文，**自动重跑 craftsman**（计入 retryCount，上限 2 次），要求逐条回应;craftsman 声称的豁免由主智能体按「豁免反腐」三类逐条仲裁,无效即并入重跑
 5. 三门禁全过 + 代码侧 tasks 全勾(`🔧[人工]` 除外) + 分支干净 → 该项标记 completed；超限仍未过 → failed（附全部差异），不阻塞其他项
 
 ---
