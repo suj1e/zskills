@@ -28,6 +28,8 @@ description: "Use when the user wants a logical scenario actually executed and a
 - **数据自给**:场景自带世界——内存库(H2 等)/ mock 数据 / 本地实例,不依赖、不连任何共享环境
 
 ### 3. 执行(本地自建世界,真实跑用例)
+
+**前置搭建(Arrange)是执行的一部分**:种子数据、mock 桩、登录态等前置世界的搭建动作必须脚本化,并记入报告的「数据准备说明」——可复现的前置才有可复现的结论。
 - **测试套件**:筛选场景相关用例运行(`vitest -t "<关键词>"` / `pytest -k "<关键词>"`)
 - **API 黑盒**:本地拉起服务实例(内存库 + mock 兜底)后按步骤调本地端口,断言状态码与响应结构;保留请求/响应全文
 - **Web UI**:playwright 驱动浏览器走场景,**每关键步截图**
@@ -56,6 +58,8 @@ description: "Use when the user wants a logical scenario actually executed and a
 ### 5. 交付
 报告路径给用户(浏览器打开),会话内给摘要(通过率 + 失败要点)。
 失败项修不修、怎么修——走 zapply,由用户点名;`.zdev/scenario/` 不 commit,删留随意。
+
+**回归联动**:修复后重跑同名场景 = 回归——报告主题标注「回归」,并对照链接前次报告;差距清单只报变化项,让"修没修好"一眼可见。
 
 ## 边界
 - **自备世界**:内存库与 mock 数据自建测试世界,不连任何共享环境;真实数据与生产永远不碰
