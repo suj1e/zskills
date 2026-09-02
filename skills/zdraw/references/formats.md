@@ -1,6 +1,7 @@
-# zdraw · 源文件生成规范(.excalidraw / .drawio)
+# zdraw · 源文件生成规范(.excalidraw 主 / .drawio 次)
 
 > 源文件是**给人继续编辑的**——骨架规范、坐标来自 layout 脚本、语义角色来自 brand-mapping。禁止手估坐标,禁止硬编码品牌色。
+> **主格式 .excalidraw**:默认一切图只出 excalidraw。`.drawio` 仅在用户点名 / 交付目标要求 / 需要大型图标库时才出。
 
 ## .excalidraw(JSON)
 
@@ -55,7 +56,7 @@
 - 必填元字段全套带齐(seed/version/versionNonce/isDeleted/opacity…),缺了编辑器打不开
 - 手绘感由 `roughness` 控制:白板 1(潦草)/ 正式 0(架构);`roundness: {"type": 3}` 圆角
 
-## .drawio(XML)
+## .drawio(XML,次选)
 
 最小合法骨架:
 

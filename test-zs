@@ -213,6 +213,11 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "dual-delivery rule missing"
       fi
+      if grep -qE '主格式 = \.excalidraw|以 \.excalidraw 为主' "$f"; then
+        ok "excalidraw-first priority stated"
+      else
+        bad "excalidraw-first priority missing"
+      fi
       ;;
     zasset)
       if grep -qE '\.zdev/design/assets' "$f"; then

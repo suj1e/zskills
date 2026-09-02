@@ -16,15 +16,16 @@ description: "Use when the user wants any diagram produced, edited, or converted
 - zdocs 写文档需要配图(落 `docs/diagrams/`)
 - 需要 .excalidraw / .drawio 文件的生成、编辑、互转
 
-## 格式路由(场景 → 格式)
+## 格式路由(以 .excalidraw 为主)
 
-| 场景 | 主格式 | 理由 |
-|---|---|---|
-| 讨论草图、思路白板、方案探索期 | **.excalidraw** | 手绘感传达"这是草稿",改起来快 |
-| 正式架构图、ER、时序、change/文档挂图 | **.drawio** | 规整工程感,图标库全 |
-| README/文档内嵌展示 | 由 .drawio 渲染 .svg | 图片格式才能内嵌 |
+**主格式 = .excalidraw**——默认一切图都出 excalidraw 源(手绘感友好、生态轻、编辑零门槛)。`.drawio` 只在以下场景作为**次选**:
 
-**双交付铁律**:源文件(人能继续编辑)+ 渲染 .svg(直接能看),缺一不算交付。
+- 用户点名要 drawio,或交付目标要求 .drawio(Confluence/工程规范)
+- 需要庞大图标库的正式工程图(云厂商拓扑、标准 UML 套件)
+
+README/文档内嵌展示:由源文件渲染 .svg(图片格式才能内嵌)。
+
+**双交付铁律**:源文件(人能继续编辑)+ 渲染 .svg(直接能看),缺一不算交付;用 drawio 时双格式同理。
 
 ## 工作流
 
@@ -42,14 +43,15 @@ description: "Use when the user wants any diagram produced, edited, or converted
 python3 scripts/zdraw_layout.py spec.json -o coords.json --svg out.svg
 ```
 
-- 支持 hierarchy(架构/流程/树)/ sequence(时序)/ grid(泳道/层栈)三种算法
-- 自动落实 4px 网格、间距阶梯、画布尺寸;SVG 渲染内置正交圆角连线、标签遮罩、箭头三件套(规则见 `references/layout-rules.md`)
+- 支持 hierarchy(架构/流程/树,层内居中)/ sequence(时序,生命线+消息序+自消息)/ grid(泳道/层栈,含车道标签)三种算法
+- 节点宽度随标签自适应(中文 12px/字符、英文 7px,80–240 钳制);自动落实 4px 网格、间距阶梯、画布尺寸
+- SVG 渲染内置:正交圆角连线、标签遮罩留隙、箭头三件套、时序生命线、泳道分隔(规则见 `references/layout-rules.md`)
 - 脚本算不了的(自由白板)才手摆,同样守 4px 网格
 
 ### 4. 生成源文件(坐标来自 coords,禁止手估)
-按 `references/formats.md` 的骨架写:
-- `.excalidraw`:elements 数组(rectangle/arrow/text),坐标直填
-- `.drawio`:mxGraphModel XML,mxCell 节点/边,style 串消费品牌色
+按 `references/formats.md` 的骨架写,**默认只出 .excalidraw**:
+- `.excalidraw`(主):elements 数组(rectangle/arrow/text),坐标直填
+- `.drawio`(次,场景命中才出):mxGraphModel XML,mxCell 节点/边,style 串消费品牌色
 
 ### 5. 品牌化(可选)
 用户要求图匹配品牌时:查 `.zdev/design/brands/<slug>/DESIGN.md`(与 zdesign 同源共享;无则先蒸馏归档),按 `references/brand-mapping.md` 映射为语义角色落盘 `.zdev/design/diagram-style.md`,再注入源文件(excalidraw strokeColors / drawio style 串)。**accent 焦点克制 ≤2 元素**;无品牌诉求则中性配色,不抢。
