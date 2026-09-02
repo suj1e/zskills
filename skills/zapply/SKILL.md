@@ -120,7 +120,7 @@ openspec archive <change-name> --yes
 
 ### 5.1 push 安全网
 
-推送前扫描（🔧[人工] 未执行项、工作区卫生、分支 sanity、force 确认）由 **`zpush` skill** 统一执行——本 skill 与 batch 各 run 的 report「待人工执行清单」是它的扫描源。
+**任何 push 发生前必须触发 `zpush` skill** 执行安全网扫描（🔧[人工] 未执行项、merge/归档一致性、工作区卫生、分支 sanity、force 确认），按其三选一决策协议处理拦截项。本 skill 与 batch 各 run 的 report「待人工执行清单」是它的扫描源。
 
 归档后汇报:
 

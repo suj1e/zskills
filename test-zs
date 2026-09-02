@@ -355,6 +355,25 @@ else
   ok "zapply SKILL contains no webhook secrets"
 fi
 
+# ---------- push 门禁(zpush 是所有推送的唯一安全网) ----------
+say ""
+say "== push gate =="
+shopt -s nullglob
+for f in "$ROOT"/skills/*/SKILL.md; do
+  name=$(basename "$(dirname "$f")")
+  [[ "$name" == "zpush" ]] && continue
+  if grep -qE 'git push|commit \+ push' "$f"; then
+    if grep -q 'zpush' "$f"; then
+      ok "[$name] push wired through zpush gate"
+    else
+      bad "[$name] pushes without zpush gate"
+    fi
+  else
+    ok "[$name] no push (gate n/a)"
+  fi
+done
+shopt -u nullglob
+
 # ---------- summary ----------
 say ""
 say "== summary =="

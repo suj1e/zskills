@@ -66,10 +66,10 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 - 待确认清单被显式列出而非悄悄略过
 
 ### 7. 交付 = 写入 + commit + push
-全部文件落盘并验收通过后:
+全部文件落盘并验收通过后,**推送前必须触发 `zpush` 安全网**(扫描:🔧[人工] 未执行项 / 工作区卫生 / 分支 sanity / force 确认),通过后才推送:
 
 ```bash
-git add <涉及文档与图> && git commit -m "docs: <主题>" && git push  # 推送前过 zpush 安全网
+git add <涉及文档与图> && git commit -m "docs: <主题>" && git push
 ```
 
 交付完成态 = 文件在库里、远端已同步(沿 zarchitect 先例)。汇报包含:文件路径清单 + 图示索引 + 待确认项。

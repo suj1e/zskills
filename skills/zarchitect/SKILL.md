@@ -144,10 +144,10 @@ CLI 不可用则手建 `openspec/changes/<name>/`,写入三文件:
 - 测试策略是方案的必要组成部分,不是可选项
 
 ### 9. 交付(commit + push)
-全部文档与图落盘并核引无误后:
+全部文档与图落盘并核引无误后,**推送前必须触发 `zpush` 安全网**(按其工作流扫描:🔧[人工] 未执行项 / merge-归档一致性 / 工作区卫生 / 分支 sanity / force 确认),通过后才推送:
 
 ```bash
-git add openspec/changes/<slug> && git commit -m "docs(change): <slug> 方案与图" && git push  # 推送前过 zpush 安全网
+git add openspec/changes/<slug> && git commit -m "docs(change): <slug> 方案与图" && git push
 ```
 
 **commit + push 是交付的一部分,不是可选项**——下游 zapply 建 worktree 的前提就是 change 文档已在基线分支上。多 change 全部一并提交。
