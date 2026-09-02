@@ -16,7 +16,7 @@
 
 交付纪律统一为「写入 + commit + push」。
 
-## Skills(9)
+## Skills(10)
 
 | Skill | 一句话 |
 |-------|--------|
@@ -28,6 +28,7 @@
 | 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
 | 🚦 [zpush](skills/zpush/SKILL.md) | 推送安全网:人工动作扫描 + 工作区卫生 + 分支 sanity + force 确认;全库唯一管"推之前查什么"的地方 |
 | 🔎 [zverify](skills/zverify/SKILL.md) | 功能点↔代码实现一致性核查:文档/口述双源,只读代理并行取证,四态裁定会话内汇报(默认零落盘) |
+| 🎬 [zscenario](skills/zscenario/SKILL.md) | 场景测试执行:逻辑场景→用例集→真实执行(套件/API/UI/模拟器),自包含 HTML 报告落 `.zdev/scenario/` |
 | 🔍 *(已并入)* | Bug 排查能力归 zarchitect(Path D)+ doctor 子智能体 |
 
 ## Agents 配套(zagents)

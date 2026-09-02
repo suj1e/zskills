@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "zskills",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "source": "./",
       "description": "suj1e 的个人 ZCode skill 集合。",
       "icon": "https://cdn.jsdelivr.net/gh/suj1e/zskills@main/icon.svg",
