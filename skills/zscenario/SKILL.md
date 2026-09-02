@@ -59,6 +59,8 @@ description: "Use when the user wants a logical scenario actually executed and a
 报告路径给用户(浏览器打开),会话内给摘要(通过率 + 失败要点)。
 失败项修不修、怎么修——走 zapply,由用户点名;`.zdev/scenario/` 不 commit,删留随意。
 
+**结算即通知**:调 `~/.zdev/bin/notify.sh`——有 failed / 阻塞 → `needs-you`(带失败摘要);全通过 → `done`。未部署或未配置则静默跳过。
+
 **回归联动**:修复后重跑同名场景 = 回归——报告主题标注「回归」,并对照链接前次报告;差距清单只报变化项,让"修没修好"一眼可见。
 
 ## 边界
