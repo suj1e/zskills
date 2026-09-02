@@ -161,20 +161,57 @@ for skill in "${SKILLS[@]}"; do
       else
         bad ".zdev/design output root missing"
       fi
-      if grep -q 'diagram-design' "$f"; then
-        ok "diagram-design routing present"
+      if grep -q 'zdraw' "$f"; then
+        ok "diagram routing to zdraw present"
       else
-        bad "diagram-design routing missing"
+        bad "zdraw routing missing"
       fi
       if grep -q 'zasset' "$f"; then
         ok "graphic assets routed to zasset"
       else
         bad "zasset routing missing"
       fi
-      if grep -qE 'diagram-basics|diagram-style-mapping|quality-checklist' "$f"; then
-        ok "diagram references present"
+      if grep -qE 'references/quality-checklist\.md' "$f"; then
+        ok "quality-checklist reference present"
       else
-        bad "diagram references missing"
+        bad "quality-checklist reference missing"
+      fi
+      if grep -q 'zdraw' "$f"; then
+        ok "diagram routing to zdraw present"
+      else
+        bad "zdraw routing missing (diagrams belong to zdraw now)"
+      fi
+      ;;
+    zdraw)
+      if grep -qE '\.excalidraw' "$f" && grep -qE '\.drawio' "$f"; then
+        ok "dual editable-source formats present (.excalidraw + .drawio)"
+      else
+        bad "dual-source formats missing"
+      fi
+      if grep -qE 'scripts/zdraw_layout\.py' "$f"; then
+        ok "layout script usage documented"
+      else
+        bad "layout script usage missing"
+      fi
+      if [[ -f "$ROOT/scripts/zdraw_layout.py" ]]; then
+        ok "scripts/zdraw_layout.py exists"
+      else
+        bad "scripts/zdraw_layout.py missing"
+      fi
+      if python3 -m py_compile "$ROOT/scripts/zdraw_layout.py" 2>/dev/null; then
+        ok "zdraw_layout.py compiles"
+      else
+        bad "zdraw_layout.py syntax errors"
+      fi
+      if grep -q 'zdesign' "$f"; then
+        ok "brand-source sharing with zdesign present"
+      else
+        bad "zdesign brand-source sharing missing"
+      fi
+      if grep -qE '双交付|双轨' "$f"; then
+        ok "dual-delivery rule stated"
+      else
+        bad "dual-delivery rule missing"
       fi
       ;;
     zasset)
@@ -210,10 +247,10 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "docswriter delegation missing"
       fi
-      if grep -q 'diagram-design' "$f"; then
-        ok "diagram-design usage present"
+      if grep -q 'zdraw' "$f"; then
+        ok "diagram usage via zdraw present"
       else
-        bad "diagram-design usage missing"
+        bad "zdraw usage missing"
       fi
       if grep -q 'zasset' "$f"; then
         ok "graphic assets sourced from zasset"

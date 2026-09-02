@@ -6,7 +6,7 @@ description: "Use when the user wants to design a solution — technical archite
 
 # zarchitect
 
-通用方案设计 skill:**输入采集 → 统一分析 → 需求澄清 → 多轮对齐(和用户头脑风暴) → 方案设计 → 开 change → diagram-design 图文 → 触发 ztest → 交付(commit + push)**。
+通用方案设计 skill:**输入采集 → 统一分析 → 需求澄清 → 多轮对齐(和用户头脑风暴) → 方案设计 → 开 change → zdraw 图文 → 触发 ztest → 交付(commit + push)**。
 
 覆盖场景:
 - **新功能需求**(大/小):从零到有的功能设计
@@ -132,7 +132,7 @@ CLI 不可用则手建 `openspec/changes/<name>/`,写入三文件:
 - **人工动作显式化**:凡涉及数据库变更、外部控制台配置、部署动作、需人眼验证的场景——在 `design.md` 末尾写 `## 上线与人工动作` 章节(每条:动作 / 目标环境 / 脚本或命令 / 验证方式);对应 tasks 条目加 `🔧[人工]` 前缀。这类条目 craftsman 永不执行、永不勾选,由用户完成后自行勾选
 
 ### 7. 图文并茂(必须)
-使用 `diagram-design` 技能生成架构图、流程图、时序图、数据流图、ER 图等。
+使用 `zdraw` 技能生成架构图、流程图、时序图、数据流图、ER 图等——交付可编辑源(.drawio/.excalidraw)+ 渲染 SVG 双轨。
 常用类型:architecture、flowchart、sequence、data-flow、component、state-machine、erd。
 图统一落到**本 change 目录下** `openspec/changes/<slug>/diagrams/`(多 change 则各归各),在 design.md 中以相对路径引用。
 设计方案涉及页面/UI 时,用 `zdesign` 技能产出带品牌风格的 HTML/CSS 设计稿。

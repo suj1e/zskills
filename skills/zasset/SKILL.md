@@ -1,14 +1,14 @@
 ---
 name: zasset
 icon: "🖌️"
-description: "Use when the user needs a standalone graphic asset produced — logo, favicon/app icons, icon sets, OG share images, banners/covers, posters, badges, empty-state/error-page illustrations. Triggers on '做个logo', '图标', 'favicon', '分享图', 'banner', '海报', '插画', 'badge'. Vector-first: SVG master files plus size exports, brand tone shared with zdesign's brand sources. For full UI pages/screens use zdesign; for structural diagrams use diagram-design."
+description: "Use when the user needs a standalone graphic asset produced — logo, favicon/app icons, icon sets, OG share images, banners/covers, posters, badges, empty-state/error-page illustrations. Triggers on '做个logo', '图标', 'favicon', '分享图', 'banner', '海报', '插画', 'badge'. Vector-first: SVG master files plus size exports, brand tone shared with zdesign's brand sources. For full UI pages/screens use zdesign; for diagrams (architecture/flowchart/ER/sketches) use zdraw."
 ---
 
 # zasset
 
 独立图形资产 skill:**定场景 → 定基调 → SVG 探索精修 → 变体导出 → 过三测交付**。
 
-凡是「单个视觉成品」——logo、图标组、favicon、分享图、banner、海报、插画、badge——都归它;页面归 zdesign,结构图归 diagram-design。
+凡是「单个视觉成品」——logo、图标组、favicon、分享图、banner、海报、插画、badge——都归它;页面归 zdesign,图归 zdraw。
 
 ## 核心理念
 
@@ -31,7 +31,7 @@ description: "Use when the user needs a standalone graphic asset produced — lo
 
 ### 1. 定场景
 确认:哪类资产?用在什么媒介(网页/app/印刷/社媒)?目标尺寸?深底还是浅底?有无已有品牌资料?
-**判据前置**:如果用户要的其实是完整页面/界面 → 转 `zdesign`;只是结构图示无品牌诉求 → 转 `diagram-design`,不抢活。
+**判据前置**:如果用户要的其实是完整页面/界面 → 转 `zdesign`;图(结构图/白板/示意图) → 转 `zdraw`,不抢活。
 
 ### 2. 定基调(与 zdesign 共享品牌源)
 查找顺序:`.zdev/design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ 没有则现场蒸馏(官网 URL 抓取 / 截图分析 / 已知范式),落盘回填 `brands/` 归档——从此同品牌零成本复跑。

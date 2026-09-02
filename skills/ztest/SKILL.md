@@ -78,7 +78,7 @@ description: "Use when a test strategy is needed — auto-invoked by zarchitect 
 ```
 
 ### 5. 图文并茂(必须——让用户看明白"要怎么验")
-使用 `diagram-design` 技能生成两张:
+使用 `zdraw` 技能生成两张:
 - **测试金字塔**:单/集/E2E 的数量与占比
 - **场景覆盖图**:核心用户旅程或关键业务场景 → 映射到测试层与验证点(含边界/异常),让用户一眼看清"每个场景由哪张网兜着"
 

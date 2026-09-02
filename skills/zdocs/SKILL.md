@@ -38,7 +38,7 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 确定文档大纲和关键要点，用层级列表展示给用户确认（长文档必须确认）。
 
 ### 4. 配图（图文并茂，必须——编排层职责）
-使用 `diagram-design` 技能生成文档所需图表：
+使用 `zdraw` 技能生成文档所需图表（交付可编辑源 + 渲染 SVG）：
 - 架构图（architecture）/ 流程图（flowchart）/ 时序图（sequence）/ ER 图（erd）/ 数据流图（data-flow）
 
 **落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。
