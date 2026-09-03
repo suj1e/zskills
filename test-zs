@@ -381,6 +381,22 @@ else
   bad "scripts/notify.sh has syntax errors"
 fi
 f="$ROOT/skills/zapply/SKILL.md"
+if grep -q '轻量直改模式' "$f" && grep -q '宁重勿漏' "$f"; then
+  ok "[zapply] lightweight direct-fix mode present (criteria + fallback)"
+else
+  bad "[zapply] lightweight direct-fix mode missing"
+fi
+if grep -q '轻量直改' "$ROOT/skills/zarchitect/SKILL.md" && grep -q '智能识别' "$ROOT/skills/zarchitect/SKILL.md"; then
+  ok "[zarchitect] simple-change smart routing present"
+else
+  bad "[zarchitect] simple-change smart routing missing"
+fi
+if grep -q 'zpush 安全网' "$ROOT/skills/zapply/SKILL.md" && grep -q '门禁不豁免' "$ROOT/skills/zapply/SKILL.md"; then
+  ok "lightweight mode keeps zpush gate (no exemption)"
+else
+  bad "lightweight mode exempts zpush gate"
+fi
+f="$ROOT/skills/zapply/SKILL.md"
 if grep -q 'notify done' "$f" && grep -q 'notify needs-you' "$f"; then
   ok "[zapply] notify obligations wired (done + needs-you)"
 else
