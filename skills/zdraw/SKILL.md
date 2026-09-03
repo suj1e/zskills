@@ -16,18 +16,25 @@ description: "Use when the user wants any diagram produced, edited, or converted
 - zdocs 写文档需要配图(落 `docs/diagrams/`)
 - 需要 .excalidraw / .drawio 文件的生成、编辑、互转
 
-## 格式路由(以 .excalidraw 为主)
+## 格式路由(三级优先)
 
-**主格式 = .excalidraw**——默认一切图都出 excalidraw 源(手绘感友好、生态轻、编辑零门槛)。`.drawio` 只在以下场景作为**次选**:
+| 优先 | 格式 | 场景 |
+|---|---|---|
+| **1. Mermaid** | 图将**住在 markdown 里** | README / design.md / docs / change 文档内嵌——零坐标、diff 友好、GitHub 原生渲染,直接写 \`\`\`mermaid 代码块,连布局脚本都不用跑 |
+| **2. .excalidraw** | 独立图文件 / 白板 / 草图 | 需要精细布局、品牌调性、或作为独立源文件被人继续编辑(独立文件的默认格式) |
+| **3. .drawio** | 点名 / 图标库 / Confluence | 用户点名、交付目标硬要求、大型图标库工程图(云拓扑/标准 UML) |
 
-- 用户点名要 drawio,或交付目标要求 .drawio(Confluence/工程规范)
-- 需要庞大图标库的正式工程图(云厂商拓扑、标准 UML 套件)
+**Mermaid 降级条件**(命中任一 → 升 .excalidraw):
+- 布局自动生成不可控,节点多(>12)或关系复杂时图会乱 → excalidraw 走脚本布局
+- 品牌化诉求(语义角色注入)→ excalidraw/drawio
+- mermaid 不支持的类型(自由白板、复杂泳道变体)→ excalidraw/drawio
 
-README/文档内嵌展示:由源文件渲染 .svg(图片格式才能内嵌)。
-
-**双交付铁律**:源文件(人能继续编辑)+ 渲染 .svg(直接能看),缺一不算交付;用 drawio 时双格式同理。
+**双交付铁律**:独立源文件场景 = 源(.excalidraw/.drawio)+ 渲染 .svg,缺一不算交付;**Mermaid 场景源即交付**(md 内代码块本身),.svg 用户要了才另出。
 
 ## 工作流
+
+### 0. 先问图住哪(路由判定)
+图将内嵌 markdown(README/design.md/docs/change 文档)→ **Mermaid 代码块直达交付**(跳过 3-4 步,无需布局脚本);命中降级条件或独立图文件 → 继续下方完整管线。
 
 ### 1. 定类型与场景
 类型八选一 + 白板:architecture / flowchart / sequence / erd / state / swimlane / tree / layer-stack。场景定尺寸预设(doc-inline 800×600 / doc-wide 1120×n / slide-16x9 1600×900 / social-og 1200×630 / fit)。**尺寸同时约束字号阶梯**——slide 的节点名 16px,不是 12px。

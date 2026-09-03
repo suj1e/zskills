@@ -213,10 +213,15 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "dual-delivery rule missing"
       fi
-      if grep -qE '主格式 = \.excalidraw|以 \.excalidraw 为主' "$f"; then
-        ok "excalidraw-first priority stated"
+      if grep -qE 'Mermaid' "$f" && grep -qE '三级优先|第一优先|先问图住哪' "$f"; then
+        ok "mermaid-first-for-md priority stated"
       else
-        bad "excalidraw-first priority missing"
+        bad "mermaid-first routing missing"
+      fi
+      if grep -qE '\.excalidraw' "$f" && grep -qE '独立(图文件|文件)?' "$f"; then
+        ok "excalidraw as standalone default present"
+      else
+        bad "excalidraw standalone default missing"
       fi
       ;;
     zasset)

@@ -1,7 +1,24 @@
-# zdraw · 源文件生成规范(.excalidraw 主 / .drawio 次)
+# zdraw · 源文件生成规范(Mermaid / .excalidraw 主 / .drawio 次)
 
-> 源文件是**给人继续编辑的**——骨架规范、坐标来自 layout 脚本、语义角色来自 brand-mapping。禁止手估坐标,禁止硬编码品牌色。
-> **主格式 .excalidraw**:默认一切图只出 excalidraw。`.drawio` 仅在用户点名 / 交付目标要求 / 需要大型图标库时才出。
+> 图住 markdown 里 → Mermaid 代码块(零坐标,自动布局,格内最轻);独立源文件 → .excalidraw 默认;`.drawio` 仅在用户点名 / 交付目标要求 / 需要大型图标库时才出。骨架规范、坐标来自 layout 脚本、语义角色来自 brand-mapping。禁止手估坐标,禁止硬编码品牌色。
+
+## Mermaid(md 内嵌,第一优先)
+
+````markdown
+```mermaid
+flowchart TB
+    c[客户端] -->|HTTPS| gw[API 网关]
+    gw --> svc[订单服务]
+    svc[(订单库)]
+```
+````
+
+- 常用图型:flowchart / sequenceDiagram / erDiagram / stateDiagram-v2 / classDiagram / journey / gantt
+- 主题跟随站点,品牌化能力弱——要品牌调性直接降级 excalidraw/drawio,别硬调 themeVariables
+- 自动布局不可控:节点 >12 或边交叉多 → 降级走脚本布局
+- 交付即源:代码块进 md 就完事,.svg 用户要了才另出(mermaid-cli 或 GitHub 截图)
+
+## .excalidraw(JSON,独立文件默认)
 
 ## .excalidraw(JSON)
 
