@@ -25,6 +25,7 @@
 | 📊 [zdash](skills/zdash/SKILL.md) | 面板纯启动器(全库唯一知道 zdashboard 怎么拉的地方) |
 | 🧪 [ztest](skills/ztest/SKILL.md) | 测试策略:分层 + 量化覆盖率 + 逐任务验收标准 + 金字塔/场景覆盖双图 |
 | 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI/图表产出:.zdev/design/ 输出根,getdesign 选风格,brands/ 归档复用 |
+| ✏️ [zdraw](skills/zdraw/SKILL.md) | 图表 skill:Mermaid md 内嵌第一优先,.excalidraw/.drawio 双可编辑源 + SVG 渲染双轨,品牌化与 zdesign 共享 brands/ |
 | 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
 | 🚦 [zpush](skills/zpush/SKILL.md) | 推送安全网:人工动作扫描 + 工作区卫生 + 分支 sanity + force 确认;全库唯一管"推之前查什么"的地方 |
 | 🔎 [zverify](skills/zverify/SKILL.md) | 功能点↔代码实现一致性核查:文档/口述双源,只读代理并行取证,四态裁定会话内汇报(默认零落盘) |
