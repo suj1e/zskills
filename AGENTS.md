@@ -13,7 +13,7 @@ justfile                   # just test → bash test-zs
 marketplace.json           # 市场清单
 ```
 
-现有 11 个 skill：zapply（执行+验收，含 batch 子模式）/ zarchitect（方案设计）/ zverify（实现核实）/ zscenario（场景测试执行） / zdash（面板启动器）/ ztest / zdraw（图表，.excalidraw/.drawio 双源交付）/ zdesign / zdocs / zpush（推送安全网）/ zasset。
+现有 12 个 skill：zapply（执行+验收，含 batch 子模式）/ zarchitect（方案设计）/ zverify（实现核实）/ zscenario（场景测试执行） / zdash（面板启动器）/ ztest / zdraw（图表，.excalidraw/.drawio 双源交付）/ zshow（会话内可视化讲解）/ zdesign / zdocs / zpush（推送安全网）/ zasset。
 
 ## 常用命令
 

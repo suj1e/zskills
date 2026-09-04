@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-SKILLS=("zasset" "zapply" "zarchitect" "zdash" "zdesign" "zdocs" "zpush" "zscenario" "ztest" "zverify")
+SKILLS=("zasset" "zapply" "zarchitect" "zdash" "zdesign" "zdocs" "zdraw" "zpush" "zscenario" "zshow" "ztest" "zverify")
 PASS=0
 FAIL=0
 TOTAL=0
@@ -198,10 +198,14 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "scripts/zdraw_layout.py missing"
       fi
-      if python3 -m py_compile "$ROOT/scripts/zdraw_layout.py" 2>/dev/null; then
+      py_ok=0
+      if command -v python3 >/dev/null 2>&1 && python3 -m py_compile "$ROOT/scripts/zdraw_layout.py" >/dev/null 2>&1; then py_ok=1
+      elif command -v python >/dev/null 2>&1 && python -m py_compile "$ROOT/scripts/zdraw_layout.py" >/dev/null 2>&1; then py_ok=1
+      fi
+      if [[ $py_ok -eq 1 ]]; then
         ok "zdraw_layout.py compiles"
       else
-        bad "zdraw_layout.py syntax errors"
+        bad "zdraw_layout.py syntax errors or no usable python"
       fi
       if grep -q 'zdesign' "$f"; then
         ok "brand-source sharing with zdesign present"
