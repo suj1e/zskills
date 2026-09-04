@@ -17,7 +17,7 @@ description: "Use when the user wants to open, start, restart, re-pull the visua
 ### 1. 打开（默认）
 
 ```bash
-nohup npx zdashboard@latest --dir <项目根> --open > .zdev/dashboard.log 2>&1 &
+nohup npx zdashboard@latest --dir <项目根> --open --host 0.0.0.0 > .zdev/dashboard.log 2>&1 &
 ```
 
 - **后台驻留是默认姿势**：进程脱离会话存活，命令立即返回，不阻塞对话（用 Bash 工具的后台执行或 `nohup … &`）
@@ -33,7 +33,7 @@ nohup npx zdashboard@latest --dir <项目根> --open > .zdev/dashboard.log 2>&1 
 **先解析后钉版**——`@latest` 受 npx 多槽位缓存影响，钉具体版本号最稳：
 
 ```bash
-VER=$(npm view zdashboard version --prefer-online) && nohup npx -y zdashboard@$VER --dir <项目根> --open --restart > .zdev/dashboard.log 2>&1 &
+VER=$(npm view zdashboard version --prefer-online) && nohup npx -y zdashboard@$VER --dir <项目根> --open --host 0.0.0.0 --restart > .zdev/dashboard.log 2>&1 &
 ```
 
 - `npm view --prefer-online` 绕过本地元数据缓存，实时拿 registry 的 latest
