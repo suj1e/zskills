@@ -13,9 +13,9 @@ description: "Use when the user needs a standalone graphic asset produced — lo
 ## 核心理念
 
 - **矢量优先**:SVG 母版是唯一真相源,PNG/ICO 只是按需导出的产物,禁止位图起稿再描。
-- **品牌基调共享**:颜色/字体的调性来自 `.zdev/design/brands/<slug>/DESIGN.md`(与 zdesign 同源共享),保证 logo 和界面一个调性。
+- **品牌基调共享**:颜色/字体的调性来自 `design/brands/<slug>/DESIGN.md`(与 zdesign 同源共享),保证 logo 和界面一个调性。
 - **完善交付**:产物必须过缩放/单色/对比度三测,未全过回炉,绝不交付半成品。
-- **统一输出根**:所有产出写入 `.zdev/design/assets/<slug>/`,skill 不询问输出路径。
+- **统一输出根**:所有产出写入 `design/assets/<slug>/`,skill 不询问输出路径。图形资产是交付物,随项目仓库 push。
 
 ## 场景矩阵(速览,精确规格见 references)
 
@@ -34,7 +34,7 @@ description: "Use when the user needs a standalone graphic asset produced — lo
 **判据前置**:如果用户要的其实是完整页面/界面 → 转 `zdesign`;图(结构图/白板/示意图) → 转 `zdraw`,不抢活。
 
 ### 2. 定基调(与 zdesign 共享品牌源)
-查找顺序:`.zdev/design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ 没有则现场蒸馏(官网 URL 抓取 / 截图分析 / 已知范式),落盘回填 `brands/` 归档——从此同品牌零成本复跑。
+查找顺序:`design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ 没有则现场蒸馏(官网 URL 抓取 / 截图分析 / 已知范式),落盘回填 `brands/` 归档——从此同品牌零成本复跑。
 没有既定品牌时,与用户确认 2-3 个色调方向再继续,不要擅自拍板配色。
 
 ### 3. 探索
@@ -79,7 +79,7 @@ logo 场景额外附 mini brand guide(见 quality-checklist 模板):色值表、
 
 ```
 ## 产出
-<slug> @ .zdev/design/assets/<slug>/
+<slug> @ design/assets/<slug>/
 | 文件 | 用途 | 尺寸 |
 
 ## 基调

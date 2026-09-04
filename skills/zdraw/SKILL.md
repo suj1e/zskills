@@ -61,7 +61,7 @@ python3 scripts/zdraw_layout.py spec.json -o coords.json --svg out.svg
 - `.drawio`(次,场景命中才出):mxGraphModel XML,mxCell 节点/边,style 串消费品牌色
 
 ### 5. 品牌化(可选)
-用户要求图匹配品牌时:查 `.zdev/design/brands/<slug>/DESIGN.md`(与 zdesign 同源共享;无则先蒸馏归档),按 `references/brand-mapping.md` 映射为语义角色落盘 `.zdev/design/diagram-style.md`,再注入源文件(excalidraw strokeColors / drawio style 串)。**accent 焦点克制 ≤2 元素**;无品牌诉求则中性配色,不抢。
+用户要求图匹配品牌时:查 `design/brands/<slug>/DESIGN.md`(与 zdesign 同源共享;无则先蒸馏归档),按 `references/brand-mapping.md` 映射为语义角色落盘 `design/diagram-style.md`,再注入源文件(excalidraw strokeColors / drawio style 串)。**accent 焦点克制 ≤2 元素**;无品牌诉求则中性配色,不抢。
 
 ### 6. 验收
 按 `references/quality-checklist.md` 逐项自检:预算内 / 正交圆角 / 标签不压线 / 4px 网格 / 双交付齐 / 浏览器亲眼确认 .svg。未全过回炉。

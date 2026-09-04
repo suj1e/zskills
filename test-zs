@@ -156,10 +156,10 @@ for skill in "${SKILLS[@]}"; do
       else
         bad "getdesign reference missing"
       fi
-      if grep -qE '\.zdev/design/?["`/ ]' "$f"; then
-        ok ".zdev/design output root present"
+      if grep -qE 'prototypes/' "$f" && grep -qE 'design/brands/' "$f"; then
+        ok "prototypes/ + design/brands/ output roots present"
       else
-        bad ".zdev/design output root missing"
+        bad "prototypes/ or design/brands/ output roots missing"
       fi
       if grep -q 'zdraw' "$f"; then
         ok "diagram routing to zdraw present"
@@ -229,10 +229,10 @@ for skill in "${SKILLS[@]}"; do
       fi
       ;;
     zasset)
-      if grep -qE '\.zdev/design/assets' "$f"; then
-        ok ".zdev/design/assets output root present"
+      if grep -qE 'design/assets' "$f"; then
+        ok "design/assets output root present"
       else
-        bad ".zdev/design/assets output root missing"
+        bad "design/assets output root missing"
       fi
       if grep -qE 'brands/' "$f"; then
         ok "shared brands/ source consumption present"

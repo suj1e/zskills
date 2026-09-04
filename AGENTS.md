@@ -28,7 +28,7 @@ openspec archive <change> --yes                  # 归档
 ## 硬规则（违者等于破坏架构）
 
 1. **面板零耦合**：全库只允许 `zdash` 提及 zdashboard / 写启动命令。其余 skill 一律不启动服务、不写展示逻辑——产物落盘约定目录，面板按约读取。
-2. **产物落盘契约**：可视化产物 → `.zdev/<域>/`（apply、design）；挂在 change 的图 → `openspec/changes/<slug>/diagrams/`；独立文档 → `docs/`、配图 `docs/diagrams/`；设计资产 → `.zdev/design/`（含 `brands/` 品牌源归档）；场景测试报告 → `.zdev/scenario/<date>-<场景>.html`（自包含单文件，不 commit）。
+2. **产物落盘契约**：可视化产物 → `.zdev/<域>/`（apply）；原型 → `prototypes/`；挂在 change 的图 → `openspec/changes/<slug>/diagrams/`；独立文档 → `docs/`、配图 `docs/diagrams/`；设计源与资产 → `design/`（`brands/` 品牌源归档、`assets/` 图形资产）；场景测试报告 → `.zdev/scenario/<date>-<场景>.html`（自包含单文件，不 commit）。前三者随仓库 commit + push。
 3. **交付纪律**：所有 skill 的完成态 =「写入 + commit + push」，直接提交 main。
 4. **batch run 结构**（`.zdev/apply/<runId>/`）：只有 `brief.md` / `state.json` / `report.md` 三件，**禁止子目录、禁止搬家、禁止第二账本**（todo/summary 类派生文件一律不建）。`report.md` 出现即结案；活动战线 = 无 report 的 run；同一 change 任何时刻至多被一个战线占用；全局 craftsman 并发预算 ≤ 4。
 5. **🔧[人工] 标记**：tasks.md 中该前缀条目 = 用户亲自执行（SQL/外部配置/人眼验证），craftsman 跳过永不勾选；push 前由 zpush 安全网扫描确认。

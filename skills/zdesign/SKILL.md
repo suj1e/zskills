@@ -13,7 +13,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 - **设计系统驱动**:所有视觉决策(配色 / 字体 / 圆角 / 间距)来自选定的 `DESIGN.md`,不自由发挥。
 - **完善交付,不是半成品**:产出必须过【约束】【细节】【验收】三道关,未全过则回炉。
 - **轻量自洽**:产出是纯 HTML/CSS(零运行时依赖),浏览器直接打开即所见。
-- **统一输出根**:所有产出默认写入 `.zdev/design/`,skill 不询问输出路径。
+- **统一输出根**:原型统一写入项目根 `prototypes/`,skill 不询问输出路径。
 
 ## 工作流
 
@@ -22,7 +22,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 **图表不是这里的活**——任何图(架构/流程/ER/白板草图)转介 `zdraw`;独立图形资产(logo/favicon/banner/插画)转介 `zasset`。
 
 ### 2. 选风格(动态发现,可插拔源)
-**查找顺序**:`.zdev/design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ getdesign 官方库 → 现场蒸馏(产出回填 brands/)。
+**查找顺序**:`design/brands/<slug>/DESIGN.md`(本地已归档,直接用)→ getdesign 官方库 → 现场蒸馏(产出回填 brands/)。
 
 风格菜单默认来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README —— 68 个品牌,9 大分类(AI / 开发工具 / 后端 / SaaS / 设计工具 / 金融 / 电商 / 媒体 / 汽车)。
 
@@ -36,7 +36,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 选定品牌后,拉取并归档到品牌源目录(`brands/` 已有同 slug 的 DESIGN.md 则跳过拉取):
 
 ```bash
-mkdir -p .zdev/design/brands/<brand-slug> && cd .zdev/design/brands/<brand-slug>
+mkdir -p design/brands/<brand-slug> && cd design/brands/<brand-slug>
 npx -y getdesign@latest add <brand-slug>
 cd -  # 回项目根继续后续步骤
 ```
@@ -48,7 +48,7 @@ cd -  # 回项目根继续后续步骤
 UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`)。**产出全程引用变量,绝不硬编码 hex / px 常数**。
 
 ### 5. 按约束产出 + 打磨细节
-遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/design/`;过程中随时可用浏览器打开文件自查。
+遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `prototypes/`;过程中随时可用浏览器打开文件自查。
 
 **taste-skill 是本 skill 的工具,装有就必须优先使用**:产出与打磨阶段**先过 taste-skill**(design-taste-frontend / high-end-visual-design / gpt-taste)的反 generic 规范与构图 / 节奏 / 动效手艺。**两者互相协调**:DESIGN.md 定视觉值,taste-skill 出手艺与方向,产出时融合执行——视觉基准仍是 DESIGN.md。未安装 taste-skill 时才降级:按【约束】【细节】内联清单执行。
 
@@ -56,14 +56,14 @@ UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color
 按【验收】清单逐项自检(含浏览器亲眼确认)。**未全过 → 回第 5 步修,过了才交付。**
 
 ### 7. 交付
-返回:产出文件路径 + 所选风格名 + 验收清单结果。
+返回:产出文件路径(`prototypes/` 下)+ 所选风格名 + 验收清单结果。
 
 ## 风格源(多源,可插拔)
 zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一命中即可:
 
 **A. DESIGN.md 库(token 现成,直接消费)**
 - `getdesign` 官方库(首选):`npx -y getdesign@latest add <brand>`(73+ 品牌,如 linear.app / stripe / notion / vercel / apple…)。菜单可从 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 的 README 抓取(68 条分类索引)。
-- 本地 `DESIGN.md`:用户项目里已有的直接 Read;zdesign 自产的统一归档 `.zdev/design/brands/<slug>/DESIGN.md`,是查找的第一优先级。
+- 本地 `DESIGN.md`:用户项目里已有的直接 Read;zdesign 自产的统一归档 `design/brands/<slug>/DESIGN.md`,是查找的第一优先级。
 - 任意 YAML / DESIGN.md 文件:符合 token 格式即可。
 
 **B. 参考驱动(库内没有时,现场蒸馏成 token)**
@@ -71,7 +71,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 - 官方规范页 / 品牌官网 URL → WebFetch 抓 → 提炼 token
 - 截图 → 视觉分析提炼 token
 - 已知范式(如 shadcn 的 zinc 色阶 + ring-offset)→ 直接落 token
-蒸馏产物落盘 `.zdev/design/brands/<slug>/DESIGN.md` 归档——从此它就是 A 类本地源,同品牌复跑零成本。
+蒸馏产物落盘 `design/brands/<slug>/DESIGN.md` 归档——从此它就是 A 类本地源,同品牌复跑零成本。
 
 > **品牌复用**:zdraw 画品牌化图表时消费同一份 brands/ 源(经语义角色映射)——界面与图表一个调性。
 
@@ -99,7 +99,7 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 **未全过 → 回炉,绝不交付半成品。**
 
 ## 输出语言(固定,不推导)
-zdesign 的产出语言**只有 HTML/CSS**——它是设计稿的通用媒介,app 屏也用手机框 mockup 的 HTML 表达。**不产出 SwiftUI / Compose / Flutter 等实现代码**:把 DESIGN.md token 落到具体平台是实现工作,归 zapply / craftsman(它们按 DESIGN.md 消费 token)。设计归设计,实现归实现。
+产出语言**只有 HTML/CSS**。
 
 ## 输出格式
 交付时给出:产出文件路径(`.zdev/design/` 下)+ 所选风格名 + 验收清单结果(逐项 ✓)。

@@ -11,7 +11,8 @@
 | 可视化产物根 | `.zdev/<域>/`(apply、design…) |
 | 挂 change 的图 | `openspec/changes/<slug>/diagrams/` |
 | 独立文档 / 其配图 | `docs/` · `docs/diagrams/` |
-| 设计资产 | `.zdev/design/`(含 `brands/` 品牌源归档) |
+| 设计源 / 资产 | `design/`(`brands/` 品牌源、`assets/` 图形资产) |
+| 原型 | `prototypes/` |
 | batch run | `.zdev/apply/<runId>/{brief,state.json,report}`——report 出现即结案,零子目录零搬家 |
 
 交付纪律统一为「写入 + commit + push」。
@@ -24,7 +25,7 @@
 | 🏗️ [zarchitect](skills/zarchitect/SKILL.md) | 方案设计全流程:四路输入 → 需求澄清硬门槛 → 头脑风暴对齐 → 开 change + 图 + ztest → commit+push;Bug 深查委派 doctor |
 | 📊 [zdash](skills/zdash/SKILL.md) | 面板纯启动器(全库唯一知道 zdashboard 怎么拉的地方) |
 | 🧪 [ztest](skills/ztest/SKILL.md) | 测试策略:分层 + 量化覆盖率 + 逐任务验收标准 + 金字塔/场景覆盖双图 |
-| 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI 产出:.zdev/design/ 输出根,getdesign 选风格,brands/ 归档复用 |
+| 🎨 [zdesign](skills/zdesign/SKILL.md) | 品牌 UI 原型:prototypes/ 输出,getdesign 选风格,design/brands/ 归档复用 |
 | 👁️ [zshow](skills/zshow/SKILL.md) | 会话内可视化讲解:伪代码/调用树/组件树/diff/mermaid/单文件 HTML,即讲即走零沉淀;图资产交付归 zdraw |
 | ✏️ [zdraw](skills/zdraw/SKILL.md) | 图表 skill:Mermaid md 内嵌第一优先,.excalidraw/.drawio 双可编辑源 + SVG 渲染双轨,品牌化与 zdesign 共享 brands/ |
 | 📝 [zdocs](skills/zdocs/SKILL.md) | 文档编排:五要素派发 docswriter 执笔,自己不动笔 |
