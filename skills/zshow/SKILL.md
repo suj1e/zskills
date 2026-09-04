@@ -65,19 +65,6 @@ sequenceDiagram
     Daemon-->>UI: stream result
 ```
 
-### 分支拓扑 / 合并事件 → Mermaid gitGraph
-
-```mermaid
-gitGraph
-    commit id: "base"
-    branch 0827-1540-auth
-    commit id: "feat: oauth"
-    commit id: "fix: token 刷新"
-    checkout main
-    merge 0827-1540-auth type: HIGHLIGHT
-    commit id: "archive"
-```
-
 ### 变化本身 → diff（形态随话题）
 
 组件变化：
