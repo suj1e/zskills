@@ -41,17 +41,14 @@ VER=$(npm view zdashboard version --prefer-online) && nohup npx -y zdashboard@$V
 - `--restart` 杀旧起新——兜底硬手段：自愈失败（升级中断 / 实例僵尸）时使用
 - 判断顺序：先普通打开（version 比对自愈）→ 仍不对劲 → 重拉兜底
 
-## 局域网访问（`--host`，显式开启）
+## 局域网地址（默认已开放）
 
-面板默认只监听回环 `127.0.0.1`（安全）。用户说「局域网访问」「手机上看」「给同事看」时，加 `--host 0.0.0.0`（重拉则保留用户已有的 `--host` 参数）：
+面板默认监听 `0.0.0.0`——**局域网天生可达**，本节只管把地址拿给用户：
 
-```bash
-nohup npx -y zdashboard@latest --dir <项目根> --open --host 0.0.0.0 --restart > .zdev/dashboard.log 2>&1 &
-```
-
-- 用 `ipconfig`（Windows）/ `hostname -I`（macOS · Linux）拿本机局域网 IPv4，拼 `http://<局域网IP>:<端口>` 给用户
-- `--open` 只在本机弹浏览器；远端设备直接访问拼出的 URL
-- **面板无鉴权**——仅在可信局域网开启；zdashboard 自己也会打「非回环监听」警告
+- Windows：`ipconfig` 取 IPv4 地址；macOS · Linux：`hostname -I`
+- 拼成 `http://<局域网IP>:<端口>` 给用户；`--open` 只在本机弹浏览器，远端设备直接访问该 URL
+- 想收紧为仅本机：加 `--host 127.0.0.1` 重拉
+- ⚠️ **面板无鉴权，局域网内任何人可读项目全部文件（含 .env 与凭据配置）**——只在可信网络使用；zdashboard 启动时也会打「非回环监听」警告
 
 ## 边界
 
