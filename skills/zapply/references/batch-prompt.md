@@ -343,7 +343,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 第七步：报告
 
-全部完成后（或用户退出时），生成报告（会话内摘要 + `report.md` 落盘），并附 **zshow 总结与 diff**：各战线合并摘要 + 汇总文件树 diff——多战线时一处看全：
+全部完成后（或用户退出时），生成报告（会话内摘要 + `report.md` 落盘），并附 **zshow 全景 HTML**，落 `.zdev/show/batch-<runId>.html`：各战线合并摘要 + 汇总文件树 diff——多战线时一处看全；会话内同步给摘要：
 
 ```markdown
 📊 zapply batch 执行报告
