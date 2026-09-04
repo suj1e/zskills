@@ -18,7 +18,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 ## 工作流
 
 ### 1. 确认任务
-确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏)?给谁用?有无参考?目标设备与断点?
+确认:做什么(web 页面 / 应用界面 / 组件 / 风格探索 / app 屏 mockup)?给谁用?有无参考?目标设备与断点?
 **图表不是这里的活**——任何图(架构/流程/ER/白板草图)转介 `zdraw`;独立图形资产(logo/favicon/banner/插画)转介 `zasset`。
 
 ### 2. 选风格(动态发现,可插拔源)
@@ -98,8 +98,8 @@ zdesign **不绑定单一库**。选风格时按优先级尝试多个源,任一�
 
 **未全过 → 回炉,绝不交付半成品。**
 
-## app 场景
-DESIGN.md 的 token 同样适用,但落点不同:web 落 HTML/CSS;app 产出 SwiftUI / Compose / Flutter 代码,把 token 映射到各平台颜色 / 字体 API,指引用户在模拟器或真机验证。
+## 输出语言(固定,不推导)
+zdesign 的产出语言**只有 HTML/CSS**——它是设计稿的通用媒介,app 屏也用手机框 mockup 的 HTML 表达。**不产出 SwiftUI / Compose / Flutter 等实现代码**:把 DESIGN.md token 落到具体平台是实现工作,归 zapply / craftsman(它们按 DESIGN.md 消费 token)。设计归设计,实现归实现。
 
 ## 输出格式
 交付时给出:产出文件路径(`.zdev/design/` 下)+ 所选风格名 + 验收清单结果(逐项 ✓)。
