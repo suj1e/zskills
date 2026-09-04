@@ -20,7 +20,8 @@ has_frontmatter() {
   first=$(head -n1 "$file")
   if [[ "$first" != "---" ]]; then return 1; fi
   # look for closing --- on a line by itself after line 1
-  if tail -n +2 "$file" | grep -q "^---$"; then
+  # (no grep -q: it exits early and SIGPIPEs tail under pipefail, flaking the check)
+  if tail -n +2 "$file" | grep "^---$" > /dev/null; then
     return 0
   else
     return 1
