@@ -125,7 +125,7 @@ git worktree remove .zworktree/<name>
 
 - 多 change(batch)场景:严格按依赖拓扑序 merge,依赖前缀相同的串行
 - **只在这两种情况停下问用户**:merge 冲突(报告冲突点,不强行解)/ 用户明确说过该分支要先留——此时触发**通知义务**:`notify needs-you "<change> merge 冲突" "<冲突点一句话>"`,然后停下等用户
-- 其余情形 merge 完在汇报里带一句结果即可
+- 其余情形 merge 完即汇报，形态走 **zshow 菜单**：Mermaid **gitGraph**（分支拓扑 + 合并点，小合并两行内联）+ 浅文件树 diff（改动落位）；batch 收官画全景——所有战线的分支与合并点一图呈现
 - 边界不变:只做本地 merge,**不 push、不开 PR**
 
 ### 5. 归档

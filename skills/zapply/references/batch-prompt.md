@@ -343,7 +343,7 @@ Change [<name>] <display-name> 第 <n> 次尝试仍失败：
 
 ## 第七步：报告
 
-全部完成后（或用户退出时），生成报告：
+全部完成后（或用户退出时），生成报告（会话内摘要 + `report.md` 落盘），并附 **zshow 全景**：Mermaid gitGraph 画出所有战线的分支拓扑与合并点——多战线时一图胜千言：
 
 ```markdown
 📊 zapply batch 执行报告
