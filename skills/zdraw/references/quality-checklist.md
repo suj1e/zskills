@@ -26,10 +26,10 @@
 
 ## 品牌化(有品牌诉求时追加)
 
-- [ ] 颜色/字体全部来自 `.zdev/design/diagram-style.md` 语义角色,无硬编码散色
+- [ ] 颜色/字体全部来自 `design/diagram-style.md` 语义角色,无硬编码散色
 - [ ] accent 元素总数 ≤2(焦点节点/主箭头合计),普通节点一律 ink/muted/soft
 - [ ] 标题品牌 display;节点名品牌 sans;技术子标签 mono(缺失退化已在 diagram-style.md 披露)
-- [ ] diagram-style.md 落盘 .zdev/design/ 且 source-design 标注
+- [ ] diagram-style.md 落盘 design/ 且 source-design 标注
 
 ## 尺寸与交付
 

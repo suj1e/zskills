@@ -77,4 +77,4 @@ degradations:                    # 所有退化决策在此披露
   1. `.drawio` — mxCell `style` 串消费角色值(`fillColor=#paper;strokeColor=#ink;fontColor=#ink`),箭头默认 `strokeColor=#muted`
   2. `.excalidraw` — 元素 `strokeColor`/`backgroundColor`/`fontFamily` 直填角色值
   3. `.svg`(layout 脚本渲染)— `--style diagram-style.md` 注入为 CSS 变量,`fill="var(--ink)"` 消费——换品牌只改变量,布局不动
-- `diagram-style.md` 落盘 `.zdev/design/diagram-style.md`,与 zdesign 的 brands/ 同源共享;同 source-design 复跑直接复用。
+- `diagram-style.md` 落盘 `design/diagram-style.md`,与 zdesign 的 brands/ 同源共享;同 source-design 复跑直接复用。

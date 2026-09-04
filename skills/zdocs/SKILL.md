@@ -43,7 +43,7 @@ zdocs 自己不逐字执笔——写作由 `docswriter` 子智能体(zagents 提
 
 **落盘契约**：服务于 openspec change 的放对应 change 目录下的 `diagrams/`;README、changelog 等独立文档的配图回落 `docs/diagrams/`。
 涉及页面/UI 设计的转介 `zdesign` 产出带品牌风格的设计稿。
-文档需 **logo / favicon / banner / badge 等独立图形资产**时,引用 `zasset` 已产出的文件(`.zdev/design/assets/`);没有则建议用户先跑 zasset,不要现画。
+文档需 **logo / favicon / banner / badge 等独立图形资产**时,引用 `zasset` 已产出的文件(`design/assets/`);没有则建议用户先跑 zasset,不要现画。
 
 ### 5. 派发执笔（docswriter）
 组装**指令五要素**交给 `docswriter`(可后台执行):

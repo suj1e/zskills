@@ -32,7 +32,7 @@
 
 ## 三、mini brand guide 模板(logo 场景交付必备)
 
-落盘 `.zdev/design/assets/<slug>/BRAND.md`:
+落盘 `design/assets/<slug>/BRAND.md`:
 
 ```markdown
 # <品牌名> Visual Quick Guide
