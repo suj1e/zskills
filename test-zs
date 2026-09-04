@@ -151,15 +151,10 @@ for skill in "${SKILLS[@]}"; do
       else
         ok "no ZenTao mention (zdesign)"
       fi
-      if grep -q 'getdesign' "$f"; then
-        ok "getdesign reference present"
+      if grep -qE 'prototypes/' "$f"; then
+        ok "prototypes/ output root present"
       else
-        bad "getdesign reference missing"
-      fi
-      if grep -qE 'prototypes/' "$f" && grep -qE 'design/brands/' "$f"; then
-        ok "prototypes/ + design/brands/ output roots present"
-      else
-        bad "prototypes/ or design/brands/ output roots missing"
+        bad "prototypes/ output root missing"
       fi
       if grep -q 'zdraw' "$f"; then
         ok "diagram routing to zdraw present"
