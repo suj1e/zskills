@@ -1,16 +1,16 @@
 ---
 name: zdesign
 icon: "🎨"
-description: "Use when the user wants concrete UI/visual design produced for a product prototype — landing pages, web app screens, app screens, components, or visual style exploration. Routes to the right taste-skill for direction, generates HTML/CSS that follows it, self-verifies against quality gates, and delivers polished artifacts. For design taste/guidance alone without producing artifacts, frontend-design may suffice; use zdesign when actual design artifacts are needed. Diagrams of any kind (architecture, flowchart, ER, whiteboard sketches — branded or not) route to zdraw; standalone graphic assets (logo, favicon/app icons, OG share images, banners, posters, illustrations) route to zasset instead."
+description: "Use when the user wants concrete UI/visual design produced for a product prototype — landing pages, web app screens, app screens, components, or visual style exploration. Routes to the right taste-skill for direction, delegates HTML/CSS production to the frontend-design skill, self-verifies against quality gates, and delivers polished artifacts. For design taste/guidance alone without producing artifacts, frontend-design may suffice; use zdesign when actual design artifacts are needed. Diagrams of any kind (architecture, flowchart, ER, whiteboard sketches — branded or not) route to zdraw; standalone graphic assets (logo, favicon/app icons, OG share images, banners, posters, illustrations) route to zasset instead."
 ---
 
 # zdesign
 
-产品原型阶段的视觉产出 skill。**taste-skill 定调 → 模型交付 HTML/CSS 原型**。
+产品原型阶段的视觉产出 skill。**taste-skill 定调 → frontend-design 产出 → 质量门禁交付**。
 
 ## 核心理念
 
-- **taste-skill 驱动**：所有视觉决策来自 taste-skill 的品味判断，模型不自由发挥。
+- **taste-skill 定调，frontend-design 产出**：品味方向来自 taste-skill 的判断；原型由 `frontend-design` skill 产出；zdesign 负责路由与验收，不裸写。
 - **完善交付，不是半成品**：产出必须过【约束】【细节】【验收】三道关，未全过则回炉。
 - **轻量自洽**：产出是纯 HTML/CSS（零运行时依赖），浏览器直接打开即所见。
 - **统一输出根**：原型统一写入 `prototypes/`，skill 不询问输出路径。
@@ -69,7 +69,7 @@ taste-skill 定品味（从零定方向）
 3. **用户决策**：展示给用户，收集反馈，确定最终方向。
 4. **提炼 DESIGN.md**：将选定方向落地为项目根目录 `DESIGN.md`（含 token 级设计系统 + 调性描述 + 禁忌清单）。
 5. **清理**：删除 `prototypes/taste-options/` 目录。
-6. **产出正式原型**：基于 DESIGN.md 产出完整原型。
+6. **产出正式原型**：委派 `frontend-design` 产出（见下方「产出：委派 frontend-design」）。
 7. **质量门禁自检**：过【约束】【细节】【验收】三道关。
 8. **交付**：返回文件路径 + 验收结果。
 
@@ -90,7 +90,7 @@ taste-skill 定品味（基于现有 DESIGN.md 确认/微调方向）
 **步骤详情**：
 
 1. **taste-skill 定品味**：调用合适的 taste-skill，输入包含现有 `DESIGN.md` 内容，确认或微调方向。
-2. **直接产出正式原型**：基于 DESIGN.md 产出完整原型。
+2. **直接产出正式原型**：委派 `frontend-design` 产出（见下方「产出：委派 frontend-design」）。
 3. **质量门禁自检**：过【约束】【细节】【验收】三道关。
 4. **交付**：返回文件路径 + 验收结果。
 
@@ -149,12 +149,11 @@ spacing: "8px"
 
 ---
 
-## 产出 + 打磨
+## 产出：委派 frontend-design
 
-1. **token → CSS 变量**：将 DESIGN.md 的 token 映射成 `:root` CSS 变量（如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`）。**全程引用变量，绝不硬编码 hex / px 常数**。
-2. **遵守约束硬规则**：见下方【约束】。
-3. **打磨细节**：见下方【细节】清单。
-4. **浏览器自查**：产出过程中随时可用浏览器打开文件自查。
+1. **委派产出**：调用 `Skill: frontend-design`，输入三件——DESIGN.md（视觉真相）、任务 brief（做什么 / 给谁 / 断点）、下方【约束】硬规则。原型在它的前端手艺规范下产出，zdesign 不裸写。taste-options 探索稿同走此路径（输入换成 taste-skill 的品味判断）。
+2. **token → CSS 变量**：产出全程引用 `:root` CSS 变量（如 `--color-primary`、`--surface-1`、`--font-display`、`--radius-md`、`--space-lg`），**绝不硬编码 hex / px 常数**——这是传给 frontend-design 的硬要求。
+3. **浏览器自查**：产出过程中随时可用浏览器打开文件自查。【约束】【细节】清单随委派传入，并在验收阶段逐项复核。
 
 ---
 
