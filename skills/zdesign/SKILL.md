@@ -30,7 +30,7 @@ description: "Use when the user wants concrete UI/visual design produced — lan
 - 解析出品牌清单(`slug` + 一句话描述 + 分类)。slug 就是 getdesign.md 的品牌路径,如 `linear.app`、`stripe`、`notion`、`vercel`、`apple`。
 - **按分类**展示给用户选;**视觉探索**场景并排 2-3 个对比。
 - 用户也可直接指定("用 Linear 风格")。
-- **风格方向不明时**:借 **taste-skill** 插件(design-taste-frontend)的 brief 推断定调——先给设计方向判断,再落到上面的风格源查找。
+- **风格方向不明时**:**优先用 taste-skill**(装有就必须用,design-taste-frontend 的 brief 推断)定调——先给设计方向判断,再落到上面的风格源查找。
 
 ### 3. 取 DESIGN.md(官方 CLI,拿完整 token)
 选定品牌后,拉取并归档到品牌源目录(`brands/` 已有同 slug 的 DESIGN.md 则跳过拉取):
@@ -50,7 +50,7 @@ UI 产出:把 DESIGN.md 的 YAML token 映射成 `:root` CSS 变量(如 `--color
 ### 5. 按约束产出 + 打磨细节
 遵守下方【约束】硬规则与【细节】清单,产出 HTML/CSS 写入 `.zdev/design/`;过程中随时可用浏览器打开文件自查。
 
-**品味手艺外挂——taste-skill 是本 skill 的工具**:产出与打磨阶段调用 **taste-skill** 插件(design-taste-frontend / high-end-visual-design / gpt-taste)的反 generic 规范与构图 / 节奏 / 动效手艺。**分层铁律:视觉值(色 / 字 / 圆角 / 间距)永远以 DESIGN.md 为唯一真相——taste 只补 DESIGN.md 不管的手艺,其自带的配色 / 字体倾向不得覆盖 DESIGN.md**。未安装 taste-skill 时降级:按【约束】【细节】内联清单执行,零硬依赖。
+**taste-skill 是本 skill 的工具,装有就必须优先使用**:产出与打磨阶段**先过 taste-skill**(design-taste-frontend / high-end-visual-design / gpt-taste)的反 generic 规范与构图 / 节奏 / 动效手艺。**两者互相协调**:DESIGN.md 定视觉值,taste-skill 出手艺与方向,产出时融合执行——视觉基准仍是 DESIGN.md。未安装 taste-skill 时才降级:按【约束】【细节】内联清单执行。
 
 ### 6. 验收(闭环)
 按【验收】清单逐项自检(含浏览器亲眼确认)。**未全过 → 回第 5 步修,过了才交付。**
